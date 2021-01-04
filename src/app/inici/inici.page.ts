@@ -3,7 +3,7 @@ import { SesionService } from '../servicios/sesion.service';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { PeticionesAPIService } from '../servicios/index';
 import { CalculosService } from '../servicios/calculos.service';
-import { Juego, Equipo } from '../clases/index';
+import { Juego, Equipo, Grupo } from '../clases/index';
 import { Router } from '@angular/router';
 import { JuegoSeleccionadoPage } from '../juego-seleccionado/juego-seleccionado.page';
 import { IonSlides } from '@ionic/angular';
@@ -18,9 +18,13 @@ export class IniciPage implements OnInit {
 
   /* Creamos los array con los juegos activos e inactivos que solicitaremos a la API */
   id: number;
-  JuegosActivos: Juego[] = [];
+  juegosRapidos: Juego[] = [];
+  juegosActivos: Juego[] = [];
+  juegosInactivos: Juego[] = [];
+  juegosPreparados: Juego[] = [];
   disablePrevBtn = true;
   disableNextBtn = false;
+  listaGrupos: Grupo [];
 
 
 
@@ -41,12 +45,51 @@ export class IniciPage implements OnInit {
   
 
   ngOnInit() {
-    this.id = this.sesion.DameAlumno().id;
-    console.log('Este es el id del alumno que se ha logado: ' + this.id);
-    this.calculos.DameJuegosAlumno(this.id)
-      .subscribe(listas => {
-        this.JuegosActivos = listas.activos;
-      });
+    this.id = this.sesion.DameProfesor().id;
+    // this.ObtenJuegosDelProfesor();
+ 
+  }
+  ionViewWillEnter() {
+    // Esto se ejecutara despues del noOnInit y cada vez que regresemos al inicio
+    // De esta forma recuperamos la lista de juegos por si hubiera habido alguna novedad
+    this.ObtenJuegosDelProfesor();
+ 
+  }
+  
+
+  
+  ObtenJuegosDelProfesor() {
+    this.calculos.DameJuegosRapidos(this.id)
+    .subscribe(juegos => {
+      this.juegosRapidos = juegos;
+      this.sesion.TomaJuegosRapidos (this.juegosRapidos);
+    });
+    this.juegosActivos = [];
+    this.peticionesAPI.DameGruposProfesor(this.id)
+    .subscribe(res => {
+      this.listaGrupos = res;
+      if (res[0] !== undefined) {
+        let cont = 0;
+        this.listaGrupos.forEach (grupo => {
+          this.calculos.DameListaJuegos(grupo.id)
+          .subscribe ( listas => {
+                  this.juegosActivos = this.juegosActivos.concat (listas.activos);
+                  this.juegosInactivos = this.juegosInactivos.concat (listas.inactivos);
+                  this.juegosInactivos = this.juegosInactivos.concat (listas.preparados);
+                  cont = cont + 1;
+                  if (cont === this.listaGrupos.length) {
+                    console.log ('ya tengo los juegos');
+                    this.sesion.TomaJuegosInactivos (this.juegosInactivos);
+                    this.sesion.TomaJuegosPreparados (this.juegosPreparados);
+                  }
+          });
+        });
+      }
+    });
+  }
+
+  DameNombreGrupo(grupoId: number): string {
+    return this.listaGrupos.filter (grupo => grupo.id === grupoId)[0].Nombre;
   }
 
 

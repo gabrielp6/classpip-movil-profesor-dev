@@ -5,11 +5,11 @@
       <div class="user-image">
         <div class="border">
           <div class="img-box">
-            <img *ngIf = "MiAlumno !== undefined" [src]="MiAlumno.ImagenPerfil">
+            <img *ngIf = "profesor !== undefined" [src]="profesor.ImagenPerfil">
           </div>
         </div>
       </div>
-      <p *ngIf = "MiAlumno !== undefined"> {{MiAlumno.Nombre}} {{MiAlumno.PrimerApellido}} <br> {{MiAlumno.SegundoApellido}} </p>
+      <p *ngIf = "profesor !== undefined"> {{profesor.Nombre}} {{profesor.PrimerApellido}} <br> {{profesor.SegundoApellido}} </p>
       <ion-row style="height: 20px"></ion-row>
 
       <ion-menu-toggle auto-hide="true">
@@ -23,6 +23,29 @@
         <ion-item lines="none" class="sidemenu-items" (click)="GoMisJuegosInactivos();" routerDirection="forward">
           <ion-icon class = "negro" name="logo-game-controller-b" slot="start"></ion-icon>
           Mis Juegos Inactivos
+        </ion-item>
+
+          
+        <ion-item lines="none" class="sidemenu-items" (click)="GoMisJuegosPreparados();" routerDirection="forward">
+          <ion-icon class = "rojo" name="logo-game-controller-b" slot="start"></ion-icon>
+          Mis Juegos Preparados
+        </ion-item>
+
+          
+        <ion-item lines="none" class="sidemenu-items" (click)="CrearJuegoRapido();" routerDirection="forward">
+          <ion-icon class = "rojo" name="build" slot="start"></ion-icon>
+          Crear juego rápido
+        </ion-item>
+
+        <ion-item lines="none" class="sidemenu-items" (click)="GoMisJuegosRapidos();" routerDirection="forward">
+          <ion-icon class = "rojo" name="flash" slot="start"></ion-icon>
+          Mis juegos rápidos
+        </ion-item>
+
+          
+        <ion-item lines="none" class="sidemenu-items" (click)="GoMisJuegosInactivos();" routerDirection="forward">
+          <ion-icon class = "verde" name="build" slot="start"></ion-icon>
+          Mis Recursos
         </ion-item>
         
         <ion-item lines="none" class="sidemenu-items" (click)="GoMisGrupos();" routerDirection="forward">

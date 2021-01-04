@@ -1,0 +1,39 @@
+ion-slide {
+    height: 650px;
+    width: 200px;
+
+
+
+}
+// esto es para que me ponga cada slide arriba
+ion-slide.swiper-slide {
+    align-items: flex-start;
+}
+
+// Esto es para que haga scroll vertical cuando no cabe la información
+// en el slide
+
+.swiper-slide {
+    overflow-y: scroll;    
+    display: block;    
+}
+
+
+//Para que parpade la ultima votación en el juego de votaciones uno a todos
+.blink {
+    color: red;
+    font-size:large;
+    animation: blink-animation 1s steps(5, start) infinite;
+    -webkit-animation: blink-animation 1s steps(5, start) infinite;
+  }
+  @keyframes blink-animation {
+    to {
+      visibility: hidden;
+    }
+  }
+  @-webkit-keyframes blink-animation {
+    to {
+      visibility: hidden;
+    }
+  }
+  

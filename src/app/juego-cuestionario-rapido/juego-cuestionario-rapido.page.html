@@ -1,0 +1,91 @@
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Juego de Cuestionario Rápido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="juegos-content">
+  
+  <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+  <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
+
+  
+  <ion-slides  #slides (ionSlideWillChange)="doCheck()">
+    <ion-slide>
+      <ion-list lines = "none" style="text-align: center;">
+        <label align = "center"><h2 style="color:rgb(109, 11, 19)"><strong>Informacion del juego</strong></h2></label>
+        <br>
+        <br>
+       
+        <ion-item><h3> Descripcion</h3></ion-item>
+        <ion-item><h1><strong>{{juegoSeleccionado.NombreJuego}}</strong></h1></ion-item>
+        <br>
+        <ion-item><h3> Enlace</h3></ion-item>
+        <ion-item><h1><strong>http://147.83.118.92/home</strong></h1></ion-item>
+        <br>
+        <ion-item><h3> Clave</h3></ion-item>
+        <ion-item><h1><strong>{{juegoSeleccionado.Clave}}</strong></h1></ion-item>
+        <br>
+        <ion-list style="text-align:center">
+          <ion-button class="ranking-btn-rojo" (click)="Eliminar();">Eliminar juego rápido</ion-button> 
+        </ion-list>      
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <ion-list lines = "none" style="text-align: center;">
+        <label align = "center"><h2 style="color:rgb(109, 11, 19)"><strong>Alumnos conectados</strong></h2></label>
+        <br>
+        <br>
+
+        <ion-item *ngFor="let participante of participantes">
+            <ion-label *ngIf = "!participante.contestado" style="color: red"> {{participante.nickName}} </ion-label>
+            <ion-label *ngIf = "participante.contestado" style="color: green"> {{participante.nickName}} </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Clasificación</strong></h1></label>
+        <br>
+        <ion-item  *ngFor="let participante of clasificacion">
+          <ion-item lines = "none"  style="width: 80%" >
+            <ion-label> {{participante.nick}}</ion-label>
+          </ion-item>
+          <ion-item lines = "none"  style="text-align: right;">
+            <ion-label style = "color: green"> {{participante.nota}}</ion-label>
+          </ion-item>
+        </ion-item>
+        <br>
+        <br>
+      </ion-list>
+    </ion-slide>
+  
+    <ion-slide>
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Histograma de aciertos</strong></h1></label>
+        <br>
+        <div echarts [options]="grafico"  theme="macarons" class="demo-chart"></div>
+      </ion-list>
+    </ion-slide>
+    <ion-slide *ngFor = "let pregunta of preguntas; index as i">
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Respuestas a cada pregunta</strong></h1></label>
+        <br>
+        <ion-label><strong>Pregunta {{i + 1 }}</strong></ion-label>
+        <br>
+        <br>
+        <ion-label class="ion-text-wrap"> {{preguntasCuestionario[i].Pregunta}}</ion-label>
+        <br>
+        <br>
+     
+        <div [options]="donuts[i]" class="demo-chart" echarts theme="macarons"></div>
+      </ion-list>
+    </ion-slide>
+  </ion-slides>
+
+
+</ion-content>

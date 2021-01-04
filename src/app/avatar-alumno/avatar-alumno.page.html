@@ -1,0 +1,40 @@
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Avatar de {{alumno.Nombre}} {{alumno.PrimerApellido}} {{alumno.SegundoApellido}} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="juegoavatar-content">  
+  <ion-list style="text-align:center">
+    <ion-button class="ranking-btn" (click)="CambiarPrivilegios();">Cambiar privilegios</ion-button> 
+  </ion-list>
+  <br>  
+  <div  *ngIf = "inscripcionAlumnoJuegoAvatar.Silueta" style="display: flex; width: 300px; height: 324px; margin: auto; margin-top: 20%;">
+    <img  [src]="imagenesAvatares + inscripcionAlumnoJuegoAvatar.Silueta" style="width: 300px; height: 324px; position: relative; z-index: 0;">
+    <img  *ngIf = "inscripcionAlumnoJuegoAvatar.Complemento1" [src]="imagenesAvatares + inscripcionAlumnoJuegoAvatar.Complemento1" style="width: 300px; height: 324px; position: absolute; z-index: 1;">
+    <img  *ngIf = "inscripcionAlumnoJuegoAvatar.Complemento2" [src]="imagenesAvatares + inscripcionAlumnoJuegoAvatar.Complemento2" style="width: 300px; height: 324px;position: absolute; z-index: 2;">
+    <img  *ngIf = "inscripcionAlumnoJuegoAvatar.Complemento3" [src]="imagenesAvatares + inscripcionAlumnoJuegoAvatar.Complemento3" style="width: 300px; height: 324px;position: absolute; z-index: 3;">
+    <img  *ngIf = "inscripcionAlumnoJuegoAvatar.Complemento4" [src]="imagenesAvatares + inscripcionAlumnoJuegoAvatar.Complemento4" style="width: 300px; height: 324px;position: absolute; z-index: 4;">
+
+  </div>
+  <ion-list style="text-align:center">
+    <audio  controls *ngIf = 'inscripcionAlumnoJuegoAvatar.Voz' style="margin-bottom: 20%;">
+      <source [src]="audiosAvatares + inscripcionAlumnoJuegoAvatar.Voz" type="audio/mpeg">
+    </audio> 
+  </ion-list>
+
+  
+  
+  <div  *ngIf = "!inscripcionAlumnoJuegoAvatar.Silueta" style="display: flex; width: 300px; height: 324px; margin: auto; margin-top: 20%; margin-bottom: 30%; opacity: 0.2;">
+    <img  src = "../../assets/interrogante.jpg" style="width: 300px; height: 324px; position: relative; z-index: 0;">
+  </div>
+ 
+
+
+
+
+
+</ion-content>

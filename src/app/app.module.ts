@@ -25,6 +25,8 @@ import * as URL from './URLs/urls';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+ 
+
 
 //const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 // const config: SocketIoConfig = { url: 'http://147.83.118.92:8080', options: {} };
@@ -49,6 +51,14 @@ import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
 import { DateAdapter } from '@angular/material';
 import { CustomDateAdapter } from './CustomDataAdapter';
 import {DatePipe} from '@angular/common';
+import {  SeleccionarCromoPageModule } from './seleccionar-cromo/seleccionar-cromo.module';
+import { SeleccionarAlumnosPageModule } from './seleccionar-alumnos/seleccionar-alumnos.module';
+
+import {NgxEchartsModule} from 'ngx-echarts';
+
+
+// import * as echarts from './custom-echarts';
+import * as echarts from 'echarts';
 
 @NgModule({
   declarations: [AppComponent],
@@ -68,11 +78,13 @@ import {DatePipe} from '@angular/common';
     BrowserAnimationsModule,
     LongPressModule,
 
-
     SocketIoModule.forRoot(config),
     IntercambiarCromosPageModule,
-    AvatarEditorPageModule
-    
+    AvatarEditorPageModule,
+    SeleccionarCromoPageModule,
+    SeleccionarAlumnosPageModule,
+    NgxEchartsModule.forRoot({echarts}),
+ 
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   providers: [

@@ -8,24 +8,74 @@
 </ion-header>
 
 
-<ion-content>
-  <br>
-  <ion-list style="text-align:justify; padding: 10%;">
-    <ion-label>{{juegoSeleccionado.Presentacion}}</ion-label>
-  </ion-list>
-  <br>
+<ion-content class="juegos-content">
   
-  <ion-list style="text-align:center">
-    <ion-label> <strong>Turnos disponibles</strong></ion-label>
-  </ion-list>
+  <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+  <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
 
+  
+  <ion-slides  #slides (ionSlideWillChange)="doCheck()">
+    <ion-slide>
+      <ion-list lines = "none" style="text-align: center;">
+        <label align = "center"><h2 style="color:rgb(109, 11, 19)"><strong>Informacion del juego</strong></h2></label>
+        <br>
+        <br>
+       
+        <ion-item><h3> Descripcion</h3></ion-item>
+        <ion-item><h1><strong>{{juegoSeleccionado.NombreJuego}}</strong></h1></ion-item>
+        <ion-item><h2>{{juegoSeleccionado.Presentacion}}</h2></ion-item>
+        <br>
+        <ion-item><h3> Enlace</h3></ion-item>
+        <ion-item><h1><strong>http://147.83.118.92/home</strong></h1></ion-item>
+        <br>
+        <ion-item><h3> Clave</h3></ion-item>
+        <ion-item><h1><strong>{{juegoSeleccionado.Clave}}</strong></h1></ion-item>
+        <br>
+        <ion-list style="text-align:center">
+          <ion-button class="ranking-btn-rojo" (click)="Eliminar();">Eliminar juego rápido</ion-button> 
+        </ion-list>      
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <ion-list lines = "none" style="text-align: center;">
+        <label align = "center"><h2 style="color:rgb(109, 11, 19)"><strong>Alumnos conectados</strong></h2></label>
+        <br>
+        <br>
 
-  <ion-list  *ngIf = "listaOpciones">
-    <ion-item style = "width: 80%; padding-left: 20%;" (click) = "EnviarTurnoElegido (turno)" *ngFor = "let turno of listaOpciones">
-      <ion-label *ngIf = "!turno.persona && turno.dia !== '*'">{{turno.dia | date: 'dd-MM-yyyy'}}</ion-label>
-      <ion-label *ngIf = "!turno.persona && turno.dia !== '*'">{{turno.hora}}</ion-label>
-      <ion-label *ngIf = "turno.dia === '*'" > Ningún turno me vale</ion-label>
-    </ion-item>
-  </ion-list>
+        <ion-item *ngFor="let participante of participantes">
+            <ion-label *ngIf = "!participante.contestado" style="color: red"> {{participante.nickName}} </ion-label>
+            <ion-label *ngIf = "participante.contestado" style="color: green"> {{participante.nickName}} </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Estado de los turnos</strong></h1></label>
+        <br>
+        <ion-item  *ngFor="let turno of juegoSeleccionado.Turnos;">
+          <ion-item lines = "none" style = " width: 50%">
+            <ion-label *ngIf = "turno.dia !== '*'" > {{datePipe.transform(turno.dia, 'dd-MM-yyyy') }} {{turno.hora}}</ion-label>
+            <ion-label *ngIf = "turno.dia === '*'"> Ninguno</ion-label>
+          </ion-item>
+          <ion-item lines = "none" style = " width: 30%">
+            <ion-label style = "color: green"> {{turno.persona}}</ion-label>
+          </ion-item>
+
+          <ion-item lines = "none" style="text-align: right;">
+           <i class="material-icons  md-36" style = "color: red" (click)="EliminarTurno(turno)">delete</i>
+          </ion-item>
+        </ion-item>
+        <br>
+        <br>
+      </ion-list>
+      <ion-list lines = "none" style="text-align: center;">
+        <ion-button class="ranking-btn" (click)="MostrarInput();">Añade turno</ion-button>
+        <div align = "center"> <input id='inputDateTime'  style= 'display:none; width: 50%' matInput type="datetime-local" (change)="AgregarTurno($event.target.value)"> </div>                
+      </ion-list> 
+
+ 
+    </ion-slide>
+  </ion-slides>
+
 
 </ion-content>

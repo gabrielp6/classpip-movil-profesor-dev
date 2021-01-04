@@ -7,65 +7,40 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-    <br>
-    <h4 style = "text-align: center;color: rgb(165, 32, 32)">Conceptos</h4>
-    <ion-list>
-      <ion-item *ngFor ="let concepto of juegoSeleccionado.Conceptos; let i=index">
-        <ion-label><strong>{{concepto}}</strong>, que tiene un peso del {{juegoSeleccionado.Pesos[i]}}% </ion-label>
-      </ion-item>
-    </ion-list>
-    <h4 *ngIf = "VotacionFinalizada()" style = "text-align: center;color: rgb(12, 126, 46)">Ya has completado tus votaciones</h4>
-    <div>
-      <h4 style = "text-align: center;color: rgb(165, 32, 32)">Tus votaciones</h4>
-      <mat-accordion #accordion="matAccordion" [multi]="true">
-        <div *ngFor="let item of listaAlumnos; let pos=index">
-          <mat-expansion-panel *ngIf = "item.registrado" disabled>
-            <mat-expansion-panel-header>
-                <ion-item style= "width: 50%">
-                  <ion-label>
-                    {{item.al.Nombre}} {{item.al.PrimerApellido}}
-                  </ion-label>
-                </ion-item> 
-                <ion-item  *ngFor="let concepto of juegoSeleccionado.Conceptos; let i=index" style= "width: 15%">
-                  <ion-label style="color: green; text-align: right;">
-                    {{item.votos[i]}}
-                  </ion-label>
+<ion-content class="juegos-content">
+  
+  
+  <ion-slides>
 
-                </ion-item>
-              
-            </mat-expansion-panel-header>
-
-            
-        
-          </mat-expansion-panel>
-          <mat-expansion-panel *ngIf = "!item.registrado">
-            <mat-expansion-panel-header (click)="MuestraPicker(pos)">
-                <ion-item style= "width: 50%">
-                  <ion-label>
-                    {{item.al.Nombre}} {{item.al.PrimerApellido}}
-                  </ion-label>
-                </ion-item> 
-                <ion-item *ngFor="let concepto of juegoSeleccionado.Conceptos; let i=index" style= "width: 15%">
-           
-                  <ion-label *ngIf = "!item.votos">
-                      
-                  </ion-label>
-                  <ion-label *ngIf = "item.votos" style=" color: red; text-align: right;">
-                    {{item.votos[i]}}
-                  </ion-label>
+    <ion-slide>
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Resultados de la votación</strong></h1></label>
+ 
+        <label align = "center" style = "font-size: small;">En <strong>negrita</strong> los alumnos que han finalizado sus votaciones</label>
+        <br>
+        <label align = "center" style = "font-size: small;">En <strong style="color:green">verde</strong> las notas recibidad por cada alumno</label>
+        <br>
+        <br>
+        <ion-item  *ngFor="let alumno of rankingIndividualJuegoDeVotacionTodosAUno;">
           
-
-                </ion-item>
-              
-            </mat-expansion-panel-header>
-          </mat-expansion-panel>
-        </div>
-      </mat-accordion>
-
-      <ion-list style="text-align:center">
-          <ion-button *ngIf = "!VotacionFinalizada()" class="ranking-btn" (click)="Enviar();">Enviar votaciones</ion-button> 
+          <ion-item lines = "none" style = " width: 60%">
+            <ion-label *ngIf = "alumno.votado" class="ion-text-wrap"><strong>{{alumno.nombre}} {{alumno.primerApellido}} {{alumno.segundoApellido}}</strong></ion-label>
+            <ion-label *ngIf = "!alumno.votado" class="ion-text-wrap">{{alumno.nombre}} {{alumno.primerApellido}} {{alumno.segundoApellido}}</ion-label>
+      
+          </ion-item>
+          <ion-item lines = "none" style = " width: 20%">
+            <ion-label style = " color: rgb(11, 105, 27); ">{{alumno.votosRecibidos}}</ion-label>
+          </ion-item>
+          <ion-item lines = "none" style = " width: 20%">
+            <ion-label>{{(alumno.nota).toFixed(2)}}</ion-label>
+          </ion-item>
+         
+          
+        </ion-item>
       </ion-list>
+    </ion-slide>
 
-    </div>
+  </ion-slides>
+
+
 </ion-content>

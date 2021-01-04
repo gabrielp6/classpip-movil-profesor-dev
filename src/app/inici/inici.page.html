@@ -14,24 +14,32 @@
     <ion-row style="height: 25px"></ion-row>
     <img height= "40px" src="../../assets/home/Active-games-banner.svg">
 
-    <div *ngIf="!JuegosActivos[0]"><p>No hay juegos activos</p></div>
+    <div *ngIf="!juegosActivos[0]"><p>No hay juegos activos</p></div>
 
-    <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 15px;font-size: 50px;z-index: 2;" (click)="prev()">
+    <!-- <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 15px;font-size: 50px;z-index: 2;" (click)="prev()">
       <i class="material-icons">skip_previous</i>
     </div>
     <div *ngIf="!disableNextBtn" style="position: absolute;top: 50%;right: 15px;font-size: 50px;z-index: 2;" (click)="next()">
       <i class="material-icons">skip_next</i>
-    </div>
+    </div> -->
+
+    
+
+    <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+    <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
+  
     <!-- [options]="sliderConfig" -->
 
     <ion-slides  #slides (ionSlideWillChange)="doCheck()" >
-      <ion-slide *ngFor="let juego of JuegosActivos">
+      <ion-slide *ngFor="let juego of juegosActivos">
         <div>
-          <ion-card class="juegos-card-bg">
+          <ion-card class="juegos-card-bg-activo">
             <div class = "info-juego">
-              <h2> {{juego.NombreJuego}} </h2>
-              <h3>{{ juego.Tipo }}</h3>
+              <div><h2> {{juego.NombreJuego}} </h2><h3>({{ juego.Tipo }})</h3></div>
+         
               <p>{{ juego.Modo }}</p> 
+              <p>{{ DameNombreGrupo (juego.grupoId) }}</p> 
+
             </div>
              <div class="logo-btn">
               <img *ngIf="juego.Tipo == 'Juego De Puntos'" class = "card-img" src="../../assets/img/puntosicon.svg">

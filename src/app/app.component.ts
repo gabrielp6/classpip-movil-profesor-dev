@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { Alumno } from '../app/clases/Alumno';
 import { SesionService, ComServerService } from '../app/servicios';
 import * as URL from '../app//URLs/urls';
+import { Profesor } from './clases';
 
 
 @Component({
@@ -16,7 +17,7 @@ import * as URL from '../app//URLs/urls';
 })
 export class AppComponent {
 
-  MiAlumno: Alumno;
+  profesor: Profesor;
   navigate: any;
   imagenPerfil: string;
 
@@ -37,15 +38,15 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.sesion.EnviameAlumno().subscribe ((alumno) => {
-        this.MiAlumno = alumno;
+      this.sesion.EnviameProfesor().subscribe ((profesor) => {
+        this.profesor = profesor;
       //  this.imagenPerfil = URL.ImagenesPerfil + this.MiAlumno.ImagenPerfil;
       });
     });
   }
 
   GoOut() {
-    this.comServer.Desconectar(this.MiAlumno);
+    this.comServer.Desconectar(this.profesor.id);
     this.route.navigateByUrl('/home');
   }
 
@@ -56,9 +57,8 @@ export class AppComponent {
   }
 
   GoMisGrupos() {
-    this.MiAlumno = this.sesion.DameAlumno();
-    console.log ('Estamos');
-    console.log (this.MiAlumno);
+    console.log ('vamos a mis grupos');
+ 
     this.route.navigateByUrl('tabs/mis-grupos');
   }
 
@@ -69,4 +69,18 @@ export class AppComponent {
   GoMisJuegosInactivos() {
     this.route.navigateByUrl('tabs/mis-juegos-inactivos');
   } 
+
+  GoMisJuegosRapidos() {
+    this.route.navigateByUrl('mis-juegos-rapidos');
+  } 
+
+   
+  GoMisJuegosPreparados() {
+    this.route.navigateByUrl('tabs/mis-juegos-inactivos');
+  } 
+
+  CrearJuegoRapido() {
+    this.route.navigateByUrl('crear-juego-rapido');
+
+  }
 }

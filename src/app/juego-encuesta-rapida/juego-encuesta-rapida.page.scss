@@ -1,0 +1,19 @@
+ion-slide {
+    height: 650px;
+    width: 200px;
+
+
+
+}
+// esto es para que me ponga cada slide arriba
+ion-slide.swiper-slide {
+    align-items: flex-start;
+}
+
+// Esto es para que haga scroll vertical cuando no cabe la información
+// en el slide
+
+.swiper-slide {
+    overflow-y: scroll;    
+    display: block;    
+}

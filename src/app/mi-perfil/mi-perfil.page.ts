@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PeticionesAPIService} from '../servicios/index';
 import { SesionService} from '../servicios/sesion.service';
 import { CalculosService } from '../servicios/calculos.service';
-import { Juego, Equipo, Alumno, MiAlumnoAMostrarJuegoDePuntos, Grupo, MiEquipoAMostrarJuegoDePuntos } from '../clases/index';
+import { Juego, Equipo, Alumno, MiAlumnoAMostrarJuegoDePuntos, Grupo, MiEquipoAMostrarJuegoDePuntos, Profesor } from '../clases/index';
 import { File } from '@ionic-native/file/ngx';
 import { ActionSheetController, AlertController } from '@ionic/angular';
 // import { Camera, CameraOptions } from '@ionic-native/Camera/ngx';
@@ -16,7 +16,7 @@ import * as URL from '../URLs/urls';
 export class MiPerfilPage implements OnInit {
 
   base64Image: any;
-  alumno: Alumno;
+  profesor: Profesor;
   MiImagenAlumno: string[] = [];
   MisAlumnosAMostrar: MiAlumnoAMostrarJuegoDePuntos[] = [];
   imagenPerfil: string;
@@ -36,67 +36,13 @@ export class MiPerfilPage implements OnInit {
 
   ngOnInit() {
     console.log ('estoy en mi perfil');
-    this.alumno = this.sesion.DameAlumno();
-    console.log(this.alumno);
-    // this.MiImagenAlumno = this.calculos.VisualizarImagenAlumno(this.Alumno.ImagenPerfil);
-    console.log('Ya tengo la imagen del Alumno');
-    console.log(this.MiImagenAlumno);
-   // this.imagenPerfil = URL.ImagenesPerfil + this.Alumno.ImagenPerfil;
-    
+    this.profesor = this.sesion.DameProfesor();
+    console.log (this.profesor);
+   
   }
 
-  // accessGallery() {
-  //   this.camera.getPicture({
-  //     sourceType: this.camera.PictureSourceType.SAVEDPHOTOALBUM,
-  //     destinationType: this.camera.DestinationType.DATA_URL
-  //   }).then((imageData) => {
-  //     this.base64Image = 'data:image/jpeg;base64,' + imageData;
-  //     }, (err) => {
-  //     console.log(err);
-  //   });
-  // }
+ 
 
-  // pickImage(sourceType) {
-  //   const options: CameraOptions = {
-  //     quality: 100,
-  //     // tslint:disable-next-line:object-literal-shorthand
-  //     sourceType: sourceType,
-  //     destinationType: this.camera.DestinationType.FILE_URI,
-  //     encodingType: this.camera.EncodingType.JPEG,
-  //     mediaType: this.camera.MediaType.PICTURE
-  //   };
-  //   this.camera.getPicture(options).then((imageData) => {
-  //     // imageData is either a base64 encoded string or a file URI
-  //     // If it's base64 (DATA_URL):
-  //     // let base64Image = 'data:image/jpeg;base64,' + imageData;
-  //   }, (err) => {
-  //     // Handle error
-  //   });
-  // }
-
-  // async selectImage() {
-  //   const actionSheet = await this.actionSheetController.create({
-  //     header: 'Select Image source',
-  //     buttons: [{
-  //       text: 'Load from Library',
-  //       handler: () => {
-  //         this.pickImage(this.camera.PictureSourceType.PHOTOLIBRARY);
-  //       }
-  //     },
-  //     {
-  //       text: 'Use Camera',
-  //       handler: () => {
-  //         this.pickImage(this.camera.PictureSourceType.CAMERA);
-  //       }
-  //     },
-  //     {
-  //       text: 'Cancel',
-  //       role: 'cancel'
-  //     }
-  //     ]
-  //   });
-  //   await actionSheet.present();
-  // }
 
   CambiarImagen() {
     document.getElementById('inputImagen').click();
@@ -114,8 +60,8 @@ export class MiPerfilPage implements OnInit {
     formData.append(imagen.name, imagen);
     this.peticionesAPI.PonImagenPerfil(formData)
     .subscribe (() => {
-      this.alumno.ImagenPerfil = URL.ImagenesPerfil + imagen.name;
-      this.peticionesAPI.ModificaAlumno (this.alumno).subscribe();
+      this.profesor.ImagenPerfil = URL.ImagenesPerfil + imagen.name;
+      this.peticionesAPI.ModificaProfesor (this.profesor).subscribe();
      });
   }
   async CambiarDatos () {
@@ -127,20 +73,20 @@ export class MiPerfilPage implements OnInit {
         {
           text: 'SI',
           handler: async () => {
-            if (this.cambioPass && (this.alumno.Password !== this.contrasenaRep)) {
+            if (this.cambioPass && (this.profesor.Password !== this.contrasenaRep)) {
               const alert = await this.alertController.create({
                 header: 'No coincide la contraseña con la contraseña repetida',
                 buttons: ['OK']
               });
               await alert.present();
-            } else if (!this.EmailCorrecto (this.alumno.Email)) {
+            } else if (!this.EmailCorrecto (this.profesor.email)) {
               const alert = await this.alertController.create({
                 header: 'El email es incorrecto',
                 buttons: ['OK']
               });
               await alert.present();
             } else {
-                this.peticionesAPI.ModificaAlumno (this.alumno)
+                this.peticionesAPI.ModificaProfesor (this.profesor)
                 .subscribe (async () => {
                   const alert = await this.alertController.create({
                     header: 'Datos modificados con éxito',

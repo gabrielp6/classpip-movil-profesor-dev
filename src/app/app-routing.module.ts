@@ -40,6 +40,21 @@ const routes: Routes = [
   { path: 'mis-juegos-inactivos', loadChildren: './mis-juegos-inactivos/mis-juegos-inactivos.module#MisJuegosInactivosPageModule' },
   // tslint:disable-next-line:max-line-length
   { path: 'juego-coger-turno-rapido', loadChildren: './juego-coger-turno-rapido/juego-coger-turno-rapido.module#JuegoCogerTurnoRapidoPageModule' },
+  
+ 
+  // tslint:disable-next-line:max-line-length
+  { path: 'ver-coleccion', loadChildren: './ver-coleccion/ver-coleccion.module#VerColeccionPageModule' },
+  { path: 'seleccionar-cromo', loadChildren: './seleccionar-cromo/seleccionar-cromo.module#SeleccionarCromoPageModule' },
+  { path: 'seleccionar-alumnos', loadChildren: './seleccionar-alumnos/seleccionar-alumnos.module#SeleccionarAlumnosPageModule' },
+  { path: 'avatar-alumno', loadChildren: './avatar-alumno/avatar-alumno.module#AvatarAlumnoPageModule' },
+  { path: 'crear-juego-rapido', loadChildren: './crear-juego-rapido/crear-juego-rapido.module#CrearJuegoRapidoPageModule' },  { path: 'ver-grupo', loadChildren: './ver-grupo/ver-grupo.module#VerGrupoPageModule' },
+  { path: 'mis-juegos-rapidos', loadChildren: './mis-juegos-rapidos/mis-juegos-rapidos.module#MisJuegosRapidosPageModule' },
+  { path: 'juego-encuesta-rapida', loadChildren: './juego-encuesta-rapida/juego-encuesta-rapida.module#JuegoEncuestaRapidaPageModule' },
+  { path: 'juego-cuestionario-rapido', loadChildren: './juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },
+
+
+
+
 
 
 

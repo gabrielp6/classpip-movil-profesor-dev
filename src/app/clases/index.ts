@@ -61,6 +61,13 @@ export * from './JuegoDeCuestionarioSatisfaccion';
 export * from './AlumnoJuegoDeCuestionarioSatisfaccion';
 export * from './CuestionarioSatisfaccion';
 export * from './JuegoDeEncuestaRapida';
-
+export * from './JuegoDeCuestionarioRapido';
+export * from './JuegoDeCogerTurnoRapido';
+export * from './JuegoDeVotacionRapida';
+export * from './TablaAlumnoJuegoDeCuestionario';
+export * from './SesionClase';
+export * from './AsistenciaClase';
+export * from './TablaAlumnoJuegoDeVotacionUnoATodos';
+export * from './TablaAlumnoJuegoDeVotacionTodosAUno';
 
 

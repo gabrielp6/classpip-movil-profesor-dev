@@ -8,78 +8,21 @@
 </ion-header>
 
 <ion-content class="juegocoleccion-content" #content>
-
-<!-- <div *ngIf="juegoSeleccionado.Modo === 'Individual' && coleccion !== undefined">
-  <div *ngIf="alumno !== undefined"> -->
-  <div *ngIf="preparado && coleccion">
-    <ion-button class="ranking-btn" (click)=MostrarAlbum()>Ver album</ion-button>
-     
-  
-    <div  *ngIf = "coleccion.DosCaras"  >
-      <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 6px;font-size: 25px;z-index: 2;" (click)="prev()">
-        <i class="material-icons">skip_previous</i>
-      </div>
-      <div *ngIf="!disableNextBtn" style="position: absolute;top: 50%;right: 6px;font-size: 25px;z-index: 2;" (click)="next()">
-        <i class="material-icons">skip_next</i>
-      </div>
-      
-      <ion-slides  #slides (ionSlideWillChange)="doCheck()">
-        <!-- Prinero muestro los cromos que tiene el alumno -->
-        <!-- Si hace click es que quiere regalar el cromo -->
-        <!-- <ion-slide (click) = "RegalarCromo(elem, i)" *ngFor="let elem of cromosSinRepetidos;let i = index"> -->
-          <ion-slide  (click) = "RegalarCromo(elem, i)"  *ngFor="let elem of cromosSinRepetidos;let i = index">  
-            <div class="flip-box">
-              <div class="flip-box-inner">
-                <div class="flip-box-front">
-                  <img class = "cromoTengo" [src]="cromosQueTengoImagenDelante[i]"  >
-                </div>
-                <div class="flip-box-back">
-                  <img  class = "cromoTengo" [src]="cromosQueTengoImagenDetras[i]" >
-                </div>
-              </div>
-            </div>
-            
-         
-        </ion-slide>
-      
-        <!-- y ahora los que no tiene todavia -->
-        <ion-slide *ngFor="let elem of cromosQueNoTengo;let i = index">
-          <div class="flip-box">
-            <div class="flip-box-inner">
-              <div class="flip-box-front">
-                <img class = "cromoNoTengo" [src]="cromosQueNoTengoImagenDelante[i]" >
-              </div>
-              <div class="flip-box-back">
-                <!-- Mostrará la cara de delante pero al revés -->
-              </div>
-            </div>
-          </div>
-        </ion-slide>
-      </ion-slides>
-    </div>
-
-    <div  *ngIf = "!coleccion.DosCaras"  >
-      <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 16px;font-size: 25px;z-index: 2;" (click)="prev()">
-        <i class="material-icons">skip_previous</i>
-      </div>
-      <div *ngIf="!disableNextBtn" style="position: absolute;top: 50%;right: 16px;font-size: 25px;z-index: 2;" (click)="next()">
-        <i class="material-icons">skip_next</i>
-      </div>
-    
-      <ion-slides  #slides (ionSlideWillChange)="doCheck()">
-        <!-- Prinero muestro los cromos que tiene el alumno -->
-        <ion-slide *ngFor="let elem of cromosSinRepetidos;let i = index">
-          <img [src]="cromosQueTengoImagenDelante[i]" style = "width:468px; height:675px; padding-right: 20px;">
-        </ion-slide>
-      
-        <!-- y ahora los que no tiene todavia -->
-        <ion-slide *ngFor="let elem of cromosQueNoTengo;let i = index">
-          <img [src]="cromosQueNoTengoImagenDelante[i]" style = "opacity: 0.5 !important; width:468px; height:675px; padding-right: 20px;">
-        </ion-slide>
-      </ion-slides>
-    </div>
+  <ion-list style="text-align:center">
+    <ion-button style = "width: 30%; height: 40pt" class="ranking-btn" (click)="VerColeccion();">Ver <br> colección</ion-button> 
+    <ion-button style = "width: 30%; height: 40pt"class="ranking-btn-rojo" (click)="AsignacionAleatoria();">Asignación <br> aleatoria</ion-button> 
+    <ion-button style = "width: 30%; height: 40pt" class="ranking-btn-azul" (click)="AsignacionSeleccion();">Asignación <br> seleccion</ion-button>
+  </ion-list>
 
 
-  </div>
-<!-- </div> -->
+  <ion-list>
+    <ion-item *ngFor="let alumno of alumnosDelGrupo; let i = index" (click) = "MostrarAlbum (alumno)" >
+        <ion-item lines = "none"  style="width: 80%" >
+          <ion-label > {{alumno.Nombre}} {{alumno.PrimerApellido}} {{alumno.SegundoApellido}}</ion-label>
+        </ion-item>
+        <ion-item lines = "none"  style="text-align: right;">
+          <i class="material-icons  md-36" style = "color: rgb(29, 109, 69)">visibility</i>
+        </ion-item>
+    </ion-item>
+  </ion-list>
 </ion-content>

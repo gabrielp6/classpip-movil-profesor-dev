@@ -1,0 +1,65 @@
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cromos de {{coleccion.Nombre}} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <br>
+  <br>
+
+  <div *ngIf="cromosColeccion && imagenesPreparadas">
+  
+  
+    <div  *ngIf = "coleccion.DosCaras"  >
+      <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 6px;font-size: 25px;z-index: 2;" (click)="prev()">
+        <i class="material-icons">skip_previous</i>
+      </div>
+      <div *ngIf="!disableNextBtn" style="position: absolute;top: 50%;right: 6px;font-size: 25px;z-index: 2;" (click)="next()">
+        <i class="material-icons">skip_next</i>
+      </div>
+      
+      <ion-slides  #slides (ionSlideWillChange)="doCheck()">
+        <!-- Prinero muestro los cromos que tiene el alumno -->
+        <!-- Si hace click es que quiere regalar el cromo -->
+        <!-- <ion-slide (click) = "RegalarCromo(elem, i)" *ngFor="let elem of cromosSinRepetidos;let i = index"> -->
+          <ion-slide  *ngFor="let elem of cromosColeccion;let i = index" (click) = "CromoSeleccionado (elem)">  
+            <div class="flip-box">
+              <div class="flip-box-inner">
+                <div class="flip-box-front">
+                  <img class = "cromoTengo" [src]="cromosImagenDelante[i]"  >
+                </div>
+                <div class="flip-box-back">
+                  <img  class = "cromoTengo" [src]="cromosImagenDetras[i]" >
+                </div>
+              </div>
+            </div>
+            
+         
+        </ion-slide>
+      </ion-slides>
+    </div>
+
+    <div  *ngIf = "!coleccion.DosCaras"  >
+      <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 16px;font-size: 25px;z-index: 2;" (click)="prev()">
+        <i class="material-icons">skip_previous</i>
+      </div>
+      <div *ngIf="!disableNextBtn" style="position: absolute;top: 50%;right: 16px;font-size: 25px;z-index: 2;" (click)="next()">
+        <i class="material-icons">skip_next</i>
+      </div>
+    
+      <ion-slides  #slides (ionSlideWillChange)="doCheck()">
+        <!-- Prinero muestro los cromos que tiene el alumno -->
+        <ion-slide *ngFor="let elem of cromosColeccion;let i = index" (click) = "CromoSeleccionado (elem)">
+          <img [src]="cromosImagenDelante[i]" style = "width:468px; height:675px; padding-right: 20px;">
+        </ion-slide>
+      </ion-slides>
+    </div>
+
+
+  </div>
+ 
+</ion-content>

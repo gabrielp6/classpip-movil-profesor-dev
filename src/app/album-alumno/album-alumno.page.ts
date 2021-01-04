@@ -25,6 +25,7 @@ export class AlbumAlumnoPage implements OnInit {
   tengoCromo: boolean[] = [];
   cromo: Cromo;
   voltear = false;
+  alumno: Alumno;
 
   constructor(
     private sesion: SesionService,
@@ -35,6 +36,7 @@ export class AlbumAlumnoPage implements OnInit {
   ngOnInit() {
     this.coleccion = this.sesion.DameColeccion();
     this.cromosAlumno = this.sesion.DameCromos();
+    this.alumno = this.sesion.DameAlumno ();
     this.CromosDeLaColeccion(this.coleccion);
   }
 

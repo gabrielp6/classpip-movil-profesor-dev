@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PeticionesAPIService, SesionService, ComServerService } from '../servicios/index';
 import { CalculosService } from '../servicios/calculos.service';
 import { NavController, AlertController } from '@ionic/angular';
-import { Alumno, JuegoDeAvatar, AlumnoJuegoDeAvatar } from '../clases/index';
+import { Alumno, JuegoDeAvatar, AlumnoJuegoDeAvatar, Profesor } from '../clases/index';
 
 import * as URL from '../URLs/urls';
 import { ModalController } from '@ionic/angular';
@@ -16,8 +16,9 @@ import {AvatarEditorPage} from '../avatar-editor/avatar-editor.page';
 export class JuegoAvatarPage implements OnInit {
 
   alumno: Alumno;
+  profesor: Profesor;
   InfoMiAlumno: AlumnoJuegoDeAvatar;
-  juegoSeleccionado: JuegoDeAvatar;
+  juegoSeleccionado: any;
   alumnosDelJuego: Alumno[];
   inscripcionesAlumnosJuegodeAvatar: AlumnoJuegoDeAvatar[];
   criterios: Array<{nombre: string, criterio: string}>;
@@ -30,119 +31,227 @@ export class JuegoAvatarPage implements OnInit {
   tieneVoz = false;
 
 
+  alumnosDelGrupo: Alumno[];
+
+
 
   constructor(
     public navCtrl: NavController,
     private sesion: SesionService,
     private peticionesAPI: PeticionesAPIService,
     public modalController: ModalController,
-    public alertController: AlertController,
+    private alertCtrl: AlertController,
     private comServer: ComServerService
   ) { }
 
   ngOnInit() {
-    this.juegoSeleccionado = this.sesion.DameJuegoAvatar();
-    this.alumno = this.sesion.DameAlumno();
-    if (this.juegoSeleccionado.Modo === 'Individual') {
-      this.peticionesAPI.DameInscripcionAlumnoJuegoDeAvatar (this.juegoSeleccionado.id, this.alumno.id)
-      .subscribe (inscripcion => {
-        this.inscripcionAlumnoJuegoAvatar = inscripcion[0];
-        if (this.inscripcionAlumnoJuegoAvatar.Silueta !== undefined) {
-          this.tieneAvatar = true;
-          if ((this.inscripcionAlumnoJuegoAvatar.Privilegios[4]) && (this.inscripcionAlumnoJuegoAvatar.Voz)) {
-            this.tieneVoz = true;
-            this.audioAvatar = URL.AudiosAvatares + this.inscripcionAlumnoJuegoAvatar.Voz;
+
+      this.juegoSeleccionado = this.sesion.DameJuego();
+      this.profesor = this.sesion.DameProfesor();
+      
+      if (this.juegoSeleccionado.Modo === 'Individual') {
+        this.peticionesAPI.DameAlumnosGrupo (this.juegoSeleccionado.grupoId)
+        .subscribe ( res => {
+          this.alumnosDelGrupo = res;
+
+        });
+        this.peticionesAPI.DameInscripcionesAlumnoJuegoDeAvatar (this.juegoSeleccionado.id)
+        .subscribe (res => {
+          this.inscripcionesAlumnosJuegodeAvatar = res;
+        });
+      }
+
+     
+    // this.juegoSeleccionado = this.sesion.DameJuegoAvatar();
+    // this.alumno = this.sesion.DameAlumno();
+    // if (this.juegoSeleccionado.Modo === 'Individual') {
+    //   this.peticionesAPI.DameInscripcionAlumnoJuegoDeAvatar (this.juegoSeleccionado.id, this.alumno.id)
+    //   .subscribe (inscripcion => {
+    //     this.inscripcionAlumnoJuegoAvatar = inscripcion[0];
+    //     if (this.inscripcionAlumnoJuegoAvatar.Silueta !== undefined) {
+    //       this.tieneAvatar = true;
+    //       if ((this.inscripcionAlumnoJuegoAvatar.Privilegios[4]) && (this.inscripcionAlumnoJuegoAvatar.Voz)) {
+    //         this.tieneVoz = true;
+    //         this.audioAvatar = URL.AudiosAvatares + this.inscripcionAlumnoJuegoAvatar.Voz;
+    //       }
+    //     }
+    //     this.PrepararCriterios();
+    //   });
+    //  } else {
+    //    // De momento no hay juego de avatar de equipo
+    //  }
+  }
+
+  MostrarAvatar(alumno) {
+    this.sesion.TomaAlumno (alumno);
+    this.sesion.TomaJuegoAvatar (this.juegoSeleccionado);
+    const inscripcionAlumno = this.inscripcionesAlumnosJuegodeAvatar.filter (inscripcion => inscripcion.alumnoId === alumno.id)[0];
+    this.sesion.TomaInscripcionAlumno (inscripcionAlumno);
+    this.navCtrl.navigateForward('/avatar-alumno');
+  }
+
+  DarPrivilegiosATodos() {
+    this.alertCtrl.create({
+      cssClass: 'my-custom-class',
+      header: 'Selecciona los privilegios que quieres DAR a todos',
+      inputs: [
+        {
+          type: 'checkbox',
+          label: 'Complemento 1',
+          value: 0,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Complemento 2',
+          value: 1,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Complemento 3',
+          value: 2,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Complemento 4',
+          value: 3,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Poner voz',
+          value: 4,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Espiar',
+          value: 5,
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+          }
+        }, {
+          text: 'Ok',
+          handler: (data: any) => {
+            console.log('Confirm Ok');
+            console.log (data);
+            if (data.length === 0) {
+              this.alertCtrl.create({
+                header: 'No hay privilegios que añadir',
+                buttons: ['OK']
+              }).then(res => {
+                res.present();
+              });
+
+            } else {
+              this.inscripcionesAlumnosJuegodeAvatar.forEach (inscripcion => {
+                data.forEach (p => inscripcion.Privilegios[p] = true);
+                this.peticionesAPI.ModificaInscripcionAlumnoJuegoDeAvatar (inscripcion)
+                .subscribe ();
+              });
+              this.alertCtrl.create({
+                  header: 'Privilegios AÑADIDOS',
+                  buttons: ['OK']
+                }).then(res => {
+                  res.present();
+              });
+            }
+
           }
         }
-        this.PrepararCriterios();
-      });
-     } else {
-       // De momento no hay juego de avatar de equipo
-     }
+      ]
+    }).then ( res => res.present());
+
   }
 
+  QuitarPrivilegiosATodos() {
+    this.alertCtrl.create({
+      header: 'Selecciona los privilegios que quieres QUITAR a todos',
+      inputs: [
+        {
+          type: 'checkbox',
+          label: 'Complemento 1',
+          value: 0,
+        },
 
-  PrepararCriterios() {
-    this.criterios = [
-      {nombre: 'Complemento 1', criterio: this.juegoSeleccionado.CriteriosPrivilegioComplemento1},
-      {nombre: 'Complemento 2', criterio: this.juegoSeleccionado.CriteriosPrivilegioComplemento2},
-      {nombre: 'Complemento 3', criterio: this.juegoSeleccionado.CriteriosPrivilegioComplemento3},
-      {nombre: 'Complemento 4', criterio: this.juegoSeleccionado.CriteriosPrivilegioComplemento4},
-      {nombre: 'Nota de Voz', criterio: this.juegoSeleccionado.CriteriosPrivilegioVoz},
-      {nombre: 'Espiar Compañeros', criterio: this.juegoSeleccionado.CriteriosPrivilegioVerTodos}
+        {
+          type: 'checkbox',
+          label: 'Complemento 2',
+          value: 1,
+        },
 
-    ]
+        {
+          type: 'checkbox',
+          label: 'Complemento 3',
+          value: 2,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Complemento 4',
+          value: 3,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Poner voz',
+          value: 4,
+        },
+
+        {
+          type: 'checkbox',
+          label: 'Espia',
+          value: 5,
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+          }
+        }, {
+          text: 'Ok',
+          handler: (data: any) => {
+            console.log('Confirm Ok');
+            console.log (data);
+            if (data.length === 0) {
+              this.alertCtrl.create({
+                header: 'No hay privilegios que quitar',
+                buttons: ['OK']
+              }).then(res => {
+                res.present();
+              });
+
+            } else {
+              this.inscripcionesAlumnosJuegodeAvatar.forEach (inscripcion => {
+                data.forEach (p => inscripcion.Privilegios[p] = false);
+                this.peticionesAPI.ModificaInscripcionAlumnoJuegoDeAvatar (inscripcion)
+                .subscribe ();
+              });
+              this.alertCtrl.create({
+                  header: 'Privilegios QUITADOS',
+                  buttons: ['OK']
+                }).then(res => {
+                  res.present();
+              });
+            }
+
+          }
+        }
+      ]
+    }).then ( res => res.present());
+
   }
-  async AbreEditorAvatar() {
-    this.sesion.TomaInscripcionAlumno(this.inscripcionAlumnoJuegoAvatar);
-    // abrimos la página del editor de forma modal porque interesa recoger el resultado 
-    // para actualizar el avatar en esta página
-    const modal = await this.modalController.create({
-      component: AvatarEditorPage,
-      cssClass: 'my-custom-class',
-    });
-    await modal.present();
-    const { data } = await modal.onWillDismiss();
-    // En data me devuelve dos cosas: si ha habido cambio en el avatar y, 
-    // en caso afirmativo, la inscripcion que contiene el avatar cambiado
-    if (data.hayCambio) {
-      this.tieneAvatar = true;
-      this.inscripcionAlumnoJuegoAvatar = data.inscripcion;
-    }
-  }
-
-  VerAvatares() {
-    this.navCtrl.navigateForward('/ver-avatares-grupo');
-  }
-
-  // Activa la función SeleccionarFicheroVoz
-  ActivarInput() {
-    console.log('Activar input');
-    document.getElementById('inputVoz').click();
-}
-
-// Selecciona y guarda el fichero de voz
-// Si hay uno anterior lo borra.
-async SeleccionarFicheroVoz($event) {
-
-    const file = $event.target.files[0];
-    if (this.inscripcionAlumnoJuegoAvatar.Voz) {
-      // borro el fichero de audio de la voz anterior
-      this.peticionesAPI.BorraAudioAvatar (this.inscripcionAlumnoJuegoAvatar.Voz).subscribe();
-    }
-
-    this.inscripcionAlumnoJuegoAvatar.Voz = file.name;
-    this.peticionesAPI.ModificaInscripcionAlumnoJuegoDeAvatar (this.inscripcionAlumnoJuegoAvatar)
-    .subscribe ();
-    const formDataOpcion = new FormData();
-    formDataOpcion.append(file.fileName, file);
-    this.peticionesAPI.PonAudioAvatar(formDataOpcion)
-    .subscribe(async () => {
-      this.tieneVoz = true;
-        // Notifico al server que se ha modificado un avatar
-      this.comServer.Emitir('modificacionAvatar', { inscripcion: this.inscripcionAlumnoJuegoAvatar});
-      this.audioAvatar = URL.AudiosAvatares + this.inscripcionAlumnoJuegoAvatar.Voz;
-      const alert2 = await this.alertController.create({
-        cssClass: 'my-custom-class',
-        header: 'voz asignada con exito',
-        buttons: ['OK']
-      });
-      await alert2.present();
-    });
-}
-
-QuitaVoz() {
-  if (this.inscripcionAlumnoJuegoAvatar.Voz) {
-    // borro el fichero de audio de la voz anterior
-    this.peticionesAPI.BorraAudioAvatar (this.inscripcionAlumnoJuegoAvatar.Voz).subscribe();
-    this.inscripcionAlumnoJuegoAvatar.Voz = undefined;
-    this.peticionesAPI.ModificaInscripcionAlumnoJuegoDeAvatar (this.inscripcionAlumnoJuegoAvatar)
-    .subscribe ();
-    this.tieneVoz = false;
-  }
-
-}
-
 
 
 }

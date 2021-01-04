@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SesionService, PeticionesAPIService } from '../servicios';
-import { NavController, AlertController, Platform } from '@ionic/angular';
+import { NavController, AlertController, Platform, IonSlides } from '@ionic/angular';
 import { CalculosService, ComServerService } from '../servicios';
-import { Juego } from '../clases';
+import { Alumno, Juego, TablaAlumnoJuegoDeCuestionario } from '../clases';
 import { Cuestionario } from '../clases/Cuestionario';
 import { Pregunta } from '../clases/Pregunta';
 import { AlumnoJuegoDeCuestionario } from '../clases/AlumnoJuegoDeCuestionario';
@@ -10,6 +10,9 @@ import { Router } from '@angular/router';
 import { MiAlumnoAMostrarJuegoDeCuestionario } from '../clases/MiAlumnoAMostrarJuegoDeCuestionario';
 import { RespuestaJuegoDeCuestionario } from '../clases/RespuestaJuegoDeCuestionario';
 import {MatStepper} from '@angular/material';
+import {MatAccordion} from '@angular/material/expansion'; 
+
+
 
 
 @Component({
@@ -26,6 +29,7 @@ export class JuegoDeCuestionarioPage implements OnInit {
   juegoSeleccionado: any;
   cuestionario: Cuestionario;
   PreguntasCuestionario: Pregunta[];
+  preguntas: Pregunta[];
   descripcion = '';
   puntuacionCorrecta: number;
   puntuacionIncorrecta: number;
@@ -58,10 +62,78 @@ export class JuegoDeCuestionarioPage implements OnInit {
   reorden: AlumnoJuegoDeCuestionario[];
   nickName: string;
   cuestionarioRapido = false;
+  seleccion: boolean[][];
+
+  alumnosDelJuego: Alumno[];
+  listaAlumnosOrdenadaPorNota: AlumnoJuegoDeCuestionario[];
+  rankingAlumnosPorNota: TablaAlumnoJuegoDeCuestionario[];
+  inscripcionAlumnoJuegoDeCuestionario: AlumnoJuegoDeCuestionario;
+  titulos: string[];
+  barras: any[];
+  info: any;
+
+  analizar = false;
+
+
+  ////////////////////////////////////////////////
+  donut = {
+    tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)'
+    },
+    series: [
+        {
+            name: '',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+                show: false,
+                position: 'center'
+            },
+            emphasis: {
+                label: {
+                    show: true,
+                    fontSize: '30',
+                    fontWeight: 'bold'
+                }
+            },
+            labelLine: {
+                show: false
+            },
+            data: [
+                {value: 5, name: 'respuesta A'},
+                {value: 7, name: 'respuesta B'},
+                {value: 2, name: 'respuesta C'},
+                {value: 0, name: 'respuesta D'}
+            ]
+        }
+    ]
+  };
+
+
+  datos: any[] = [];
+  donuts: any[] = [];
+  misDonuts: any[] = [];
+
+  histogramaAciertos: any [];
+  grafico: any;
+  infA: any;
+
+  respuestasJuegoDeCuestionario: RespuestaJuegoDeCuestionario[];
+  categoriasEjeX;
+  ///////////////////////////////////////// 
+  disablePrevBtn = true;
+  disableNextBtn = false;
+
+
+
 
   // @ViewChild('stepper') stepper: MatStepper;
 
   @ViewChild(MatStepper, { static: false }) stepper: MatStepper;
+  @ViewChild('accordion', {static: false}) accordion: MatAccordion;
+  @ViewChild(IonSlides, { static: false }) slides: IonSlides;
 
   constructor(
     private sesion: SesionService,
@@ -72,408 +144,396 @@ export class JuegoDeCuestionarioPage implements OnInit {
     private alertCtrl: AlertController,
     private platform: Platform,
     private comServer: ComServerService
-  ) { }
+  ) {
+  }
 
+
+
+  
   ngOnInit() {
-
     this.juegoSeleccionado = this.sesion.DameJuego();
-    this.puntuacionCorrecta = this.juegoSeleccionado.PuntuacionCorrecta;
-    this.puntuacionIncorrecta = this.juegoSeleccionado.PuntuacionIncorrecta;
-    this.tiempoLimite = this.juegoSeleccionado.TiempoLimite;
-    if (this.juegoSeleccionado.Tipo === 'Juego De Cuestionario') {
-      // Obtenemos la inscripcion del alumno al juego de cuestionario
-      this.alumnoId = this.sesion.DameAlumno().id;
-      this.peticionesAPI.DameInscripcionAlumnoJuegoDeCuestionario(this.alumnoId, this.juegoSeleccionado.id)
-      .subscribe (res => {
-        this.alumnoJuegoDeCuestionario = res;
-        this.NotaInicial = res[0].Nota.toString();
-      });
-      if (this.juegoSeleccionado.JuegoTerminado) {
-        this.MisAlumnosDelJuegoDeCuestionario = this.calculos.DameListaAlumnosJuegoCuestionarioOrdenada(this.juegoSeleccionado.id);
-      }
-    } else {
-        // es un juego de cuestionario rápido
-        this.alumnoJuegoDeCuestionario = new AlumnoJuegoDeCuestionario();
-        this.NotaInicial = '0';
-        this.nickName = this.sesion.DameNickName();
-        this.cuestionarioRapido = true;
-    }
-    // Obtenemos el cuestionario a realizar
-    this.peticionesAPI.DameCuestionario(this.juegoSeleccionado.cuestionarioId)
-    .subscribe(res => {
-      this.cuestionario = res;
-      this.descripcion = res.Descripcion;
+    this.AlumnosDelJuego();
+    this.peticionesAPI.DameCuestionario (this.juegoSeleccionado.cuestionarioId)
+    .subscribe (cuestionario => {
+            this.cuestionario = cuestionario;
+            this.peticionesAPI.DamePreguntasCuestionario (this.cuestionario.id)
+            .subscribe ( preguntas => {
+              this.preguntas = preguntas;
+            });
     });
-    // Obtenemos las preguntas del cuestionario y ordenamos preguntas/respuestas en funcion a lo establecido en el cuestionario
-    this.peticionesAPI.DamePreguntasCuestionario(this.juegoSeleccionado.cuestionarioId)
-    .subscribe(res => {
-      if (this.juegoSeleccionado.Presentacion !== 'Mismo orden para todos') {
-        this.ordenarRespuestas(res);
-      } else {
-        this.PreguntasCuestionario = res;
-      }
-      this.respuestasPosibles.push(res[0].RespuestaIncorrecta1);
-      this.respuestasPosibles.push(res[0].RespuestaIncorrecta2);
-      this.respuestasPosibles.push(res[0].RespuestaIncorrecta3);
-      this.respuestasPosibles.splice(this.ordenRespuestaCorrecta[0], 0, res[0].RespuestaCorrecta);
-      if (this.juegoSeleccionado.Presentacion === 'Preguntas y respuestas desordenadas') {
-        this.respuestasPosibles = this.desordenRespuestas(this.respuestasPosibles);
-        this.todasRespuestas = this.respuestasPosibles;
-
-        let i = 1;
-        while (i < this.PreguntasCuestionario.length) {
-          this.mezclaRespuestas.push(res[i].RespuestaIncorrecta1);
-          this.mezclaRespuestas.push(res[i].RespuestaIncorrecta2);
-          this.mezclaRespuestas.push(res[i].RespuestaIncorrecta3);
-          this.mezclaRespuestas.push(res[i].RespuestaCorrecta);
-          this.mezclaRespuestas = this.desordenRespuestas(this.mezclaRespuestas);
-
-          this.todasRespuestas = this.todasRespuestas.concat(this.mezclaRespuestas);
-
-          i++;
-          this.mezclaRespuestas = [];
-        }
-      }
-    });
-   
+       // }
+    this.comServer.EsperoRespuestasJuegoDeCuestionario()
+    .subscribe((alumno: any) => {
+         //  sound.play();
+           console.log ('Ya ha contestado: ' + alumno.id);
+           console.log ('La nota es: ' + alumno.nota);
+           // esto lo hago para que al desplegar las respuestas del alumno no me diga que aun no ha contestado
+           this.listaAlumnosOrdenadaPorNota.filter (a => a.alumnoId === alumno.id )[0].Contestado = true;
+           const al = this.rankingAlumnosPorNota.filter (a => a.id === alumno.id )[0];
+           al.nota = alumno.nota;
+           al.tiempoEmpleado = alumno.tiempo;
+           al.contestado = true;
+           console.log ('tabla');
+           console.log (this.rankingAlumnosPorNota);
+           // tslint:disable-next-line:only-arrow-functions
+           this.rankingAlumnosPorNota = this.rankingAlumnosPorNota.sort(function(a, b) {
+             if (b.nota !== a.nota) {
+               return b.nota - a.nota;
+             } else {
+               // en caso de empate en la nota, gana el que empleó menos tiempo
+               return a.tiempoEmpleado - b.tiempoEmpleado;
+             }
+           });
+       });
   }
 
-  // Esta funcion coge el array en el cual se asigna la posicion de las respuestas correctas y lo
-  // reordena en funcion al nuevo orden de las preguntas (ya el primer paso de la funcion es desordenar las preguntas)
-  ordenarRespuestas(preguntas: Pregunta[]) {
-    this.PreguntasCuestionarioOrdenadas = preguntas;
-    this.PreguntasCuestionario = this.desordenPreguntas(this.PreguntasCuestionarioOrdenadas);
+  AlumnosDelJuego() {
+    this.peticionesAPI.DameAlumnosJuegoDeCuestionario(this.juegoSeleccionado.id)
+    .subscribe(alumnosJuego => {
+      this.alumnosDelJuego = alumnosJuego;
+      this.RecuperarInscripcionesAlumnoJuego();
+    });
+  }
 
-    if (this.PreguntasCuestionarioOrdenadas !== this.PreguntasCuestionario ) {
-      for (let i = 0; i < this.PreguntasCuestionarioOrdenadas.length; i++) {
-        for (let j = 0; j < this.PreguntasCuestionario.length; j++) {
-          if (this.PreguntasCuestionarioOrdenadas[i] === this.PreguntasCuestionario[j]) {
-            this.nuevaOrdenacion.splice(this.nuevaOrdenacion[i], 0, this.ordenRespuestaCorrecta[j]);
+  RecuperarInscripcionesAlumnoJuego() {
+    this.peticionesAPI.DameInscripcionesAlumnoJuegoDeCuestionario (this.juegoSeleccionado.id)
+    .subscribe(inscripciones => {
+      this.listaAlumnosOrdenadaPorNota = inscripciones;
+      // tslint:disable-next-line:only-arrow-functions
+      this.listaAlumnosOrdenadaPorNota = this.listaAlumnosOrdenadaPorNota.sort(function(a, b) {
+        if (b.Nota !== a.Nota) {
+          return b.Nota - a.Nota;
+        } else {
+          // en caso de empate en la nota, gana el que empleó menos tiempo
+          return a.TiempoEmpleado - b.TiempoEmpleado;
+        }
+      });
+      console.log ('inscripciones');
+      console.log (this.listaAlumnosOrdenadaPorNota);
+      this.rankingAlumnosPorNota = this.calculos.PrepararTablaRankingCuestionario(this.listaAlumnosOrdenadaPorNota,
+        this.alumnosDelJuego);
+    });
+  }
+
+  
+  MostrarRespuestasAlumno (alumno) {
+    console.log ('Mostrar respuestas de');
+    console.log (alumno);
+    console.log ('lista');
+    console.log (this.listaAlumnosOrdenadaPorNota);
+    //this.alumno = this.sesion.DameAlumnoJuegoDeCuestionario();
+    this.inscripcionAlumnoJuegoDeCuestionario = this.listaAlumnosOrdenadaPorNota.filter (a => a.alumnoId === alumno.id)[0];
+    console.log (this.inscripcionAlumnoJuegoDeCuestionario);
+    this.PrepararInfoAlumno();
+  }
+
+
+
+
+  PrepararInfoAlumno() {
+    // Me traigo el cuestionario y las preguntas
+    this.peticionesAPI.DameCuestionario (this.juegoSeleccionado.cuestionarioId)
+    .subscribe (cuestionario => {
+            this.cuestionario = cuestionario;
+            this.peticionesAPI.DamePreguntasCuestionario (this.cuestionario.id)
+            .subscribe ( preguntas => {
+              this.preguntas = preguntas;
+              this.preguntas.sort((a , b) => (a.id > b.id ? 1 : -1));
+              // guardo los titulos de las preguntas para mostrarlos en el grafico
+              this.titulos = [];
+              this.preguntas.forEach (pregunta => this.titulos.push (pregunta.Titulo));
+
+              // Traigo las respuestas del alumno a las preguntas
+              this.peticionesAPI.DameRespuestasAlumnoJuegoDeCuestionario (this.inscripcionAlumnoJuegoDeCuestionario.id)
+              .subscribe (respuestas => {
+                // preparo la información para cada una de las barras horizontales
+                this.barras = [];
+                respuestas.sort((a , b) => (a.preguntaId > b.preguntaId) ? 1 : -1);
+                respuestas.forEach (respuesta => {
+                  // tslint:disable-next-line:max-line-length
+                  const respuestaCorrecta = this.preguntas.filter (pregunta => pregunta.id === respuesta.preguntaId)[0].RespuestaCorrecta;
+                  if (respuestaCorrecta === respuesta.Respuesta) {
+                    // la respuesta es correcta: barra verde
+                    this.barras.push (
+                      {value: 1, respuesta: respuesta.Respuesta, itemStyle: {color: 'green'}}
+                    );
+                  } else {
+                    // la respuesta es incorrecta: barra roja
+                    this.barras.push (
+                      {value: -1, respuesta: respuesta.Respuesta, label: {position: 'right'}, itemStyle: {color: 'red'}}
+                    );
+                  }
+                });
+
+                // preparo el objeto json que se necesita para crear el gráfico
+                this.PreparaBarras();
+
+              });
+            });
+    });
+  }
+
+
+  PreparaBarras() {
+
+    this.info = {
+     // aqui se indica lo que se mostrará cuando el ratón esté sobre la barra
+      tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+              type: 'shadow'
+          },
+          formatter(data) {
+            // mostraré la respuesta que dió el alumno, que está en el campo respuesta del
+            // objeto que creé para la barra
+            // data es un vector, pero en esta caso solo hay una barra para cada elemento de la serie. Por eso
+            // solo me interesa data[0]
+            return data[0].data.respuesta;
           }
-        }
-      }
-      this.ordenRespuestaCorrecta = this.nuevaOrdenacion;
+      },
+      grid: {
+          top: 80,
+          bottom: 30,
+          letf: 50,
+          right: 50
+      },
+      xAxis: {
+        type: 'value',
+        show: false,
+        splitLine: {show: false}
+      },
+      yAxis: {
+          // en el eje y estará los títulos de las preguntas
+          type: 'category',
+          axisLine: {show: false},
+          axisLabel: {show: false},
+          axisTick: {show: false},
+          splitLine: {show: false},
+          data: this.titulos,
+      },
+      series: [
+          {
+              name: 'Res ',
+              type: 'bar',
+              label: {
+                // en cada barra muestro el titulo de la pregunta
+                show: true,
+                formatter: '{b}'
+              },
+              data: this.barras
+          }
+      ]
+    };
 
-    }
-  }
-
-  // Funcion para establecer las respuestas posibles de la siguiente pregunta que aparezca en el cuestinario
-  cambioRespuestasSiguiente(i: number) {
-    console.log ('respuesta ' + i + ': ' + this.RespuestaEscogida);
-    this.RespuestasAlumno.splice(i, 1, this.RespuestaEscogida);
-    if (this.RespuestasAlumno[i + 1] !== undefined) {
-      this.RespuestaEscogida = this.RespuestasAlumno[i + 1];
-    } else if ((i + 1) !== this.PreguntasCuestionario.length) {
-      this.RespuestaEscogida = undefined;
-    } else {
-      this.RespuestaEscogida = this.RespuestasAlumno[i];
-    }
-
-    if ((i + 1) !== this.PreguntasCuestionario.length && this.juegoSeleccionado.Presentacion !== 'Preguntas y respuestas desordenadas') {
-      this.respuestasPosibles = [];
-      i = i + 1;
-      this.respuestasPosibles.push(this.PreguntasCuestionario[i].RespuestaIncorrecta1);
-      this.respuestasPosibles.push(this.PreguntasCuestionario[i].RespuestaIncorrecta2);
-      this.respuestasPosibles.push(this.PreguntasCuestionario[i].RespuestaIncorrecta3);
-      this.respuestasPosibles.splice(this.ordenRespuestaCorrecta[i], 0, this.PreguntasCuestionario[i].RespuestaCorrecta);
-    }
-
-    if ((i + 1) !== this.PreguntasCuestionario.length && this.juegoSeleccionado.Presentacion === 'Preguntas y respuestas desordenadas') {
-      this.numeroDeRespuestas = this.numeroDeRespuestas + 4;
-      this.respuestasPosibles = [];
-      for (let i = this.numeroDeRespuestas; i < (this.numeroDeRespuestas + 4); i++) {
-        this.respuestasPosibles.push(this.todasRespuestas[i]);
-      }
-
-    }
-  }
-
-  // Cargamos las respuestas posibles de la pregunta anterior
-  cambioRespuestasAnterior(i: number) {
-    this.RespuestaEscogida = this.RespuestasAlumno[i - 1];
-    this.respuestasPosibles = [];
-    i = i - 1;
-    this.respuestasPosibles.push(this.PreguntasCuestionario[i].RespuestaIncorrecta1);
-    this.respuestasPosibles.push(this.PreguntasCuestionario[i].RespuestaIncorrecta2);
-    this.respuestasPosibles.push(this.PreguntasCuestionario[i].RespuestaIncorrecta3);
-    this.respuestasPosibles.splice(this.ordenRespuestaCorrecta[i], 0, this.PreguntasCuestionario[i].RespuestaCorrecta);
-
-    if (this.juegoSeleccionado.Presentacion === 'Preguntas y respuestas desordenadas') {
-      this.numeroDeRespuestas = this.numeroDeRespuestas - 4;
-      this.respuestasPosibles = [];
-      for (let i = this.numeroDeRespuestas; i < (this.numeroDeRespuestas + 4); i++) {
-        this.respuestasPosibles.push(this.todasRespuestas[i]);
-      }
-    }
 
   }
 
-  // Desordenador de preguntas
-  desordenPreguntas(datos: Pregunta[]): Pregunta[] {
-    let currentIndex = datos.length, temporaryValue, randomIndex;
+  Desactivar() {
+    this.juegoSeleccionado.JuegoActivo = false;
+    this.juegoSeleccionado.JuegoTerminado = false;
+    this.peticionesAPI.ModificaJuegoDeCuestionario (this.juegoSeleccionado, this.juegoSeleccionado.id, this.juegoSeleccionado.grupoId)
+    .subscribe(res => {
+      this.route.navigateByUrl('/inici');
+    });
 
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
+  }
+  Activar() {
+    this.juegoSeleccionado.JuegoActivo = true;
+    this.juegoSeleccionado.JuegoTerminado = false;
+    this.peticionesAPI.ModificaJuegoDeCuestionario (this.juegoSeleccionado, this.juegoSeleccionado.id, this.juegoSeleccionado.grupoId)
+    .subscribe(res => {
+      this.route.navigateByUrl('/inici');
+    });
 
-      temporaryValue = datos[currentIndex];
-      datos[currentIndex] = datos[randomIndex];
-      datos[randomIndex] = temporaryValue;
-    }
-    return datos;
   }
 
-  // Desordenador de respuestas
-  desordenRespuestas(datos: string[]): string[] {
-    let currentIndex = datos.length, temporaryValue, randomIndex;
+  Finalizar () {
+    this.juegoSeleccionado.JuegoActivo = false;
+    this.juegoSeleccionado.JuegoTerminado = true;
+    this.peticionesAPI.ModificaJuegoDeCuestionario (this.juegoSeleccionado, this.juegoSeleccionado.id, this.juegoSeleccionado.grupoId)
+    .subscribe(res => {
+      this.route.navigateByUrl('/inici');
+    });
 
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-
-      temporaryValue = datos[currentIndex];
-      datos[currentIndex] = datos[randomIndex];
-      datos[randomIndex] = temporaryValue;
-    }
-    return datos;
   }
 
-  // Funcion para establecer la nota y guardar respuestas
-  ponerNota() {
-    // paramos el timer si está activo
-    if (this.contar) {
-      clearInterval(this.timer);
-      this.contar = false;
-    }
-    this.puntuacionMaxima = this.puntuacionCorrecta * this.PreguntasCuestionario.length;
-    console.log ('Respuestas');
-    console.log (this.RespuestasAlumno);
+  Analizar () {
+    this.analizar = true;
+    this.TraeInfo();
+  }
 
-    // Para calcular la nota comprobamos el vector de respuestas con el de preguntas (mirando la respuesta correcta)
-    // si es correcta sumamos, si es incorrecta restamos y en el caso de que la haya dejado en blanco ni suma ni resta
-    for (let i = 0; i < this.PreguntasCuestionario.length; i++) {
-      if (this.RespuestasAlumno[i] === this.PreguntasCuestionario[i].RespuestaCorrecta) {
-        this.Nota = this.Nota + this.puntuacionCorrecta;
-        this.feedbacks.push(this.PreguntasCuestionario[i].FeedbackCorrecto);
-      } else if (this.RespuestasAlumno[i] === undefined) {
-        this.feedbacks.push(' ');
-      } else {
-        this.Nota = this.Nota - this.puntuacionIncorrecta;
-        this.feedbacks.push(this.PreguntasCuestionario[i].FeedbackIncorrecto);
-
-      }
-    }
-    if (this.Nota <= 0) {
-      this.Nota = 0.1;
-    }
-    const tiempoEmpleado = this.tiempoLimite - this.tiempoRestante;
-    // tslint:disable-next-line:max-line-length
-    this.peticionesAPI.PonerNotaAlumnoJuegoDeCuestionario(new AlumnoJuegoDeCuestionario ( this.Nota, true, this.juegoSeleccionado.id, this.alumnoId, tiempoEmpleado), this.alumnoJuegoDeCuestionario[0].id)
-      .subscribe(res => {
-        console.log ('ya he puesto nota');
-        console.log(res);
-      });
-
-    console.log ('vamos a registrar las respuestas');
-    // Aqui guardamos las respuestas del alumno
+  
+  TraeInfo() {
+    this.histogramaAciertos = Array(this.preguntas.length + 1).fill(0);
+    this.respuestasJuegoDeCuestionario = [];
     let cont = 0;
-    for (let i = 0; i < this.PreguntasCuestionario.length; i++) {
-      console.log ('respuesta a la pregunta ' + i);
-      console.log (this.RespuestasAlumno[i]);
-      if ((this.RespuestasAlumno[i] === '') || (this.RespuestasAlumno[i] === undefined)) {
-        this.RespuestasAlumno[i] = '-';
-      }
-      // tslint:disable-next-line:max-line-length
-      this.peticionesAPI.GuardarRespuestaAlumnoJuegoDeCuestionario(new RespuestaJuegoDeCuestionario(this.alumnoJuegoDeCuestionario[0].id, this.PreguntasCuestionario[i].id,
-        this.RespuestasAlumno[i]))
-        .subscribe(res => {
-          console.log ('ya he guardado respuesta');
-          console.log(res);
-          cont++;
-          if (cont === this.PreguntasCuestionario.length)  {
-            // Notificamos respuesta al servidor
-            this.comServer.Emitir ('respuestaJuegoDeCuestionario', { id: this.alumnoId, nota: this.Nota, tiempo: tiempoEmpleado});
+    this.listaAlumnosOrdenadaPorNota.forEach (alumno => {
+      this.peticionesAPI.DameRespuestasAlumnoJuegoDeCuestionario (alumno.id)
+      .subscribe (respuestas => {
+        let aciertos = 0;
+        // voy a contar los aciertos de este alumno
+        respuestas.forEach (respuesta => {
+        // tslint:disable-next-line:max-line-length
+          const respuestaCorrecta = this.preguntas.filter (pregunta => pregunta.id === respuesta.preguntaId)[0].RespuestaCorrecta;
+          if (respuestaCorrecta === respuesta.Respuesta) {
+            aciertos++;
           }
         });
-    }
-  }
-
-  // En el caso de que el alumno le de al boton de salir despues de haber empezado el cuestionario
-  // se activa esta funcion y en el caso de que acepte salir del cuestionario, se le pondrá un 0 en el examen
-  async popup() {
-    const confirm = await this.alertCtrl.create({
-      header: '¿Seguro que quieres salir?',
-      message: 'Si sales sacaras un 0',
-      buttons: [
-        {
-          text: 'SI',
-          handler: () => {
-            this.Nota = 0.1;
-            // tslint:disable-next-line:max-line-length
-            this.peticionesAPI.PonerNotaAlumnoJuegoDeCuestionario(new AlumnoJuegoDeCuestionario ( this.Nota, true, this.juegoSeleccionado.id, this.alumnoId ), this.alumnoJuegoDeCuestionario[0].id)
-              .subscribe(res => {
-                console.log(res);
-                this.comServer.Emitir('respuestaJuegoDeCuestionario', { id: this.alumnoId, nota: this.Nota});
-              });
-            this.route.navigateByUrl('tabs/inici');
-          }
-        }, {
-          text: 'NO',
-          role: 'cancel',
-          handler: () => {
-            console.log('NO, ME QUEDO');
-          }
-        }
-      ]
-    });
-    await confirm.present();
-  }
-
-  // Flag para ver si hemos empezado el cuestionario
-  empezamos() {
-    this.empezado = true;
-  }
-
-  // Volvemos a la pagina de inicio
-  GoMisJuegos() {
-    this.route.navigateByUrl('tabs/inici');
-  }
-
-  // Exit page
-  public exitPage() {
-    this.route.navigateByUrl('tabs/inici');
-  }
-
-  IniciarTimer() {
-    if (this.tiempoLimite !== 0) {
-      // el timer solo se activa si se ha establecido un tiempo limite
-      this.contar = true; // para que se muestre la cuenta atrás
-      this.tiempoRestante = this.tiempoLimite;
-      this.timer = setInterval(async () => {
-            this.tiempoRestante = this.tiempoRestante - 1;
-            if (this.tiempoRestante === 0) {
-              // salto al paso de cuestionario concluido
-        
-              const confirm = await this.alertCtrl.create({
-                header: 'Se te acabó el tiempo',
-                message: 'Vamos a enviar tus respuestas',
-                buttons: [
-                    {
-                    text: 'OK',
-                    role: 'cancel',
-                    handler: () => {
-                      if (this.juegoSeleccionado.Tipo === 'Juego de Cuestionario') {
-                        this.ponerNota();
-                      } else {
-                        this.EnviarRespuesta();
-                      }
-                      this.stepper.selectedIndex = this.PreguntasCuestionario.length + 3;
-                    }
-                  }
-                ]
-              });
-              await confirm.present();
-
+        this.histogramaAciertos[aciertos]++;
+        this.respuestasJuegoDeCuestionario = this.respuestasJuegoDeCuestionario.concat (respuestas);
+        cont++;
+        if (cont === this.listaAlumnosOrdenadaPorNota.length) {
+          // preparo el vector con las categorias para el eje X del histograma
+            this.categoriasEjeX = [];
+            for (let n = 0; n < this.histogramaAciertos.length ; n++) {
+              this.categoriasEjeX.push (n.toString());
             }
+            this.PrepararDonuts();
+        }
 
-      }, 1000);
-    }
+      });
+    });
+  }
+
+  PrepararDonuts() {
+    // preparo un donut para cada pregunta
+    this.preguntas.forEach (pregunta => {
+      // selecciono las respuestas para esa pregunta
+      const respuestas = this.respuestasJuegoDeCuestionario.filter (respuesta => respuesta.preguntaId === pregunta.id);
+      let miDonut: any;
+      miDonut = [];
+      // preparo los datos del donut
+      miDonut.push ( { respuesta: pregunta.RespuestaCorrecta, cont: 0});
+      miDonut.push ( { respuesta: pregunta.RespuestaIncorrecta1, cont: 0});
+      miDonut.push ( { respuesta: pregunta.RespuestaIncorrecta2, cont: 0});
+      miDonut.push ( { respuesta: pregunta.RespuestaIncorrecta3, cont: 0});
+      // esto es para el caso de respuesta en blando
+      miDonut.push ( { respuesta: '-', cont: 0});
+      // ahora cuento las veces que aparece cada una de las respuestas
+      respuestas.forEach (respuesta =>
+        miDonut.filter (entrada => entrada.respuesta === respuesta.Respuesta)[0].cont++
+      );
+      this.misDonuts.push (miDonut);
+
+    });
+
+    this.PrepararGraficos();
+  }
+
+  PrepararGraficos() {
+    // Histograda de número de aciertos
+
+    const histo = this.histogramaAciertos;
+
+    this.grafico = {
+      color: ['#3398DB'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: 'aciertos: {b}  <br/>{c}'
+      },
+      grid: {
+        left: '20%',
+        right: '20%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: [
+        {
+          type: 'category',
+          name: '# aciertos',
+          data: this.categoriasEjeX,
+          axisTick: {
+            alignWithLabel: true
+          }
+        }
+      ],
+      yAxis: [{
+        type: 'value',
+        name: '# alumnos'
+      }],
+      series: [{
+        type: 'bar',
+        barWidth: '60%',
+        data: this.histogramaAciertos,
+      }]
+    };
+
+    // ahora preparo los donuts
+    let i = 1;
+    this.misDonuts.forEach (miDonut => {
+      const datos = [
+        // las respuestas correctas siempre en verde
+        {value: miDonut[0].cont, name: miDonut[0].respuesta, itemStyle: {color: 'green'}},
+        {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'rgb(50,50,50)'}},
+        {value: miDonut[2].cont, name: miDonut[2].respuesta, itemStyle: {color: 'rgb(100,100,100)'}},
+        {value: miDonut[3].cont, name: miDonut[3].respuesta, itemStyle: {color: 'rgb(125,125,125)'}},
+        {value: miDonut[4].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+      ];
+      const  donut = {
+        title: {
+          text: 'Respuesta correcta',
+          subtext: miDonut[0].respuesta ,
+          left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{c} alumnos <br/> ({d}%)'
+        },
+        series: [
+            {
+                name: '',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: datos
+            }
+        ]
+      };
+      this.donuts.push (donut);
+    });
+
+  }
+
+  doCheck() {
+    // Para decidir si hay que mostrar los botones de previo o siguiente slide
+    const prom1 = this.slides.isBeginning();
+    const prom2 = this.slides.isEnd();
+  
+    Promise.all([prom1, prom2]).then((data) => {
+      data[0] ? this.disablePrevBtn = true : this.disablePrevBtn = false;
+      data[1] ? this.disableNextBtn = true : this.disableNextBtn = false;
+    });
   }
 
 
-  async EnviarRespuesta() {
-    /* Preparamos un mensaje con la siguiente informacion:
-        Nota
-        Tiempo empleado
-        Id de las preguntas del cuestionario
-        Respuestas
-    */
+  next() {
+    this.slides.slideNext();
+  }
 
-   
+  prev() {
+    this.slides.slidePrev();
+  }
 
-    // paramos el timer si está activo
-    if (this.contar) {
-      clearInterval(this.timer);
-      this.contar = false;
-    }
-    this.puntuacionMaxima = this.puntuacionCorrecta * this.PreguntasCuestionario.length;
-    console.log ('Respuestas');
-    console.log (this.RespuestasAlumno);
 
-    // Para calcular la nota comprobamos el vector de respuestas con el de preguntas (mirando la respuesta correcta)
-    // si es correcta sumamos, si es incorrecta restamos y en el caso de que la haya dejado en blanco ni suma ni resta
-    for (let i = 0; i < this.PreguntasCuestionario.length; i++) {
-      if (this.RespuestasAlumno[i] === this.PreguntasCuestionario[i].RespuestaCorrecta) {
-        this.Nota = this.Nota + this.puntuacionCorrecta;
-        this.feedbacks.push(this.PreguntasCuestionario[i].FeedbackCorrecto);
-      } else if (this.RespuestasAlumno[i] === undefined) {
-        this.feedbacks.push(' ');
-      } else {
-        this.Nota = this.Nota - this.puntuacionIncorrecta;
-        this.feedbacks.push(this.PreguntasCuestionario[i].FeedbackIncorrecto);
-
-      }
-    }
-    if (this.Nota <= 0) {
-      this.Nota = 0.1;
-    }
-    const tiempoEmpleado = this.tiempoLimite - this.tiempoRestante;
-
-    console.log ('vamos a registrar las respuestas');
-    // Aqui guardamos las respuestas del alumno
-    for (let i = 0; i < this.PreguntasCuestionario.length; i++) {
-      console.log ('respuesta a la pregunta ' + i);
-      console.log (this.RespuestasAlumno[i]);
-      if ((this.RespuestasAlumno[i] === '') || (this.RespuestasAlumno[i] === undefined)) {
-        this.RespuestasAlumno[i] = '-';
-      }
-    }
-
-    const preguntas: number[] = [];
-    this.PreguntasCuestionario.forEach (pregunta => preguntas.push (pregunta.id));
-    let respuesta: any = [];
-    respuesta = {
-      Nota: this.Nota,
-      Tiempo: tiempoEmpleado,
-      Preguntas: preguntas,
-      Respuestas: this.RespuestasAlumno
-    };
-  
-    console.log ('voy a enviar respuesta');
-    console.log (respuesta);
-    this.comServer.Emitir ('respuestaCuestionarioRapido',
-      { nick: this.nickName,
-        respuestas: respuesta
-      }
-    );
-     // Ahora añado la respuesta a los datos del juego para guardarlo en la base de datos
-    // Asi las respuestas no se perderán si el dashboard no está conectado al juego
-    // Pero primero me traigo de nuevo el juego por si ha habido respuestas despues de que
-    // me lo traje
-    this.peticionesAPI.DameJuegoDeCuestionarioRapido (this.juegoSeleccionado.Clave)
-    .subscribe ( juego => {
-      juego[0].Respuestas.push (
-        { nick: this.nickName,
-          respuestas: respuesta
-      });
-      console.log ('ya he preparado las respuestas');
-      console.log (juego[0]);
-      this.peticionesAPI.ModificarJuegoDeCuestionarioRapido (juego[0]).subscribe();
-    });
-
-    const confirm = await this.alertCtrl.create({
-      header: 'Respuestas enviadas con éxito',
-      message: 'Gracias por contestar el cuestionario',
-      buttons: [
-          {
-          text: 'OK',
-          role: 'cancel',
-          handler: () => {
-          }
-        }
-      ]
-    });
-    await confirm.present();
+  Volver() {
+    this.analizar = false;
   }
 
   Cerrar() {

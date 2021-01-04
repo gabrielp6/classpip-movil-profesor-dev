@@ -110,8 +110,7 @@
       </ion-label>
 
    
-      <ion-button  *ngIf ="!juegoRapido" (click)="AccesoJuegoRapido();" class="login-btn">Juego Rápido
-      </ion-button>
+   
 
       <br>
       <br>
@@ -120,35 +119,6 @@
       </ion-label>
 
 
-    </div> 
-    
-  </div>
-</ion-content>
-
-<ion-content padding class="login-content-juego-rapido" *ngIf ="juegoRapido">
-  <div>
-
-
-    <div class="login-logo">
-      <img class="logo" width="100" height="100">
-    </div> 
-
-    <div class="login-credentials">
-      <ion-item lines="none">
-        <ion-input type="text" value="" name="clave" placeholder="Clave" requiered [(ngModel)]="clave"></ion-input>
-        <img class="user-input-logo" width="21" height="21" slot="end">
-      </ion-item>
-      <ion-row style="height: 5px"></ion-row>
-
-      <ion-item lines="none">
-        <ion-input type="text" name="nickname" placeholder="Nickname" requiered [(ngModel)]="nickname"></ion-input>
-        <img class="pass-input-logo" width="20" height="20" slot="end">
-      </ion-item>
-
-      <ion-button (click)="AutentificarJuegoRapido();" class="login-btn">Log In JUEGO RÁPIDO
-      </ion-button>
-      <ion-button (click)="VolverDeJuegoRapido();" class="login-btn">VOLVER A LOGIN
-      </ion-button>
     </div> 
     
   </div>
@@ -201,10 +171,6 @@
         <img class="pass-input-logo" width="20" height="20" slot="end">
       </ion-item>
       <ion-row style="height: 5px"></ion-row>
-      <ion-item lines="none">
-        <ion-input type="text" name="identificador" placeholder="Identificador" requiered [(ngModel)]="identificador"></ion-input>
-        <img class="user-input-logo" width="20" height="20" slot="end">
-      </ion-item>
 
       <ion-button (click)="Registro();" class="login-btn">REGISTRAR
       </ion-button>

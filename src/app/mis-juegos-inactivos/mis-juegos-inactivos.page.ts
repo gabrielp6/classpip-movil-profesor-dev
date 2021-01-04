@@ -36,17 +36,14 @@ export class MisJuegosInactivosPage implements OnInit {
   ) { }
  
   ngOnInit() {
-    this.id = this.sesion.DameAlumno().id;
-    console.log('Este es el id del alumno que se ha logado: ' + this.id);
-    this.calculos.DameJuegosAlumno(this.id)
-      .subscribe(listas => {
-        this.JuegosInactivos = listas.inactivos;
-      });
+   this.JuegosInactivos = this.sesion.DameJuegosInactivos();
   }
 
   
 
   JuegoSeleccionado(juego: any) {
+    console.log ('juego seleccionado');
+    console.log (juego);
 
     this.sesion.TomaJuego(juego);
     if (juego.Tipo === 'Juego De Puntos') {

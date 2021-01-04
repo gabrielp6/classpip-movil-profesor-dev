@@ -12,6 +12,7 @@ export class SesionService {
   alumno: Alumno;
   alumnoObservable = new ReplaySubject(1);
   profesor: Profesor;
+  profesorObservable = new ReplaySubject(1);
   grupo: Grupo;
   juego: Juego;
   juegodeAvatar: JuegoDeAvatar;
@@ -65,15 +66,24 @@ export class SesionService {
   cromosQueNoTengoImagenDelante;
   cromosQueNoTengoImagenDetras;
   nickName;
+  juegosInactivos: any;
+  juegosPreparados: any;
+  juegosRapidos: any;
 
   constructor() { }
   public TomaProfesor(profesor: Profesor) {
     this.profesor = profesor;
+    this.profesorObservable.next(profesor);
   }
   public DameProfesor(): Profesor {
     return this.profesor;
   }
 
+  public EnviameProfesor(): any {
+    return this.profesorObservable;
+  }
+
+ 
 
 
   // public TomaProfesor(profesor: Profesor) {
@@ -477,6 +487,26 @@ export class SesionService {
 
   public DameNickName(): string {
     return this.nickName;
+  }
+
+  public TomaJuegosInactivos (juegosInactivos) {
+    this.juegosInactivos = juegosInactivos;
+  }
+
+  public TomaJuegosPreparados (juegosPreparados) {
+    this.juegosPreparados = juegosPreparados;
+  }
+
+  public DameJuegosInactivos (): any {
+    return this.juegosInactivos;
+  }
+
+  public DameJuegosRapidos (): any {
+    return this.juegosRapidos;
+  }
+
+  public TomaJuegosRapidos (juegosRapidos) {
+    this.juegosRapidos = juegosRapidos;
   }
 
 

@@ -1,0 +1,339 @@
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Crear juego rápido</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  
+  <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+  <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
+  <button *ngIf="ultimoSlide"  class = "siguiente" mat-raised-button  (click)="CrearJuego()">Crear juego</button>
+
+  
+   
+  <ion-slides  #slides  #slides (ionSlideWillChange)="doCheck()">
+    <ion-slide>
+      <br>
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Nombre del juego</strong></h1></label>
+        <br>
+        <ion-item>
+          <br>
+          <br>
+          <br>
+          <ion-label style="font-size: larger;" position="floating">Introduce el nombre del juego</ion-label>
+          <br>
+          <ion-input style="font-size: larger;" placeholder="nombre ..."  [(ngModel)]="nombreDelJuego"></ion-input>
+        </ion-item>
+      </ion-list>
+    
+    </ion-slide>
+    <ion-slide>
+      <br>
+      <ion-list   style="text-align: center;">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Tipo de juego</strong></h1></label>
+        <br>
+        <ion-item>
+          <ion-label>Elije el tipo de juego rápido</ion-label>
+        </ion-item>
+        <ion-radio-group (ionChange)= "GuardaTipoDeJuego($event)">
+          <ion-item>
+            <ion-label>Encuesta rápida</ion-label>
+            <ion-radio slot="start"  value="Juego De Encuesta Rápida"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Cuestionario rápido</ion-label>
+            <ion-radio slot="start"  value="Juego De Cuestionario Rápido"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Votación rápida</ion-label>
+            <ion-radio slot="start" value="Juego De Votación Rápida"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Coger turno rápido</ion-label>
+            <ion-radio slot="start"  value="Juego De Coger Turno Rápido"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+   
+    
+    </ion-slide>
+    <ion-slide>
+      
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Encuesta Rápida'">
+        <br>
+        <ion-list   style="text-align: center;">
+          <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Selecciona cuestionario de satisfacción</strong></h1></label>
+          <br>
+
+          <br>
+          <ion-list style="text-align:center">
+              <ion-button *ngIf ="!mostrarPublicos"  class="ranking-btn-rojo" (click)="MostrarCuestionariosDeSatisfaccionPublicos();">Añade cuestionarios satisfacción públicos</ion-button> 
+              <ion-button *ngIf ="mostrarPublicos"  class="ranking-btn-rojo" (click)="OcultarCuestionariosDeSatisfaccionPublicos();">Oculta cuestionarios satisfacción públicos</ion-button> 
+          </ion-list>
+          <ion-radio-group (ionChange)= "GuardaCuestionarioDeSatisfaccion($event)">
+              <ion-item *ngFor = "let cuestionario of cuestionariosDeSatisfaccion">
+                <ion-label>{{cuestionario.Titulo}}</ion-label>
+                <ion-radio slot="start"  value="{{cuestionario.id}}"></ion-radio>
+              </ion-item>
+          </ion-radio-group>
+        </ion-list>
+      </div>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
+        <br>
+        <ion-list   style="text-align: center;">
+          <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Selecciona cuestionario</strong></h1></label>
+          <br>
+          <ion-list style="text-align:center">
+            <ion-button *ngIf ="!mostrarPublicos"  class="ranking-btn-rojo" (click)="MostrarCuestionariosPublicos();">Añade cuestionarios públicos</ion-button> 
+            <ion-button *ngIf ="mostrarPublicos"  class="ranking-btn-rojo" (click)="OcultarCuestionariosPublicos();">Oculta cuestionarios públicos</ion-button> 
+          </ion-list>
+          <ion-radio-group (ionChange)= "GuardaCuestionario($event)">
+              <ion-item *ngFor = "let cuestionario of cuestionarios">
+                <ion-label>{{cuestionario.Titulo}}</ion-label>
+                <ion-radio slot="start"  value="{{cuestionario.id}}"></ion-radio>
+              </ion-item>
+          </ion-radio-group>
+        </ion-list>
+      </div>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Coger Turno Rápido'">
+        <br>
+        <ion-list   style="text-align: center;">
+          <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Presentación</strong></h1></label>
+          <br>
+        
+          <ion-item>
+          <br>
+          <br>
+          <br>
+          <ion-label style="font-size: larger;" position="floating">Escribe la presentación</ion-label>
+          <br>
+          <ion-input style="font-size: larger;" placeholder="Presentación ..."  [(ngModel)]="presentacion"></ion-input>
+          </ion-item>
+        </ion-list>
+      
+      </div>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Votación Rápida'">
+         
+        <br>
+        <ion-list   style="text-align: center;">
+          <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Lista de conceptos a votar</strong></h1></label>
+          <br>
+          <ion-item  *ngFor="let concepto of listaDeConceptos;">
+            <ion-item lines = "none" style = " width: 80%">
+              <ion-label> {{concepto}} </ion-label>
+            </ion-item>
+            <ion-item lines = "none" style="text-align: right;">
+             <i class="material-icons  md-36" style = "color: red" (click)="EliminarConcepto(concepto)">delete</i>
+            </ion-item>
+          </ion-item>
+        </ion-list>
+        <br>
+       
+     
+        <ion-item style="text-align: center;">
+            <ion-item lines = "none" style = "width:65%">
+              <ion-label position="floating">Introduce un nuevo concepto</ion-label>
+              <ion-input placeholder="concepto ..."  [(ngModel)]="nuevoConcepto"></ion-input>
+            </ion-item >
+            <ion-item lines = "none" style = "width:35%">
+              <ion-button class="ranking-btn" (click)="PonerConcepto();">Añadir</ion-button>
+            </ion-item>
+        </ion-item>
+   
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Criterio de puntuación</strong></h1></label>
+        <br>
+      
+        <ion-item>
+              <ion-label style="font-size: larger;" position="floating">Sumar por respuesta correcta</ion-label>
+              <br>
+              <ion-input style="font-size: larger;" placeholder="puntos a sumar..."  [(ngModel)]="puntuacionCorrecta"></ion-input>
+        </ion-item>
+        <br>
+        <ion-item>
+              <ion-label style="font-size: larger;" position="floating">Restar por respuesta incorrecta</ion-label>
+              <br>
+              <ion-input style="font-size: larger;" placeholder="puntos a restar ..."  [(ngModel)]="puntuacionIncorrecta"></ion-input>
+        </ion-item>
+      </div>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Coger Turno Rápido'">
+        <br>
+        <ion-list   style="text-align: center;">
+          <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Lista de turnos</strong></h1></label>
+          <br>
+          <ion-item  *ngFor="let turno of listaDeTurnos;">
+            <ion-item lines = "none" style = " width: 80%">
+              <ion-label> {{datePipe.transform(turno.dia, 'dd-MM-yyyy') }} {{turno.hora}} </ion-label>
+            </ion-item>
+            <ion-item lines = "none" style="text-align: right;">
+             <i class="material-icons  md-36" style = "color: red" (click)="EliminarTurno(turno)">delete</i>
+            </ion-item>
+          </ion-item>
+        </ion-list>
+       
+        <ion-list lines = "none" style="text-align: center;">
+            <ion-button class="ranking-btn" (click)="MostrarInput();">Elije turno</ion-button>
+            <div align = "center"> <input id='inputDateTime'  style= 'display:none; width: 50%' matInput type="datetime-local" (change)="PonTurno($event.target.value)"> </div>                
+        </ion-list> 
+      </div>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Votación Rápida'">
+        <br>
+        <ion-list   style="text-align: center;">
+          <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Modo de reparto de puntos</strong></h1></label>
+          <br>
+        
+          <ion-item>
+            <ion-label>Elije el modo de reparto de puntos</ion-label>
+          </ion-item>
+          <ion-radio-group (ionChange)= "GuardarModoDeReparto($event)">
+            <ion-item>
+              <ion-label>Reparto fijo según posición</ion-label>
+              <ion-radio slot="start"  value="Reparto fijo según posición"></ion-radio>
+            </ion-item>
+    
+            <ion-item>
+              <ion-label>Reparto libre</ion-label>
+              <ion-radio slot="start"  value="Reparto libre"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+          </ion-list>
+
+          <div *ngIf= "modoDeReparto === 'Reparto libre'">
+            <br>
+            <span style ="font-weight: bold;">Puntos a repartir   </span>
+            <br>
+            <br>
+        
+                
+              <ion-item  style = "width:80%; margin-left: 10%;" lines = "none" >
+                <ion-item lines = "none" >
+                  <span (click)="DecrementarPuntosARepartir ()" style = "color: red; font-size:4em;" class="material-icons"> remove_circle_outline</span>
+                </ion-item>
+                <ion-item lines = "none" >
+                  <ion-label style = "font-size:4em"><b>{{puntosARepartir}} </b></ion-label>
+                </ion-item>
+              
+                <ion-item lines = "none" >
+                  <span (click)="IncrementarPuntosARepartir ()" style = "color: green; font-size: 4em;" class="material-icons"> add_circle_outline</span>
+                </ion-item>  
+              </ion-item>
+        
+
+
+          
+          </div>
+
+
+          <div *ngIf= "modoDeReparto === 'Reparto fijo según posición'">
+            <br>
+            <span style ="font-weight: bold;">Puntos a asignar según posición</span>
+            <br>
+            <ion-list  style="text-align: center;">
+            <ion-item>
+            <ion-list-header style = " width: 20%">
+              <ion-label >Posición</ion-label>
+            </ion-list-header>
+            <ion-list-header style = " width: 20%">
+              <ion-label ></ion-label>
+            </ion-list-header>
+            <ion-list-header style = " width: 20%">
+              <ion-label >Puntos</ion-label>
+            </ion-list-header>
+            <ion-list-header style = " width: 20%">
+              <ion-label ></ion-label>
+            </ion-list-header>
+            <ion-list-header style = " width: 20%">
+              <ion-label ></ion-label>
+            </ion-list-header>
+    
+  
+            </ion-item>
+            <ion-item  *ngFor="let puntos of puntuaciones; let i= index">
+              <ion-item lines = "none" style = " width: 20%">
+                <ion-label> {{i + 1}} </ion-label>
+              </ion-item>
+              <ion-item lines = "none" style = " width: 20%">
+                <span (click)="Decrementar (i)" style = "color: red" class="material-icons"> remove_circle_outline</span>
+              </ion-item>
+              <ion-item lines = "none" style = " width: 20%">
+                <ion-label style = "font-size: large;"><b>{{puntos}} </b></ion-label>
+              </ion-item>
+            
+              <ion-item lines = "none" style = " width: 20%">
+                <span (click)="Incrementar (i)" style = "color: green" class="material-icons"> add_circle_outline</span>
+              </ion-item>
+              <ion-item lines = "none" style = " width: 20%">
+                <i class="material-icons  md-36" style = "color: red" (click)="EliminarPuntos(i)">delete</i>
+              </ion-item>
+            </ion-item>
+            </ion-list>
+
+            <br>
+          
+        
+            <ion-list style="text-align: center;">
+              <ion-button class="ranking-btn" (click)="PonerPosicion();">Añadir posición</ion-button>
+            </ion-list>
+
+
+          </div>
+      
+        
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Modo de presentación</strong></h1></label>
+        <br>
+
+        <p>Elije el modo de presentación de las preguntas y respuetas</p>
+        <ion-radio-group (ionChange)= "GuardaModoDePresentacion($event)">
+              <ion-item>
+                <ion-label>Mismo orden para todos</ion-label>
+                <ion-radio slot="start"  value="Mismo orden para todos"></ion-radio>
+              </ion-item>
+    
+              <ion-item>
+                <ion-label>Preguntas desordenadas</ion-label>
+                <ion-radio slot="start"  value="Preguntas desordenadas"></ion-radio>
+              </ion-item>
+      
+              <ion-item>
+                <ion-label>Preguntas y respuestas desordenadas</ion-label>
+                <ion-radio slot="start" value="Preguntas y respuestas desordenadas"></ion-radio>
+              </ion-item>
+        </ion-radio-group>
+         
+
+      </div>
+    </ion-slide>      
+    <ion-slide>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Tiempo de respuesta</strong></h1></label>
+        <br>
+
+        <ion-item>
+              <ion-label style="font-size: larger;" position="floating">Tiempo (en segundos) para responder</ion-label>
+              <br>
+              <ion-input style="font-size: larger;" placeholder="tiempo ..."  [(ngModel)]="tiempoLimite"></ion-input>
+        </ion-item>
+
+      </div>
+    </ion-slide>
+  </ion-slides>
+
+</ion-content>

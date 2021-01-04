@@ -17,18 +17,15 @@
       <img height= "40px" src="../../assets/home/inactive-games-banner.svg">
   
       <div *ngIf="!JuegosInactivos[0]"><p>No hay juegos inactivos</p></div>
-  
-      <div *ngIf="!disablePrevBtn" style="position: absolute;top: 50%;left: 15px;font-size: 25px;z-index: 2;" (click)="prev()">
-        <i class="material-icons">skip_previous</i>
-      </div>
-      <div *ngIf="!disableNextBtn" style="position: absolute;top: 50%;right: 15px;font-size: 25px;z-index: 2;" (click)="next()">
-        <i class="material-icons">skip_next</i>
-      </div>
-  
+    
+
+      <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+      <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
+    
       <ion-slides  #slides (ionSlideWillChange)="doCheck()">
         <ion-slide *ngFor="let juego of JuegosInactivos">
           <div>
-            <ion-card class="juegos-card-bg" style="background: grey;">
+            <ion-card class="juegos-card-bg-inactivo" style="background: grey;">
               <div class = "info-juego">
                 <h2> {{juego.NombreJuego}} </h2>
                 <h3>{{ juego.Tipo }}</h3>

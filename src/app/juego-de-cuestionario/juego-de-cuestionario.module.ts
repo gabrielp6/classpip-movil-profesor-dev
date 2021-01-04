@@ -9,6 +9,12 @@ import { JuegoDeCuestionarioPage } from './juego-de-cuestionario.page';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule, MatRadioModule } from '@angular/material';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {NgxEchartsModule} from 'ngx-echarts';
+
+import * as echarts from 'echarts';
+
+//import * as echarts from './../custom-echarts';
 
 const routes: Routes = [
   {
@@ -26,7 +32,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    MatExpansionModule,
+    RouterModule.forChild(routes),
+    NgxEchartsModule.forRoot({echarts})
   ],
   declarations: [JuegoDeCuestionarioPage]
 })

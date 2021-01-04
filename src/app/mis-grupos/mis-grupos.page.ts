@@ -3,9 +3,10 @@ import { NgModule } from '@angular/core';
 import { PeticionesAPIService} from '../servicios/index';
 import { CalculosService } from '../servicios/calculos.service';
 import { SesionService} from '../servicios/sesion.service';
-import { Grupo, Alumno, Equipo, AlumnoJuegoDeVotacionTodosAUno } from '../clases/index';
+import { Grupo, Alumno, Equipo, AlumnoJuegoDeVotacionTodosAUno, Profesor } from '../clases/index';
 import * as URL from '../URLs/urls';
 import {MatAccordion} from '@angular/material/expansion';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mis-grupos',
@@ -15,9 +16,9 @@ import {MatAccordion} from '@angular/material/expansion';
 export class MisGruposPage implements OnInit {
   @ViewChild('accordion', {static: false}) accordion: MatAccordion;
 
-  Grupos: Grupo[];
-  Alumno: Alumno;
-  listaGruposYAlumnos: any;
+  listaGrupos: Grupo[];
+  profesor: Profesor;
+  
   listaGruposYEquipos: any [];
   Tipo: string;
   equiposDelAlumno: Equipo[];
@@ -28,31 +29,37 @@ export class MisGruposPage implements OnInit {
     private peticionesAPI: PeticionesAPIService,
     private sesion: SesionService,
     private calculos: CalculosService,
+    private route: Router,
   ) { }
 
   ngOnInit() {
-    this.Alumno = this.sesion.DameAlumno();
-    this.peticionesAPI.DameEquiposDelAlumno (this.Alumno.id)
-    .subscribe (equipos => this.equiposDelAlumno = equipos);
-    this.peticionesAPI.DameGruposAlumno(this.Alumno.id).subscribe(
-      MisGrupos => {
-        console.log ('ya tengo los grupos');
-        this.Grupos = MisGrupos;
-        console.log(this.Grupos);
-        this.calculos.DameLosGruposYLosAlumnos(this.Grupos)
-        .subscribe (lista => {
-          this.listaGruposYAlumnos = lista;
-        });
 
-        this.calculos.DameLosGruposYLosEquipos(this.Grupos)
-        .subscribe (lista =>  {
-          this.listaGruposYEquipos = lista;
-          console.log ('equipos');
-          console.log (this.listaGruposYEquipos);
-        });
+      this.profesor = this.sesion.DameProfesor();
+      // CUANDO INICIEMOS EL COMPONENTE NOS LISTARÁ LOS GRUPOS DEL PROFESOR QUE RECUPERAMOS EL ID DE LA URL
+      this.GruposDelProfesor();
+  }
+  
+  GruposDelProfesor() {
+      console.log ('Busco grupos del profesor');
+      this.peticionesAPI.DameGruposProfesor(this.profesor.id)
+      .subscribe(res => {
+        if (res[0] !== undefined) {
+          this.listaGrupos = res;
+        } else {
+          this.listaGrupos = undefined;
+        }
       });
   }
- 
+
+  SeleccionaGrupo (grupo: Grupo) {
+    console.log ('Grupo seleccionado');
+    console.log (grupo);
+    this.sesion.TomaGrupo (grupo);
+    
+    this.route.navigateByUrl('ver-grupo');
+
+  }
+   
   ionViewWillEnter (){
     this.Tipo = "Alumnos";
   }

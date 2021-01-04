@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NavController, LoadingController, AlertController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { PeticionesAPIService } from '../servicios/index';
 import { CalculosService } from '../servicios/calculos.service';
 import {
@@ -8,6 +8,8 @@ import {
   TablaHistorialPuntosAlumno } from '../clases/index';
 import { SesionService } from '../servicios/sesion.service';
 import { IonContent } from '@ionic/angular';
+import {MatAccordion} from '@angular/material/expansion'; 
+import { SeleccionarAlumnosPage } from '../seleccionar-alumnos/seleccionar-alumnos.page';
 
 @Component({
   selector: 'app-juego-puntos',
@@ -49,12 +51,20 @@ export class JuegoPuntosPage implements OnInit {
   // EN el panel que muestra la info, enseñaremos los puntos de porfma preddeterminada
   Tipo: String;
 
+  puntoAleatorioId: number;
+
   public hideMe: boolean = false;
+  historialAlumno: any[];
+
+  @ViewChild('accordion', {static: false}) accordion: MatAccordion;
+
   constructor(
     private sesion: SesionService,
     public navCtrl: NavController,
     private peticionesAPI: PeticionesAPIService,
     private calculos: CalculosService,
+    private alertCtrl: AlertController,
+    public modalController: ModalController
   ) { }
   @ViewChild('content', { static: false }) content: IonContent;
   toggleInfoView() {
@@ -63,29 +73,137 @@ export class JuegoPuntosPage implements OnInit {
 
   ngOnInit() {
     this.juegoSeleccionado = this.sesion.DameJuego();
-    this.MiAlumno = this.sesion.DameAlumno();
-    console.log(this.MiAlumno);
-    console.log(this.juegoSeleccionado.id);
+
+   
+   // this.listaSeleccionable[0] =  new Punto('Totales');
+
     this.NivelesJuego();
     this.DamePuntosDelJuego();
+
     if (this.juegoSeleccionado.Modo === 'Individual') {
-      this.calculos.DameHistorialMisPuntos(this.juegoSeleccionado.id, this.MiAlumno.id).subscribe(
-        lista => {
-          console.log(lista);
-          this.EsteAlumnoJuegoDePuntos = lista.AlumnoJDP;
-          console.log(this.EsteAlumnoJuegoDePuntos[0]);
-          this.MiHistorialPuntos = lista.Historial;
-          this.peticionesAPI.DameInscripcionAlumnoJuegoDePuntos(this.MiAlumno.id, this.juegoSeleccionado.id).subscribe(
-            AlumnoJDP => {
-              this.MiAlumnoJDP = AlumnoJDP[0].PuntosTotalesAlumno;
-              console.log(this.MiAlumnoJDP);
-            });
-        }
-      );
       this.AlumnosDelJuego();
     } else {
       this.EquiposDelJuego();
     }
+
+
+
+
+    // this.MiAlumno = this.sesion.DameAlumno();
+    // console.log(this.MiAlumno);
+    // console.log(this.juegoSeleccionado.id);
+
+    // if (this.juegoSeleccionado.Modo === 'Individual') {
+    //   this.calculos.DameHistorialMisPuntos(this.juegoSeleccionado.id, this.MiAlumno.id).subscribe(
+    //     lista => {
+    //       console.log(lista);
+    //       this.EsteAlumnoJuegoDePuntos = lista.AlumnoJDP;
+    //       console.log(this.EsteAlumnoJuegoDePuntos[0]);
+    //       this.MiHistorialPuntos = lista.Historial;
+    //       this.peticionesAPI.DameInscripcionAlumnoJuegoDePuntos(this.MiAlumno.id, this.juegoSeleccionado.id).subscribe(
+    //         AlumnoJDP => {
+    //           this.MiAlumnoJDP = AlumnoJDP[0].PuntosTotalesAlumno;
+    //           console.log(this.MiAlumnoJDP);
+    //         });
+    //     }
+    //   );
+    //   this.AlumnosDelJuego();
+    // } else {
+    //   this.EquiposDelJuego();
+    // }
+  }
+
+  
+  async SeleccionarAlumnos(): Promise<any> {
+    // La selección de los alumnos quería hacerla con una alerta con checkbox, pero 
+    // no vi la manera de tener un boton para seleccionarlos todos.
+    // Por eso lo hago con una página a la que accedo de forma modal.
+    this.sesion.TomaAlumnosJuegoDeColeccion (this.alumnosDelJuego);
+    const modalAlumnos = await this.modalController.create({
+      component: SeleccionarAlumnosPage,
+      cssClass: 'my-custom-class',
+    });
+    await modalAlumnos.present();
+    // tslint:disable-next-line:semicolon
+    const { data }  = await modalAlumnos.onWillDismiss();
+    return data.seleccion;
+  }
+  AsignarASeleccion () {
+    const opciones: any[] = [];
+    this.TodosLosPuntos.forEach (tipo => {
+      opciones.push ({
+          type: 'radio',
+          label: tipo.Nombre,
+          value: tipo.id
+      });
+    });
+
+    this.alertCtrl.create({
+      header: 'Selecciona el tipo de punto a asignar',
+      inputs: opciones,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'OK',
+          handler: (tipoPuntoId) => {
+         
+            this.SeleccionarAlumnos()
+            .then (seleccion => {
+              console.log ('seleccion');
+              console.log (seleccion);
+              if (seleccion) {
+                let i;
+                for (i = 0; i < this.alumnosDelJuego.length; i++) {
+                  if (seleccion[i]) {
+                    console.log ('Alumnos del juego');
+                    console.log (this.alumnosDelJuego);
+                    console.log ('lista ordenada');
+                    console.log (this.listaAlumnosOrdenadaPorPuntos);
+                    console.log ('renking');
+                    console.log (this.rankingJuegoDePuntos);
+                    // tslint:disable-next-line:max-line-length
+                    const inscripcionAlumno = this.listaAlumnosOrdenadaPorPuntos.filter (inscripcion => inscripcion.alumnoId === this.alumnosDelJuego[i].id)[0];
+                    this.calculos.AsignarPuntosAlumno (inscripcionAlumno,
+                      this.nivelesDelJuego, 1, tipoPuntoId);
+                    this.rankingJuegoDePuntos.filter (r => r.id === inscripcionAlumno.alumnoId)[0].puntos++;
+
+                    if (inscripcionAlumno.nivelId !== undefined) {
+                      const nivel = this.nivelesDelJuego.filter (n => n.id === inscripcionAlumno.nivelId)[0];
+                      this.rankingJuegoDePuntos.filter (r => r.id === inscripcionAlumno.alumnoId)[0].nivel = nivel.Nombre;
+                    }
+                  }
+                }
+                // tslint:disable-next-line:only-arrow-functions
+                this.listaAlumnosOrdenadaPorPuntos = this.listaAlumnosOrdenadaPorPuntos.sort(function(obj1, obj2) {
+                      return obj2.PuntosTotalesAlumno - obj1.PuntosTotalesAlumno;
+                 });
+                 // tslint:disable-next-line:only-arrow-functions
+                this.rankingJuegoDePuntos = this.rankingJuegoDePuntos.sort(function(obj1, obj2) {
+                      return obj2.puntos - obj1.puntos;
+                });
+                // tslint:disable-next-line:no-shadowed-variable
+                for (let j = 0; j < this.rankingJuegoDePuntos.length; j++) {
+                      this.rankingJuegoDePuntos[j].posicion = j + 1;
+                }
+
+                this.alertCtrl.create({
+                  header: 'Puntos asignados',
+                  buttons: ['OK']
+                }).then(res => {
+                  res.present();
+                });
+              }
+            });
+          }
+        }
+      ]
+    }).then (res => res.present());
   }
 
   DameEquipoAlumnoConectado() {
@@ -116,6 +234,9 @@ export class JuegoPuntosPage implements OnInit {
         this.RecuperarInscripcionesAlumnoJuego();
       });
   }
+
+
+
 
   // Recupera los equipos que pertenecen al juego
   EquiposDelJuego() {
@@ -168,6 +289,7 @@ DamePuntosDelJuego() {
     puntos => {
       this.TodosLosPuntos = puntos;
       console.log(this.TodosLosPuntos);
+      this.puntoAleatorioId = this.TodosLosPuntos.filter (p => p.Nombre === 'Aleatorio')[0].id;
     }
   );
 }
@@ -176,6 +298,8 @@ DamePuntosDelJuego() {
 RecuperarInscripcionesAlumnoJuego() {
   this.peticionesAPI.DameInscripcionesAlumnoJuegoDePuntos(this.juegoSeleccionado.id)
     .subscribe(inscripciones => {
+      console.log('ya tengo las inscripcionesssssssssssssssssssssssssssssss');
+      console.log(inscripciones);
       this.listaAlumnosOrdenadaPorPuntos = inscripciones;
       // ordena la lista por puntos
       // tslint:disable-next-line:only-arrow-functions
@@ -207,6 +331,67 @@ RecuperarInscripcionesEquiposJuego() {
       console.log(this.MiEquipo);
     });
 }
+
+
+
+
+AsignarPuntoAleatorio() {
+  console.log ('niveles del juego');
+  console.log (this.nivelesDelJuego);
+  if (this.juegoSeleccionado.Modo === 'Individual') {
+    console.log ('Entramos');
+    const numeroAlumnos = this.alumnosDelJuego.length;
+    const elegido = Math.floor(Math.random() * numeroAlumnos);
+    const alumnoElegido = this.rankingJuegoDePuntos[elegido];
+
+    this.alertCtrl.create({
+      header: '¿Quieres asignar un punto aleatorio a:?',
+      message: alumnoElegido.nombre + ' ' + alumnoElegido.primerApellido + ' ' + alumnoElegido.segundoApellido,
+      buttons: [
+        {
+          text: 'SI',
+          handler: () => {
+            this.calculos.AsignarPuntosAlumno ( this.listaAlumnosOrdenadaPorPuntos[elegido],
+              this.nivelesDelJuego, 1, this.puntoAleatorioId);
+            this.rankingJuegoDePuntos[elegido].puntos = this.rankingJuegoDePuntos[elegido].puntos + 1;
+            if (this.listaAlumnosOrdenadaPorPuntos[elegido].nivelId !== undefined) {
+              const nivel = this.nivelesDelJuego.filter (n => n.id === this.listaAlumnosOrdenadaPorPuntos[elegido].nivelId)[0];
+              this.rankingJuegoDePuntos[elegido].nivel = nivel.Nombre;
+            }
+
+            // tslint:disable-next-line:only-arrow-functions
+            this.listaAlumnosOrdenadaPorPuntos = this.listaAlumnosOrdenadaPorPuntos.sort(function(obj1, obj2) {
+              return obj2.PuntosTotalesAlumno - obj1.PuntosTotalesAlumno;
+            });
+            // tslint:disable-next-line:only-arrow-functions
+            this.rankingJuegoDePuntos = this.rankingJuegoDePuntos.sort(function(obj1, obj2) {
+              return obj2.puntos - obj1.puntos;
+            });
+            for (let i = 0; i < this.rankingJuegoDePuntos.length; i++) {
+              this.rankingJuegoDePuntos[i].posicion = i + 1;
+            }
+            this.alertCtrl.create({
+              header: 'Punto asignado',
+              buttons: ['OK']
+            }).then(res => {
+              res.present();
+            });
+
+          }
+        }, {
+          text: 'NO',
+          role: 'cancel',
+          handler: () => {
+          }
+        }
+      ]
+    }).then (res => res.present());
+  }
+
+}
+
+
+
 
 // Alumnos de cada equipo
 AlumnosDelEquipo(equipo: Equipo) {
@@ -279,23 +464,19 @@ MostrarHistorialSeleccionado() {
 }
 
 
-AccederAlumno(alumno: TablaAlumnoJuegoDePuntos) {
-  this.MuestraHistorial();
-  const alumnoSeleccionado = this.alumnosDelJuego.filter(res => res.Nombre === alumno.nombre &&
-    res.PrimerApellido === alumno.primerApellido && res.SegundoApellido === alumno.segundoApellido)[0];
+MostrarHistorialAlumno(alumno: TablaAlumnoJuegoDePuntos) {
 
-  const posicion = this.rankingJuegoDePuntos.filter(res => res.nombre === alumno.nombre &&
-    res.primerApellido === alumno.primerApellido && res.segundoApellido === alumno.segundoApellido)[0].posicion;
-
-  // Informacion que se necesitara para ver la evolución del alumno
-  this.sesion.TomaDatosEvolucionAlumnoJuegoPuntos (
-    posicion,
-    this.TodosLosPuntos,
-    this.nivelesDelJuego,
-    alumnoSeleccionado,
-    this.listaAlumnosOrdenadaPorPuntos.filter(res => res.alumnoId === alumnoSeleccionado.id)[0],
-  );
-  this.HistorialTotal();
+  const inscripcionAlumno = this.listaAlumnosOrdenadaPorPuntos.filter (inscripcion => inscripcion.alumnoId === alumno.id)[0];
+  console.log ('alumno');
+  console.log (alumno);
+  console.log ('inscripcion');
+  console.log (inscripcionAlumno);
+  this.calculos.PreparaHistorialAlumno(inscripcionAlumno, this.TodosLosPuntos)
+  .subscribe(historial => {
+    console.log ('historial del alumno');
+    console.log(historial);
+    this.historialAlumno = historial;
+  });
 }
 
 HistorialTotal() {
@@ -305,6 +486,7 @@ HistorialTotal() {
   this.calculos.PreparaHistorialAlumno(this.alumnoJuegoDePuntos, this.TodosLosPuntos).
     subscribe(res => {
       this.historialalumno = res;
+      console.log ('historial del alumno');
       console.log(this.historialalumno);
     });
 }

@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seleccionar alumnos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="juegocoleccion-content" #content>
+  <ion-list style="text-align:center">
+    <ion-button [disabled] = "!HaySeleccion()" class="ranking-btn" (click)="AceptarSeleccion();">Aceptar seleccion</ion-button> 
+    <ion-button class="ranking-btn-rojo" (click)="Cancelar();">Cancelar</ion-button>
+  </ion-list>
+ 
+  <ion-list>
+    <ion-item>
+    <ion-checkbox slot="start" color = "danger"  (click) = Toggle()></ion-checkbox>
+    <ion-label style= "color: red"> Seleccionar todos </ion-label>
+    </ion-item> 
+    <ion-item *ngFor="let alumno of alumnosDelGrupo; let i = index" >
+      <ion-label > {{alumno.Nombre}} {{alumno.PrimerApellido}} {{alumno.SegundoApellido}} </ion-label>
+      <ion-checkbox slot="start" color = "danger" [(ngModel)]="seleccion[i]"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

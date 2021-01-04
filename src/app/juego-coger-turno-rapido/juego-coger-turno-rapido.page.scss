@@ -19,17 +19,22 @@
     justify-content: center;
     width: 200px;
   }
-// .vertical-center {
-//     .fixed-content,
-//     .scroll-content {
-//         display: flex;
-//         align-items: center;
+  ion-slide {
+    height: 650px;
+    width: 200px;
 
-//         ion-list {
-//             max-width: 300px; 
-//             width:100%; 
-//             margin: auto; 
-//             text-align: center;
-//         }
-//     }
-// }
+
+
+}
+// esto es para que me ponga cada slide arriba
+ion-slide.swiper-slide {
+    align-items: flex-start;
+}
+
+// Esto es para que haga scroll vertical cuando no cabe la información
+// en el slide
+
+.swiper-slide {
+    overflow-y: scroll;    
+    display: block;    
+}

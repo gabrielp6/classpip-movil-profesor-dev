@@ -1,0 +1,76 @@
+ion-slide {
+    height: 650px;
+    width: 200px;
+
+
+
+}
+// esto es para que me ponga cada slide arriba
+ion-slide.swiper-slide {
+    align-items: flex-start;
+}
+
+// Esto es para que haga scroll vertical cuando no cabe la información
+// en el slide
+
+.swiper-slide {
+    overflow-y: scroll;    
+    display: block;    
+}
+
+.footer{
+  
+    bottom: 10%;
+    position: absolute;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+  }
+  .center {
+    width: 800px;
+  }
+
+// .siguiente {
+//     background-color: rgb(11, 72, 100);
+//     color: white;
+//     font-size: 14px;
+//     padding: 10px;
+//     border-radius: 50px;
+//     position: absolute;
+//     right: 25px; 
+//     width: 100px;
+//     bottom: 10px;
+// }
+
+
+// .siguienteDisabled {
+//     background-color: rgb(11, 72, 100);
+//     color: white;
+//     font-size: 14px;
+//     padding: 10px;
+//     border-radius: 50px;
+//     position: absolute;
+//     right: 25px; 
+//     width: 100px;
+//     bottom: 10px;
+//     opacity: 0.5;
+// }
+
+
+
+
+// .anterior {
+//     background-color: white;
+//     color:rgb(11, 72, 100);
+//     border: 2px solid rgb(11, 72, 100);
+//     font-size: 14px;
+//     padding: 10px;
+//     border-radius: 50px;
+//     position: absolute;
+//     left: 25px; 
+//     width: 100px;
+//     bottom: 10px
+// }
+

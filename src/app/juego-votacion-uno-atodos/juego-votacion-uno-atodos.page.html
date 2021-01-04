@@ -7,78 +7,39 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf = 'inscripcionAlumnoJuegoDeVotacionUnoATodos && inscripcionAlumnoJuegoDeVotacionUnoATodos.Votos'>
- <!-- Ya ha votado -->
- <div>
-  <h2 style="text-align: center;">Esta ha sido tu votación</h2>
-  <!-- Solo muestro los alumnos que recibieron votos -->
-  <ion-list *ngIf = 'alumnosVotados'>
-      <ion-item *ngFor="let alumno of alumnosVotados; let i=index">
-        <ion-item>
-        <ion-label >
-          {{alumno.al.Nombre}} {{alumno.al.PrimerApellido}} {{alumno.al.SegundoApellido}}
-        </ion-label>
-        </ion-item>
-        <ion-label style="font-size: large; color: green; text-align: right;">
-          {{alumno.puntos}}
-        </ion-label>
-      </ion-item>
-  </ion-list>
-</div>
-</ion-content>
+<ion-content class="juegos-content">
+  
+  
+  <ion-slides>
 
-<ion-content *ngIf = "juegoSeleccionado.ModoReparto !== 'Reparto libre'">
-  <!-- Si aun no ha votado y el reparto es fijo-->
-  <div *ngIf = 'inscripcionAlumnoJuegoDeVotacionUnoATodos && !inscripcionAlumnoJuegoDeVotacionUnoATodos.Votos'>
-    <div style="text-align:center; margin-top: 10%;">  
-      <ion-button class="ranking-btn" (click)="Enviar()"> Envía tu votación </ion-button>  
-    </div> 
-    <ion-list *ngIf = 'alumnos'>
-      <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
-
-        <ion-item *ngFor="let alumno of alumnos; let i=index">
-          <ion-item>
-          <ion-label>
-            {{alumno.Nombre}} {{alumno.PrimerApellido}} {{alumno.SegundoApellido}}
-          </ion-label>
-          </ion-item>
-          <!-- En el caso de que estemos en una de las posiciones que recibe puntos, muestro los puntos que le corresponden -->
-          <ion-label *ngIf = 'i < juegoSeleccionado.Puntos.length' style="font-size: large; color: red; text-align: right;">
-          {{juegoSeleccionado.Puntos[i]}}
-          </ion-label>
-          <ion-reorder slot="end"></ion-reorder>
-        </ion-item>
-      </ion-reorder-group>
-    </ion-list>
-  </div>
-</ion-content>
-
-<ion-content *ngIf = "juegoSeleccionado.ModoReparto === 'Reparto libre'">
-   <!-- Si aun no ha votado y el reparto es libre-->
-  <div *ngIf = 'inscripcionAlumnoJuegoDeVotacionUnoATodos && !inscripcionAlumnoJuegoDeVotacionUnoATodos.Votos'>
-    <div *ngIf = 'puntosARepartir === 0' style="text-align:center; margin-top: 10%;">  
-      <ion-button class="ranking-btn" (click)="Enviar()"> Envía tu votación </ion-button>  
-    </div> 
-    <br>
-    <ion-list style="text-align:center">
-      <ion-label align = "center">
-      <span  style = "font-size: 2em;">Reparte </span>  
-      <span  style = "font-size: 3em; color: red">{{puntosARepartir}}</span>   
-      <span  style = "font-size: 2em;">  puntos </span>
-      </ion-label>
-    </ion-list>
-    <br>
-    <ion-item *ngFor="let item of alumnosConPuntos; let i=index">
+    <ion-slide>
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Resultados de la votación</strong></h1></label>
+ 
+        <label align = "center" style = "font-size: small;">En <strong>negrita</strong> los alumnos que ya han votado</label>
+        <br>
+        <br>
+        <ion-item  *ngFor="let alumno of rankingIndividualJuegoDeVotacionUnoATodos;">
+          
+          <ion-item lines = "none" style = " width: 60%">
+            <ion-label *ngIf = "alumno.votado" class="ion-text-wrap"><strong>{{alumno.nombre}} {{alumno.primerApellido}} {{alumno.segundoApellido}}</strong></ion-label>
+            <ion-label *ngIf = "!alumno.votado" class="ion-text-wrap">{{alumno.nombre}} {{alumno.primerApellido}} {{alumno.segundoApellido}}</ion-label>
       
-      <ion-label>
-          {{item.al.Nombre}} {{item.al.PrimerApellido}} {{item.al.SegundoApellido}}
-      </ion-label>
+          </ion-item>
+         
+          <ion-item lines = "none" style = " width: 20%">
+            <ion-label *ngIf = "alumno.incremento !==0 " class="blink">+{{alumno.incremento}}</ion-label>
+          </ion-item>
+          <ion-item lines = "none" style = " width: 20%">
+            <ion-label style = " color: rgb(11, 105, 27); ">{{alumno.puntos}}</ion-label>
+          </ion-item>
+          
+        </ion-item>
+      </ion-list>
+    </ion-slide>
 
-      <ion-label style="text-align: right;">
-        <span (click)="Decrementar (i)" style = "color: red" class="material-icons"> remove_circle_outline</span>
-        <span style = "font-size: 2em"> {{item.puntos}} </span>
-        <span (click)="Incrementar (i)" style = "color: green" class="material-icons"> add_circle_outline</span>
-        </ion-label>
-    </ion-item>
-  </div>
-</ion-content> 
+  </ion-slides>
+
+
+</ion-content>
+
