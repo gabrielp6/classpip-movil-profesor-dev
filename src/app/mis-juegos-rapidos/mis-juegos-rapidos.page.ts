@@ -34,6 +34,8 @@ export class MisJuegosRapidosPage implements OnInit {
     this.calculos.DameJuegosRapidos(this.id)
     .subscribe(juegos => {
       this.juegosRapidos = juegos;
+      console.log ('ya tengo los juegos rápidos');
+      console.log (this.juegosRapidos);
     });
    }
  
@@ -42,6 +44,8 @@ export class MisJuegosRapidosPage implements OnInit {
      this.calculos.DameJuegosRapidos(this.id)
      .subscribe(juegos => {
        this.juegosRapidos = juegos;
+       console.log ('ya tengo DE NUEVO los juegos rápidos');
+       console.log (this.juegosRapidos);
      });
    }
    
