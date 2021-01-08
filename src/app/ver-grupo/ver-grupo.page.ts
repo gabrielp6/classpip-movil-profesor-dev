@@ -50,6 +50,7 @@ export class VerGrupoPage implements OnInit {
   asistenciaPreparada = false;
   listaAlumnos: Alumno [];
   datos: any[] = [];
+  mostrarObservaciones = false;
 
   @ViewChild('accordion', {static: false}) accordion: MatAccordion;
   
@@ -493,6 +494,12 @@ PreparaGrafico() {
     this.asistenciaRegistrada = false;
    
   }
+  MostrarObservaciones(sesion) {
+    this.mostrarObservaciones = true;
+    this.asistenciaPreparada = false;
+    this.editandoAsistencia = false;
+  }
+
  Volver () {
     this.mostrarEquipos = false;
     this.sesionesAnteriores = false;
@@ -592,6 +599,95 @@ PreparaGrafico() {
     }).then (res => res.present());
 
   }
+
+  
+  EliminarObservacion (sesion: SesionClase, i: number) {
+    this.alertCtrl.create({
+      header: '¿Seguro que quieres eliminar esta observación?',
+       buttons: [
+        {
+          text: 'SI',
+          handler: () => {
+            sesion.Observaciones.splice (i, 1);
+            this.peticionesAPI.ModificaSesionClase (sesion)
+            .subscribe ();
+          }
+        },
+        {
+          text: 'NO',
+          role: 'cancel',
+          handler: () => {
+          }
+        }
+      ]
+    }).then (res => res.present());
+
+  }
+
+  NuevaObservacion(sesion: SesionClase) {
+
+    this.alertCtrl.create({
+      header: "Introduce la observación",
+      inputs: [
+        {
+          name: 'observacion',
+          type: 'text'
+        }],
+       buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary',
+              handler: () => {
+                console.log('Confirm Cancel');
+              }
+            }, {
+              text: 'Ok',
+              handler: (alertData) => { //takes the data 
+                sesion.Observaciones.push (alertData.observacion);
+                this.peticionesAPI.ModificaSesionClase (sesion)
+                .subscribe ();
+            }
+            }
+          ]
+    }).then (res => res.present());
+  }
+
+  
+  EditarObservacion(sesion: SesionClase, i: number) {
+
+    this.alertCtrl.create({
+      header: "Modifica observación",
+      inputs: [
+        {
+          name: 'observacion',
+          type: 'text',
+          value: sesion.Observaciones[i]
+
+        }],
+       buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary',
+              handler: () => {
+                console.log('Confirm Cancel');
+              }
+            }, {
+              text: 'Ok',
+              handler: (alertData) => { //takes the data 
+                sesion.Observaciones[i] = alertData.observacion;
+                this.peticionesAPI.ModificaSesionClase (sesion)
+                .subscribe ();
+            }
+            }
+          ]
+    }).then (res => res.present());
+  }
+
+
+
+
 
 
 }
