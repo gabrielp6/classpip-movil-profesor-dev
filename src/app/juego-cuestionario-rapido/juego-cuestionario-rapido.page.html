@@ -77,11 +77,34 @@
         <br>
         <ion-label><strong>Pregunta {{i + 1 }}</strong></ion-label>
         <br>
-        <br>
         <ion-label class="ion-text-wrap"> {{preguntasCuestionario[i].Pregunta}}</ion-label>
         <br>
         <br>
-     
+        <ion-label><strong>Respuesta correcta</strong></ion-label>
+        <br>
+        <ion-label 
+          *ngIf = 
+                "preguntasCuestionario[i].Tipo === 'Cuatro opciones' ||
+                preguntasCuestionario[i].Tipo === 'Verdadero o falso' ||
+                preguntasCuestionario[i].Tipo === 'Respuesta abierta'" 
+          class="ion-text-wrap"> 
+          {{preguntasCuestionario[i].RespuestaCorrecta}}
+        </ion-label>
+        
+        <ion-list *ngIf = "preguntasCuestionario[i].Tipo === 'Emparejamiento'">
+          <ion-item  *ngFor="let pareja of preguntasCuestionario[i].Emparejamientos; let j=index">
+            <ion-item lines = "none" style = "width: 50%">
+              <ion-label  style = "font-size: small;">
+                {{pareja.l}}
+              </ion-label>
+            </ion-item>
+            <ion-item lines = "none" style = "width: 50%">
+              <ion-label  style = "font-size: small;">
+                {{pareja.r}}
+              </ion-label>
+            </ion-item>
+          </ion-item>
+        </ion-list>
         <div [options]="donuts[i]" class="demo-chart" echarts theme="macarons"></div>
       </ion-list>
     </ion-slide>
