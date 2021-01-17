@@ -161,7 +161,7 @@ export class JuegoDeCuestionarioPage implements OnInit {
               this.preguntas = preguntas;
             });
     });
-       // }
+
     this.comServer.EsperoRespuestasJuegoDeCuestionario()
     .subscribe((alumno: any) => {
          //  sound.play();
@@ -746,96 +746,6 @@ export class JuegoDeCuestionarioPage implements OnInit {
   }
 
 
-  // PrepararGraficos() {
-  //   // Histograda de número de aciertos
-
-  //   const histo = this.histogramaAciertos;
-
-  //   this.grafico = {
-  //     color: ['#3398DB'],
-  //     tooltip: {
-  //       trigger: 'axis',
-  //       axisPointer: {
-  //         type: 'shadow'
-  //       },
-  //       formatter: 'aciertos: {b}  <br/>{c}'
-  //     },
-  //     grid: {
-  //       left: '20%',
-  //       right: '20%',
-  //       bottom: '3%',
-  //       containLabel: true
-  //     },
-  //     xAxis: [
-  //       {
-  //         type: 'category',
-  //         name: '# aciertos',
-  //         data: this.categoriasEjeX,
-  //         axisTick: {
-  //           alignWithLabel: true
-  //         }
-  //       }
-  //     ],
-  //     yAxis: [{
-  //       type: 'value',
-  //       name: '# alumnos'
-  //     }],
-  //     series: [{
-  //       type: 'bar',
-  //       barWidth: '60%',
-  //       data: this.histogramaAciertos,
-  //     }]
-  //   };
-
-  //   // ahora preparo los donuts
-  //   let i = 1;
-  //   this.misDonuts.forEach (miDonut => {
-  //     const datos = [
-  //       // las respuestas correctas siempre en verde
-  //       {value: miDonut[0].cont, name: miDonut[0].respuesta, itemStyle: {color: 'green'}},
-  //       {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'rgb(50,50,50)'}},
-  //       {value: miDonut[2].cont, name: miDonut[2].respuesta, itemStyle: {color: 'rgb(100,100,100)'}},
-  //       {value: miDonut[3].cont, name: miDonut[3].respuesta, itemStyle: {color: 'rgb(125,125,125)'}},
-  //       {value: miDonut[4].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
-  //     ];
-  //     const  donut = {
-  //       title: {
-  //         text: 'Respuesta correcta',
-  //         subtext: miDonut[0].respuesta ,
-  //         left: 'center'
-  //       },
-  //       tooltip: {
-  //           trigger: 'item',
-  //           formatter: '{c} alumnos <br/> ({d}%)'
-  //       },
-  //       series: [
-  //           {
-  //               name: '',
-  //               type: 'pie',
-  //               radius: ['50%', '70%'],
-  //               avoidLabelOverlap: false,
-  //               label: {
-  //                   show: false,
-  //                   position: 'center'
-  //               },
-  //               emphasis: {
-  //                   label: {
-  //                       show: true,
-  //                       fontSize: '30',
-  //                       fontWeight: 'bold'
-  //                   }
-  //               },
-  //               labelLine: {
-  //                   show: false
-  //               },
-  //               data: datos
-  //           }
-  //       ]
-  //     };
-  //     this.donuts.push (donut);
-  //   });
-
-  // }
 
   doCheck() {
     // Para decidir si hay que mostrar los botones de previo o siguiente slide
