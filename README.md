@@ -1,4 +1,4 @@
-# Classpip movil para el profesor
+# Classpip móvil para el profesor
 
 ## ¿Qué es Classpip?
 
