@@ -1,4 +1,4 @@
-# Classpip mobile para estudiantes
+# Classpip movil para el profesor
 
 ## ¿Qué es Classpip?
 
@@ -32,9 +32,9 @@ En la actualidad Classpip tiene 5 módulos:
  [![Classpip Badge](https://img.shields.io/badge/classpip-server-brightgreen.svg)](https://github.com/rocmeseguer/classpip-server)
 
   
-# Mobile-student
+# Classpip-movil-profesor
 
-Este repositorio contiene la aplicación que se ejecuta en el movil del estudiante.
+Este repositorio contiene la aplicación que se ejecuta en el movil del profesor.
 
 ## Git y GitHub
 
@@ -43,6 +43,8 @@ Necesitas tener instalado Git y una cuenta en GitHub
 https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
  
 https://github.com/
+
+Debes crear una cuenta en Github para poder hacer contribuciones en el desarrollo del código de esta aplicación.
 
 ## NodeJS
 
@@ -66,13 +68,10 @@ npm list -g -depth=0
 ```
 
 
-## Dependencias locales
+### Instalación de la aplicación
 
-Después de clonar el repositorio, instala las dependencias locales:
+Para instalar la aplicación y organizar la información para futuras contribuciones hay que seguir los pasos del 1 al 6 del protocolo de instalación y contríbuciones que se encuentra aquí.
 
-```
-npm install
-```
 
 ## Puesta en marcha en modo navegador web
 
@@ -81,8 +80,21 @@ Puedes iniciar la app para trabajar con ella desde el navegador haciendo
 ```
 ionic serve --lab
 ```
-Recuerda que para que funcione la app debes poner en marcha también Services y Server.
- 
-## Instalación en tu dispositivo movil
+Si quieres acceder desde tu propio dispositivo movil a la aplicación en modo navegador web debes poner en marcha la aplicación asi:
 
-PENDIENTE
+```
+ionic serve --external
+```
+El sistema te indicará la IP y el puerto en los que está escuchando la aplicación de manera que desde tu movil puedes conectarte a esa IP:puerto para acceder a la aplicación. El comportamiento es bastante similar al que tienes si te instalas la aplicación en el móvil.
+Recuerda que para que funcione la aplicación debes poner en marcha también Classpip-API y Classpip-servidor.
+ 
+## Instalación de la aplicación en tu dispositivo móvil
+
+Para descargar la aplicación en un dispositivo móvil Android hay que instalar adicionalmente Java JDK 8 y Android Studio. Además, hay que habilitar en el dispositivo los permisos para desarrolladores (hay que averiguar en cada dispositivo cómo se hace eso).
+
+Una vez conectado el móvil al ordenador por USB, el comando para descargar la aplicación en el móvil es:
+```
+ionic cordova run android
+```
+
+
