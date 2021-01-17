@@ -55,15 +55,7 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
     console.log ('tengo juego');
     this.profesorId = this.sesion.DameProfesor().id;
     this.juegoSeleccionado = this.sesion.DameJuego();
-    this.peticionesAPI.DamePreguntasCuestionario(this.juegoSeleccionado.cuestionarioId)
-    .subscribe(res => {
-      this.preguntasCuestionario = res;
-    });
-      
     this.PreparaInfo();
-
-    console.log ('tengo juego');
-    console.log (this.juegoSeleccionado);
 
 
     this.comServer.EsperoNickNames()
@@ -75,38 +67,64 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
           contestado: false
         });
     });
+
     this.comServer.EsperoRespuestasCuestionarioRapido()
     .subscribe((respuesta) => {
         this.numeroRespuestas++;
- 
-        console.log ('ha contestado ' + respuesta.nick);
-        console.log ('respuestas ');
-        console.log (respuesta.respuestas);
-        this.respuestas.push (respuesta.respuestas);
+    
 
-        // Actualizo el histograma
+        // Actualizo el histograma y los donuts
+
 
         let aciertos = 0;
-        let j;
-        for (j = 0; j < respuesta.respuestas.Preguntas.length; j++) {
-          // tslint:disable-next-line:max-line-length
-          const respuestaCorrecta = this.preguntas.filter (pregunta => pregunta.id === respuesta.respuestas.Preguntas[j])[0].RespuestaCorrecta;
-          if (respuestaCorrecta === respuesta.respuestas.Respuestas[j]) {
+        for (let i = 0; i < respuesta.respuestas.Preguntas.length; i++) {
+          const pregunta = this.preguntas.filter (p => p.id === respuesta.respuestas.Preguntas[i])[0];
+          // busco el donut correspondiente a esta pregunta
+          const indexDonut = this.misDonuts.findIndex (elemento => elemento[0].preguntaId === pregunta.id);
+
+          if (pregunta.Tipo === 'Emparejamiento') {
+            // primero actualizamos el histograma
+            if (respuesta.respuestas.Respuestas[i] !== undefined) {
+              // miro si todos los emparejamientos están bien
+              let n = 0;
+              for (let j = 0; j < pregunta.Emparejamientos.length; j++) {
+                if (pregunta.Emparejamientos[j].r === respuesta.respuestas.Respuestas[i][j]) {
+                  n++;
+                }
+              }
+              if (n === pregunta.Emparejamientos.length) {
+                aciertos++;
+                this.misDonuts[indexDonut][1].cont++; // respuesta correcta
+              } else {
+                this.misDonuts[indexDonut][2].cont++; // respuesta incorecta
+              }
+            } else {
+              this.misDonuts[indexDonut][3].cont++; // respuesta en blanco
+            }
+
+          } else if (pregunta.Tipo === 'Cuatro opciones') {
+            // actualizo histograma
+            if (pregunta.RespuestaCorrecta === respuesta.respuestas.Respuestas[i][0]) {
               aciertos++;
+            }
+            // actualido en el donut el contador correspondiente a la opción elegida
+            this.misDonuts[indexDonut].filter (entrada => entrada.respuesta === respuesta.respuestas.Respuestas[i][0])[0].cont++;
+          } else {
+            // la pregunta es de tipo "Verdadero o falso" o de tipo "Respuesta abierta"
+
+            if (pregunta.RespuestaCorrecta === respuesta.respuestas.Respuestas[i][0]) {
+              aciertos++;
+              this.misDonuts[indexDonut][1].cont++;  // respuesta correcta
+            } else if (respuesta.respuestas.Respuestas[i][0] === '-') {
+                this.misDonuts[indexDonut][3].cont++;  // respuesta en blanco
+              } else {
+                this.misDonuts[indexDonut][2].cont++;  // respuesta mal
+              }
           }
         }
         this.histogramaAciertos[aciertos]++;
 
-
-        // actualizo los donuts
-
-        for (j = 0; j < respuesta.respuestas.Preguntas.length; j++) {
-          const e = this.misDonuts.filter (elemento => elemento.id === respuesta.respuestas.Preguntas[j]);
-          const donut = e[0].donut;
-          donut.filter (p => p.respuesta === respuesta.respuestas.Respuestas [j])[0].cont++;
-
-        }
-
+        // Actualizo la clasificación
 
         this.clasificacion.push ({
           nick: respuesta.nick,
@@ -127,12 +145,11 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
         this.dataSource = new MatTableDataSource(this.clasificacion);
 
         this.participantes.filter (participante => participante.nickName === respuesta.nick)[0].contestado = true;
+        // vuelvo a cargar los gráficos con las novedades
         this.PrepararGraficos();
     });
   }
 
-
-  
 
   PreparaInfo() {
     this.peticionesAPI.DameCuestionario (this.juegoSeleccionado.cuestionarioId)
@@ -145,33 +162,55 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
         // preparo el histograma
         this.histogramaAciertos = Array(this.preguntas.length + 1).fill(0);
         // preparo los donuts
-
-
-        let i;
-        for (i = 0; i < this.preguntas.length; i++) {
+        // preparo un donut para cada pregunta
+        this.preguntas.forEach (pregunta => {
           let miDonut: any;
           miDonut = [];
           // preparo los datos del donut
-          miDonut.push ( { respuesta: preguntas[i].RespuestaCorrecta, cont: 0});
-          miDonut.push ( { respuesta: preguntas[i].RespuestaIncorrecta1, cont: 0});
-          miDonut.push ( { respuesta: preguntas[i].RespuestaIncorrecta2, cont: 0});
-          miDonut.push ( { respuesta: preguntas[i].RespuestaIncorrecta3, cont: 0});
-          // esto es para el caso de respuesta en blando
-          miDonut.push ( { respuesta: '-', cont: 0});
-          this.misDonuts.push ({
-            id: preguntas[i].id,
-            donut: miDonut
-          });
-        }
-        console.log ('ya he preparado los donuts');
-        console.log (this.misDonuts);
+          // los datos están en un vector en el que la posición 0 tiene el id de la pregunta y su tipo
+          // las posiciones siguientes contienen las posibles respuestas a la pregunta
+          miDonut.push ( { preguntaId: pregunta.id, Tipo: pregunta.Tipo});
+          if (pregunta.Tipo === 'Cuatro opciones') {
+            // cuatro posibles respuestas
+            miDonut.push ( { respuesta: pregunta.RespuestaCorrecta, cont: 0});
+            miDonut.push ( { respuesta: pregunta.RespuestaIncorrecta1, cont: 0});
+            miDonut.push ( { respuesta: pregunta.RespuestaIncorrecta2, cont: 0});
+            miDonut.push ( { respuesta: pregunta.RespuestaIncorrecta3, cont: 0});
+            // esto es para el caso de respuesta en blanco
+            miDonut.push ( { respuesta: '-', cont: 0});
+
+          } else if (pregunta.Tipo === 'Respuesta abierta') {
+            // respuesta correcta, incorrecta o en blanco
+            miDonut.push ( { respuesta: pregunta.RespuestaCorrecta, cont: 0});
+            miDonut.push ( { respuesta: 'Otras respuestas', cont: 0});
+            // esto es para el caso de respuesta en blando
+            miDonut.push ( { respuesta: '-', cont: 0});
+          } else if (pregunta.Tipo === 'Verdadero o falso') {
+            // respuesta correcta, incorrecta o en blanco
+            miDonut.push ( { respuesta: pregunta.RespuestaCorrecta, cont: 0});
+            miDonut.push ( { respuesta: 'Mal', cont: 0});
+            // esto es para el caso de respuesta en blando
+            miDonut.push ( { respuesta: '-', cont: 0});
+          } else {
+               // respuesta correcta, incorrecta o en blanco
+            miDonut.push ( { respuesta: 'Emparejamientos correctos', cont: 0});
+            miDonut.push ( { respuesta: 'Otros emparejamientos incorrectos', cont: 0});
+            // esto es para el caso de respuesta en blando
+            miDonut.push ( { respuesta: '-', cont: 0});
+          }
+
+          this.misDonuts.push (miDonut);
+        });
+       
+        // ahora recupero las respuestas que ya tiene el cuestionario 
         this.respuestas = this.juegoSeleccionado.Respuestas;
         this.numeroRespuestas = this.respuestas.length;
         this.numeroParticipantes = this.numeroRespuestas;
 
         if (this.numeroRespuestas !== 0) {
-          console.log ('hay respuestas');
-          this.PrepararHitogramaInicial();
+          // actualizo el histograma y los donuts con la información de las respuestas ya existentes
+          this.PrepararHitogramaYDonutsIniciales();
+          // cargo los gráficos con los datos del histograma y los donuts
           this.PrepararGraficos();
         }
       });
@@ -179,6 +218,8 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
 
   }
   
+
+
   Eliminar() {
 
     this.alertCtrl.create({
@@ -200,39 +241,55 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
 
   }
 
-
-
-
-  PrepararHitogramaInicial() {
-
-    console.log ('voy a preparar el histograma');
-    console.log (this.respuestas);
-    console.log ('preguntas');
-    console.log (this.preguntas);
+  PrepararHitogramaYDonutsIniciales() {
 
     this.respuestas.forEach (respuesta => {
-
+      // Para cada respuesta tengo que actualizar el histograma y los donuts de cada una de las preguntas
+      // En cada respuesta tengo un vector con los id de las preguntas y otro con las respuestas a cada una de las preguntas
       let aciertos = 0;
-      let j;
-      for (j = 0; j < respuesta.respuestas.Preguntas.length; j++) {
-        // tslint:disable-next-line:max-line-length
-        const respuestaCorrecta = this.preguntas.filter (pregunta => pregunta.id === respuesta.respuestas.Preguntas[j])[0].RespuestaCorrecta;
-        if (respuestaCorrecta === respuesta.respuestas.Respuestas[j]) {
+      for (let i = 0; i < respuesta.respuestas.Preguntas.length; i++) {
+        // primero obtengo la pregunta
+        const pregunta = this.preguntas.filter (p => p.id === respuesta.respuestas.Preguntas[i])[0];
+        // ahora el donut correspondiente a esa pregunta
+        const donut = this.misDonuts.filter (elemento => elemento[0].preguntaId === pregunta.id)[0];
+
+        if (pregunta.Tipo === 'Emparejamiento') {
+          // Veo si la respuesta es acertada y actualizo histograma y donut en coherencia
+          if (respuesta.respuestas.Respuestas[i] !== undefined) {
+            let n = 0;
+            for (let j = 0; j < pregunta.Emparejamientos.length; j++) {
+              if (pregunta.Emparejamientos[j].r === respuesta.respuestas.Respuestas[i][j]) {
+                n++;
+              }
+            }
+            if (n === pregunta.Emparejamientos.length) {
+              aciertos++;
+              donut[1].cont++; // respuesta correcta
+            } else {
+              donut[2].cont++; // respuesta incorecta
+            }
+          } else {
+            donut[3].cont++; // respuesta en blanco
+          }
+
+        } else if (pregunta.Tipo === 'Cuatro opciones') {
+          // actualizo histograma
+          if (pregunta.RespuestaCorrecta === respuesta.respuestas.Respuestas[i][0]) {
             aciertos++;
+          }
+          donut.filter (entrada => entrada.respuesta === respuesta.respuestas.Respuestas[i][0])[0].cont++;
+        } else {
+          if (pregunta.RespuestaCorrecta === respuesta.respuestas.Respuestas[i][0]) {
+            aciertos++;
+            donut[1].cont++;  // respuesta correcta
+          } else if (respuesta.respuestas.Respuestas[i][0] === '-') {
+              donut[3].cont++;  // respuesta en blanco
+            } else {
+              donut[2].cont++;  // respuesta mal
+            }
         }
       }
       this.histogramaAciertos[aciertos]++;
-
-
-      // actualizo los donuts
-
-      for (j = 0; j < respuesta.respuestas.Preguntas.length; j++) {
-        const e = this.misDonuts.filter (elemento => elemento.id === respuesta.respuestas.Preguntas[j]);
-        const donut = e[0].donut;
-        donut.filter (p => p.respuesta === respuesta.respuestas.Respuestas [j])[0].cont++;
-
-      }
-
 
       this.clasificacion.push ({
         nick: respuesta.nick,
@@ -250,10 +307,12 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
         }
       });
     });
+    this.dataSource = new MatTableDataSource(this.clasificacion);
   }
 
 
   PrepararGraficos() {
+
     // Histograda de número de aciertos
     this.categoriasEjeX = [];
     for (let n = 0; n < this.histogramaAciertos.length ; n++) {
@@ -297,59 +356,187 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
       }]
     };
 
-    // ahora preparo los donuts
+    // ahora los donuts
     this.donuts = [];
-    let i = 1;
-    this.misDonuts.forEach (elem => {
-      const miDonut = elem.donut;
-      const datos = [
-        // las respuestas correctas siempre en verde
-        {value: miDonut[0].cont, name: miDonut[0].respuesta, itemStyle: {color: 'green'}},
-        {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'rgb(50,50,50)'}},
-        {value: miDonut[2].cont, name: miDonut[2].respuesta, itemStyle: {color: 'rgb(100,100,100)'}},
-        {value: miDonut[3].cont, name: miDonut[3].respuesta, itemStyle: {color: 'rgb(125,125,125)'}},
-        {value: miDonut[4].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
-      ];
-      const  donut = {
-        title: {
-          text: 'Respuesta correcta',
-          subtext: miDonut[0].respuesta ,
-          left: 'center'
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: '{c} alumnos <br/> ({d}%)'
-        },
-        series: [
-            {
-                name: '',
-                type: 'pie',
-                radius: ['50%', '70%'],
-                avoidLabelOverlap: false,
-                label: {
-                    show: false,
-                    position: 'center'
-                },
-                emphasis: {
-                    label: {
-                        show: true,
-                        fontSize: '30',
-                        fontWeight: 'bold'
-                    }
-                },
-                labelLine: {
-                    show: false
-                },
-                data: datos
-            }
-        ]
-      };
-      this.donuts.push (donut);
+
+    // en cada grafico donut tengo que poner los contadores de cada una de las respuestas e indicarle el color
+    this.misDonuts.forEach (miDonut => {
+      if (miDonut[0].Tipo === 'Cuatro opciones') {
+        const datos = [
+          // las respuestas correctas siempre en verde
+          {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'green'}},
+          {value: miDonut[2].cont, name: miDonut[2].respuesta, itemStyle: {color: 'rgb(50,50,50)'}},
+          {value: miDonut[3].cont, name: miDonut[3].respuesta, itemStyle: {color: 'rgb(100,100,100)'}},
+          {value: miDonut[4].cont, name: miDonut[4].respuesta, itemStyle: {color: 'rgb(125,125,125)'}},
+          {value: miDonut[5].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+        ];
+        const  donut = {
+          title: {
+            // text: 'Respuesta correcta ',
+            // subtext: miDonut[1].respuesta ,
+            // subtextStyle: ' font-size: large;',
+            // left: 'center'
+          },
+          tooltip: {
+              trigger: 'item',
+              formatter: '{c} alumnos <br/> ({d}%)'
+          },
+          series: [
+              {
+                  name: '',
+                  type: 'pie',
+                  radius: ['50%', '70%'],
+                  avoidLabelOverlap: false,
+                  label: {
+                      show: false,
+                      position: 'center'
+                  },
+                  emphasis: {
+                      label: {
+                          show: true,
+                          fontSize: '30',
+                          fontWeight: 'bold'
+                      }
+                  },
+                  labelLine: {
+                      show: false
+                  },
+                  data: datos
+              }
+          ]
+        };
+        this.donuts.push (donut);
+      } else if (miDonut[0].Tipo === 'Respuesta abierta') {
+        const datos = [
+          // las respuestas correctas siempre en verde
+          {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'green'}},
+          {value: miDonut[2].cont, name: 'Otras respuestas', itemStyle: {color: 'rgb(50,50,50)'}},
+          {value: miDonut[3].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+        ];
+        const  donut = {
+          title: {
+            // text: 'Respuesta correcta ',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
+          },
+          tooltip: {
+              trigger: 'item',
+              formatter: '{c} alumnos <br/> ({d}%)'
+          },
+          series: [
+              {
+                  name: '',
+                  type: 'pie',
+                  radius: ['50%', '70%'],
+                  avoidLabelOverlap: false,
+                  label: {
+                      show: false,
+                      position: 'center'
+                  },
+                  emphasis: {
+                      label: {
+                          show: true,
+                          fontSize: '30',
+                          fontWeight: 'bold'
+                      }
+                  },
+                  labelLine: {
+                      show: false
+                  },
+                  data: datos
+              }
+          ]
+        };
+        this.donuts.push (donut);
+      } else if (miDonut[0].Tipo === 'Verdadero o falso') {
+        const datos = [
+          // las respuestas correctas siempre en verde
+          {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'green'}},
+          {value: miDonut[2].cont, name: 'Mal', itemStyle: {color: 'rgb(50,50,50)'}},
+          {value: miDonut[3].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+        ];
+        const  donut = {
+          title: {
+            // text: 'Respuesta correcta ',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
+          },
+          tooltip: {
+              trigger: 'item',
+              formatter: '{c} alumnos <br/> ({d}%)'
+          },
+          series: [
+              {
+                  name: '',
+                  type: 'pie',
+                  radius: ['50%', '70%'],
+                  avoidLabelOverlap: false,
+                  label: {
+                      show: false,
+                      position: 'center'
+                  },
+                  emphasis: {
+                      label: {
+                          show: true,
+                          fontSize: '30',
+                          fontWeight: 'bold'
+                      }
+                  },
+                  labelLine: {
+                      show: false
+                  },
+                  data: datos
+              }
+          ]
+        };
+        this.donuts.push (donut);
+      } else {
+        const datos = [
+          // las respuestas correctas siempre en verde
+          {value: miDonut[1].cont, name: 'Emparejamientos correctos', itemStyle: {color: 'green'}},
+          {value: miDonut[2].cont, name: 'Otros emparejamientos incorrectos', itemStyle: {color: 'rgb(50,50,50)'}},
+          {value: miDonut[3].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+        ];
+        const  donut = {
+          title: {
+            // text: 'Respuesta correcta ',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
+          },
+          tooltip: {
+              trigger: 'item',
+              formatter: '{c} alumnos <br/> ({d}%)'
+          },
+          series: [
+              {
+                  name: '',
+                  type: 'pie',
+                  radius: ['50%', '70%'],
+                  avoidLabelOverlap: false,
+                  label: {
+                      show: false,
+                      position: 'center'
+                  },
+                  emphasis: {
+                      label: {
+                          show: true,
+                          fontSize: '30',
+                          fontWeight: 'bold'
+                      }
+                  },
+                  labelLine: {
+                      show: false
+                  },
+                  data: datos
+              }
+          ]
+        };
+        this.donuts.push (donut);
+      }
     });
-    console.log ('DONUTS');
-    console.log (this.donuts);
 
   }
+
 
   doCheck() {
     // Para decidir si hay que mostrar los botones de previo o siguiente slide

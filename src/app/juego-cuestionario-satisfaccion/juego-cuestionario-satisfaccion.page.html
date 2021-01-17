@@ -51,7 +51,7 @@
             <ion-label class="ion-text-wrap" style = "font-style: italic;">{{afirmacion.Texto}} </ion-label>
           </ion-item>
           <ion-item lines = "none" style="text-align: right;">
-            <ion-label style = " color: rgb(11, 105, 27); text-align: right;">{{afirmacion.Media}} </ion-label>
+            <ion-label style = " color: rgb(11, 105, 27); text-align: right;">{{afirmacion.Media.toFixed(2)}} </ion-label>
           </ion-item>
         </ion-item>
       </ion-list>
@@ -62,7 +62,7 @@
         <br>
         <ion-item><h3><strong>  {{cuestionario.PreguntasAbiertas[i]}}</strong></h3></ion-item>
         <ion-item  *ngFor="let respuesta of respuestas">
-          <ion-label style = "font-style: italic;"> {{respuesta}} </ion-label>
+          <ion-label class="ion-text-wrap" style = "font-style: italic;"> {{respuesta}} </ion-label>
         </ion-item>
       </ion-list>
     </ion-slide>
