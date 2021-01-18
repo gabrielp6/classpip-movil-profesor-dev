@@ -34,7 +34,7 @@ En la actualidad Classpip se compone de 5 aplicaciones. A continuación se descr
   
 # Classpip-movil-profesor
 
-Este repositorio contiene la aplicación que se ejecuta en el movil del profesor.
+Este repositorio contiene la aplicación que se ejecuta en el movil del profesor, en su versión en desarrollo.
 
 ## Git y GitHub
 
@@ -68,7 +68,7 @@ npm list -g -depth=0
 ```
 
 
-### Instalación de la aplicación
+## Instalación de la aplicación
 
 Para instalar la aplicación y organizar la información para futuras contribuciones hay que seguir los pasos del 1 al 6 del protocolo de instalación y contríbuciones que se encuentra aquí: https://github.com/classpip/classpip.
 
