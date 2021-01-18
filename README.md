@@ -70,7 +70,7 @@ npm list -g -depth=0
 
 ### Instalación de la aplicación
 
-Para instalar la aplicación y organizar la información para futuras contribuciones hay que seguir los pasos del 1 al 6 del protocolo de instalación y contríbuciones que se encuentra aquí.
+Para instalar la aplicación y organizar la información para futuras contribuciones hay que seguir los pasos del 1 al 6 del protocolo de instalación y contríbuciones que se encuentra aquí: https://github.com/classpip/classpip.
 
 
 ## Puesta en marcha en modo navegador web
