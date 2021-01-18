@@ -57,7 +57,7 @@ import { SeleccionarAlumnosPageModule } from './seleccionar-alumnos/seleccionar-
 import {NgxEchartsModule} from 'ngx-echarts';
 
 
-// import * as echarts from './custom-echarts';
+// /////////import * as echarts from './custom-echarts';
 import * as echarts from 'echarts';
 
 @NgModule({
