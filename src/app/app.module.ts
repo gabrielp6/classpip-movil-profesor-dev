@@ -49,7 +49,7 @@ import { IonicGestureConfig } from '../ionicGestureConfig';
 import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
 
 import { DateAdapter } from '@angular/material';
-import { CustomDateAdapter } from './CustomDataAdapter';
+import { CustomDateAdapter } from './customDataAdapter';
 import {DatePipe} from '@angular/common';
 import {  SeleccionarCromoPageModule } from './seleccionar-cromo/seleccionar-cromo.module';
 import { SeleccionarAlumnosPageModule } from './seleccionar-alumnos/seleccionar-alumnos.module';
