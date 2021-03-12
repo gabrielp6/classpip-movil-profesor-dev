@@ -8,7 +8,7 @@
 </ion-header>
 
 
-<ion-content class="juegos-content">
+<ion-content class="juegos-content" *ngIf = " juegoSeleccionado && juegoSeleccionado.Modalidad === 'Clásico'">
   
   <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
   <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
@@ -42,28 +42,14 @@
         <br>
 
         <ion-item *ngFor="let participante of participantes">
-            <ion-label *ngIf = "!participante.contestado" style="color: red"> {{participante.nickName}} </ion-label>
-            <ion-label *ngIf = "participante.contestado" style="color: green"> {{participante.nickName}} </ion-label>
+        
+            <ion-label *ngIf = "!participante.contestado" style="color: red"> {{participante.nickName}}  </ion-label>
+            <ion-label *ngIf = "participante.contestado" style="color: green"> {{participante.nickName}}  </ion-label>
+         
         </ion-item>
       </ion-list>
     </ion-slide>
-    <ion-slide>
-      <ion-list   style="text-align: center;">
-        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Clasificación</strong></h1></label>
-        <br>
-        <ion-item  *ngFor="let participante of clasificacion">
-          <ion-item lines = "none"  style="width: 80%" >
-            <ion-label> {{participante.nick}}</ion-label>
-          </ion-item>
-          <ion-item lines = "none"  style="text-align: right;">
-            <ion-label style = "color: green"> {{participante.nota}}</ion-label>
-          </ion-item>
-        </ion-item>
-        <br>
-        <br>
-      </ion-list>
-    </ion-slide>
-  
+   
     <ion-slide>
       <ion-list   style="text-align: center;">
         <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Histograma de aciertos</strong></h1></label>
@@ -72,27 +58,27 @@
       </ion-list>
     </ion-slide>
     <ion-slide *ngFor = "let pregunta of preguntas; index as i">
-      <ion-list   style="text-align: center;">
+      <ion-list *ngIf = "preguntas"  style="text-align: center;">
         <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Respuestas a cada pregunta</strong></h1></label>
         <br>
         <ion-label><strong>Pregunta {{i + 1 }}</strong></ion-label>
         <br>
-        <ion-label class="ion-text-wrap"> {{preguntasCuestionario[i].Pregunta}}</ion-label>
+        <ion-label class="ion-text-wrap"> {{preguntas[i].Pregunta}}</ion-label>
         <br>
         <br>
         <ion-label><strong>Respuesta correcta</strong></ion-label>
         <br>
         <ion-label 
           *ngIf = 
-                "preguntasCuestionario[i].Tipo === 'Cuatro opciones' ||
-                preguntasCuestionario[i].Tipo === 'Verdadero o falso' ||
-                preguntasCuestionario[i].Tipo === 'Respuesta abierta'" 
+                "preguntas[i].Tipo === 'Cuatro opciones' ||
+                preguntas[i].Tipo === 'Verdadero o falso' ||
+                preguntas[i].Tipo === 'Respuesta abierta'" 
           class="ion-text-wrap"> 
-          {{preguntasCuestionario[i].RespuestaCorrecta}}
+          {{preguntas[i].RespuestaCorrecta}}
         </ion-label>
         
-        <ion-list *ngIf = "preguntasCuestionario[i].Tipo === 'Emparejamiento'">
-          <ion-item  *ngFor="let pareja of preguntasCuestionario[i].Emparejamientos; let j=index">
+        <ion-list *ngIf = "preguntas[i].Tipo === 'Emparejamiento'">
+          <ion-item  *ngFor="let pareja of preguntas[i].Emparejamientos; let j=index">
             <ion-item lines = "none" style = "width: 50%">
               <ion-label  style = "font-size: small;">
                 {{pareja.l}}
@@ -112,3 +98,272 @@
 
 
 </ion-content>
+
+
+
+<ion-content class="juegos-content" *ngIf = " juegoSeleccionado && juegoSeleccionado.Modalidad === 'Kahoot'">
+ 
+  <button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+  <button *ngIf="slideActual !== 2 && !ultimoSlide"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
+  <button *ngIf="slideActual === 2 && finKahoot"  class = "siguiente" style = "width: 50%" mat-raised-button  (click)="next()">Ver todas las respuestas</button>
+
+  <button *ngIf= "ultimoSlide"  class = "siguiente" mat-raised-button  (click)="Cerrar()">Cerrar</button>
+  
+  <ion-slides  #slides (ionSlideWillChange)="doCheck()">
+    <ion-slide>
+      <ion-list lines = "none" style="text-align: center;">
+        <label align = "center"><h2 style="color:rgb(109, 11, 19)"><strong>Informacion del juego</strong></h2></label>
+        <br>
+        <br>
+       
+        <ion-item><h3> Descripcion</h3></ion-item>
+        <ion-item><h1><strong>{{juegoSeleccionado.NombreJuego}}</strong></h1></ion-item>
+        <br>
+        <ion-item><h3> Enlace</h3></ion-item>
+        <ion-item><h1><strong>http://147.83.118.92/home</strong></h1></ion-item>
+        <br>
+        <ion-item><h3> Clave</h3></ion-item>
+        <ion-item><h1><strong>{{juegoSeleccionado.Clave}}</strong></h1></ion-item>
+        <br>
+        <ion-list style="text-align:center">
+          <ion-button class="ranking-btn-rojo" (click)="Eliminar();">Eliminar juego rápido</ion-button> 
+        </ion-list>      
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <ion-list lines = "none" style="text-align: center;">
+        <label align = "center"><h2 style="color:rgb(109, 11, 19)"><strong>Alumnos conectados</strong></h2></label>
+        <br>
+        <br>
+
+        <ion-item *ngFor="let participante of participantes">
+        
+            <ion-label *ngIf =  "!participante.preparado" style="color: red"> {{participante.nickName}} </ion-label>
+            <ion-label *ngIf = "participante.preparado" style="color: green"> {{participante.nickName}}  </ion-label>
+
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <div  *ngIf ="mostrarBotonLanzarPregunta" >
+          <br>
+          <div  *ngIf = "siguientePregunta === 0 ">
+            <ion-button class="ranking-btn"  (click) = "LanzarPregunta()">Lanzar primera pregunta</ion-button>
+          </div>
+          <div  *ngIf = "siguientePregunta > 0 ">
+            <ion-button  style = "width: 30%; height: 40pt" class="ranking-btn"  (click) = "LanzarPregunta()">Lanzar siguiente <br> pregunta</ion-button>
+            <ion-button style = "width: 30%; height: 40pt" class="ranking-btn-rojo" (click)="muestraClasificacion = true; muestraRespuestas = false">Ver <br> clasificación</ion-button>
+            <ion-button style = "width: 30%; height: 40pt" class="ranking-btn-azul" (click)="muestraClasificacion = false; muestraRespuestas = true">Ver <br> respuestas</ion-button>
+
+          </div>
+           
+          
+        
+                  
+          <ion-list *ngIf = "muestraClasificacion "  style="text-align: center;">
+              <label  *ngIf ="!finKahoot" align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Clasificación general parcial</strong></h1></label>
+              <label  *ngIf ="finKahoot" align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Clasificación general final</strong></h1></label>
+          
+              <br>
+              <ion-item  *ngFor="let participante of listaAlumnos">
+                <ion-item lines = "none"  style="width: 60%" >
+                  <ion-label> {{participante.nickName}}</ion-label>
+                </ion-item>
+                <ion-item lines = "none"  style="width: 20%">
+                  <ion-label *ngIf= "participante.incremento > 0" style = "color: red"> +{{participante.incremento}}</ion-label>
+                </ion-item>
+                <ion-item lines = "none"  style="text-align: right;">
+                  <ion-label style = "color: green"> {{participante.puntos}}</ion-label>
+                </ion-item>
+              </ion-item>
+              <br>
+              <br>
+          </ion-list>
+          <ion-list *ngIf = "muestraRespuestas"  style="text-align: center;">
+            <label><h1 style="color:rgb(109, 11, 19)"><strong>Respuestas</strong></h1></label>
+          
+              
+            <div  echarts [options]="donuts[siguientePregunta - 1]"  theme="macarons" class="demo-chart">
+            </div>
+          </ion-list>
+       
+
+   
+<!-- 
+          <div style = "width: 60%; ">
+            <h3 align = "center"> Pregunta {{siguientePregunta}}</h3>
+            <h4 align = "center"> {{preguntaAMostrar.Pregunta}}</h4>
+            <h5 align = "center"> Respuesta correcta</h5>
+
+            <h5 align = "center"
+              *ngIf =
+                    "preguntaAMostrar.Tipo === 'Cuatro opciones' ||
+                    preguntaAMostrar.Tipo === 'Verdadero o falso' ||
+                    preguntaAMostrar.Tipo === 'Respuesta abierta'"
+            >
+              {{preguntaAMostrar.RespuestaCorrecta}}
+            </h5>
+            <ion-list style = "width:40%; margin-left: 30%;"  *ngIf = "preguntaAMostrar.Tipo === 'Emparejamiento'">
+                <ion-item *ngFor="let pareja of preguntaAMostrar.Emparejamientos">
+                  <div matLine>
+                    <p style="float:left">{{pareja.l}}</p>
+                    <p style="float:right">{{pareja.r}}</p>
+                  </div>
+                </ion-item>
+            </ion-list>
+
+
+            <div  echarts [options]="donuts[siguientePregunta - 1]"  theme="macarons" class="demo-chart">
+            </div>
+          </div> -->
+
+
+        <br>
+        <br>
+
+      
+
+      </div>
+      <div *ngIf ="mostrarCuentaAtras">
+        <br>
+        <label><h1 style="color:rgb(109, 11, 19)"><strong>Siguiente pregunta en ...</strong></h1></label>
+        <br>
+        <label><h1 style="color:rgb(109, 11, 19); font-size:15em"><strong>{{cuentaAtras}}</strong></h1></label>
+      </div>
+
+      <div *ngIf ="mostrarSiguientePregunta">
+   
+          <ion-list  *ngIf ="preguntaAMostrar" style="text-align:center">
+            <label><h1 style="color:rgb(109, 11, 19)"><strong>Pregunta {{siguientePregunta + 1}} de {{preguntas.length}}</strong></h1></label>
+            <ion-item>
+              <ion-list style="text-align:center">
+                <ion-item lines="none">
+                  <label style = "padding-right: 5px;">Tiempo restante:</label>
+                  <label style="color:rgb(109, 11, 19); font-size: x-large;"><strong> {{cuentaAtras2}}</strong></label>
+                </ion-item>
+              </ion-list>
+              <ion-list style="text-align:center">
+                <ion-item lines="none">
+                  <label style = "padding-right: 5px;">Respuestas: </label>
+                  <label style="color:rgb(109, 11, 19); font-size: x-large;"><strong> {{contadorRespuestasKahoot}}</strong></label>
+                </ion-item>
+              </ion-list>
+            </ion-item>
+
+          
+            <br>
+     
+    
+            <div *ngIf ="preguntaAMostrar.Tipo === 'Verdadero o falso'">
+        
+              <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>¿Verdadero o falso?</strong></h1></label>
+              <br>
+              <img *ngIf = "preguntaAMostrar.Imagen" style = "width: 250px; height: 250px" [src]="imagenPreguntaAMostrar" >
+              <p style="font-size: 18px;">{{preguntaAMostrar.Pregunta}}</p>
+              <div class = "enColumna">
+                <div class = "enFila" style = "width: 80%">
+                  <div  class = "opcion rojo"><p>Falso</p></div>
+                  <div  class = "opcion verde"><p>Verdadero</p></div>
+                </div>
+              </div>
+    
+            </div>
+            
+            <div *ngIf ="preguntaAMostrar.Tipo === 'Cuatro opciones'">
+              <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Elije la opción correcta</strong></h1></label>
+              <br>
+              <img *ngIf = "preguntaAMostrar.Imagen" style = "width: 250px; height: 250px" [src]="imagenPreguntaAMostrar" >
+              <p style="font-size: 18px;">{{preguntaAMostrar.Pregunta}}</p>
+              <div class = "enColumna">
+                <div class = "enFila" style = "width: 80%">
+                  <div  class = "opcion rojo"><p>{{opcionesDesordenadas[0]}}</p></div>
+                  <div  class = "opcion verde"><p>{{opcionesDesordenadas[1]}}</p></div>
+                </div>
+                <div class = "enFila" style = "width: 80%">
+                  <div  class = "opcion azul"><p>{{opcionesDesordenadas[2]}}</p></div>
+                  <div class = "opcion amarillo"><p>{{opcionesDesordenadas[3]}}</p></div>
+                </div>
+              </div>
+      
+            </div>
+             
+            <div *ngIf ="preguntaAMostrar.Tipo === 'Respuesta abierta'">
+              <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Escribe tu respuesta</strong></h1></label>
+              <br>
+              <img *ngIf = "preguntaAMostrar.Imagen" style = "width: 250px; height: 250px" [src]="imagenPreguntaAMostrar" >
+              <p style="font-size: 18px;">{{preguntaAMostrar.Pregunta}}</p>
+              
+              <br>
+              <br>
+            
+            </div>
+    
+            <div *ngIf ="preguntaAMostrar.Tipo === 'Emparejamiento'">
+              <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Forma las parejas correctas</strong></h1></label>
+              <label align = "center" style="color:rgb(109, 11, 19);"><strong>arrastrando la parte derecha <br>hasta la posición que le toca</strong></label>
+    
+              <br>
+              <img *ngIf = "preguntaAMostrar.Imagen" style = "width: 250px; height: 250px" [src]="imagenPreguntaAMostrar" >
+              <p style="font-size: 18px;">{{preguntaAMostrar.Pregunta}}</p>
+    
+            </div>
+
+            
+          </ion-list>
+          
+      </div>
+      
+
+
+    </ion-slide>
+
+    <ion-slide> 
+      <ion-list   style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Histograma de aciertos</strong></h1></label>
+        <br>
+        <div echarts [options]="grafico"  theme="macarons" class="demo-chart"></div>
+      </ion-list>
+    </ion-slide>
+    <ion-slide *ngFor = "let pregunta of preguntas; index as i">
+      <ion-list *ngIf = "preguntas"  style="text-align: center;">
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Respuestas a cada pregunta</strong></h1></label>
+        <br>
+        <ion-label><strong>Pregunta {{i + 1 }}</strong></ion-label>
+        <br>
+        <ion-label class="ion-text-wrap"> {{preguntas[i].Pregunta}}</ion-label>
+        <br>
+        <br>
+        <ion-label><strong>Respuesta correcta</strong></ion-label>
+        <br>
+        <ion-label 
+          *ngIf = 
+                "preguntas[i].Tipo === 'Cuatro opciones' ||
+                preguntas[i].Tipo === 'Verdadero o falso' ||
+                preguntas[i].Tipo === 'Respuesta abierta'" 
+          class="ion-text-wrap"> 
+          {{preguntas[i].RespuestaCorrecta}}
+        </ion-label>
+        
+        <ion-list *ngIf = "preguntas[i].Tipo === 'Emparejamiento'">
+          <ion-item  *ngFor="let pareja of preguntas[i].Emparejamientos; let j=index">
+            <ion-item lines = "none" style = "width: 50%">
+              <ion-label  style = "font-size: small;">
+                {{pareja.l}}
+              </ion-label>
+            </ion-item>
+            <ion-item lines = "none" style = "width: 50%">
+              <ion-label  style = "font-size: small;">
+                {{pareja.r}}
+              </ion-label>
+            </ion-item>
+          </ion-item>
+        </ion-list>
+        <div [options]="donuts[i]" class="demo-chart" echarts theme="macarons"></div>
+      </ion-list>
+    </ion-slide>
+  
+  </ion-slides>
+
+
+</ion-content>
+

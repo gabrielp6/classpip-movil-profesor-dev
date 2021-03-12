@@ -100,13 +100,38 @@
           
         </mat-expansion-panel-header>
         <ion-list style="text-align:center">
+          
           <br>
           <ion-label><strong>Pregunta {{i + 1 }}</strong></ion-label>
           <br>
+          <ion-label class="ion-text-wrap"> {{pregunta.Pregunta}}</ion-label>
           <br>
-          <ion-label class="ion-text-wrap"> {{preguntas[i].Pregunta}}</ion-label>
           <br>
+          <ion-label><strong>Respuesta correcta</strong></ion-label>
           <br>
+          <ion-label 
+            *ngIf = 
+                  "pregunta.Tipo === 'Cuatro opciones' ||
+                  pregunta.Tipo === 'Verdadero o falso' ||
+                  pregunta.Tipo === 'Respuesta abierta'" 
+            class="ion-text-wrap"> 
+            {{pregunta.RespuestaCorrecta}}
+          </ion-label>
+          
+          <ion-list *ngIf = "pregunta.Tipo === 'Emparejamiento'">
+            <ion-item  *ngFor="let pareja of pregunta.Emparejamientos; let j=index">
+              <ion-item lines = "none" style = "width: 50%">
+                <ion-label  style = "font-size: small;">
+                  {{pareja.l}}
+                </ion-label>
+              </ion-item>
+              <ion-item lines = "none" style = "width: 50%">
+                <ion-label  style = "font-size: small;">
+                  {{pareja.r}}
+                </ion-label>
+              </ion-item>
+            </ion-item>
+          </ion-list>
         </ion-list>
         <div [options]="donuts[i]" class="demo-chart" echarts theme="macarons"></div>
       </mat-expansion-panel>

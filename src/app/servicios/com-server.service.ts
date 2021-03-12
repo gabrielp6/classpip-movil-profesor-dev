@@ -85,7 +85,7 @@ export class ComServerService {
     console.log ('dentro del servicio para recordar contraseña');
     // Me conecto momentaneamente para enviarle al alumno la contraseña que debe enviar por email
     this.servidor.connect();
-    this.servidor.emit ('recordarContraseña' , {email: profesor.email, nombre: profesor.NombreUsuario, contrasena: profesor.Password});
+    this.servidor.emit ('recordarPassword' , {email: profesor.email, nombre: profesor.NombreUsuario, contrasena: profesor.Password});
     // Me desconecto
     this.servidor.disconnect();
   }
@@ -178,6 +178,44 @@ export class ComServerService {
         });
     });
   }
+  public Espero(): any  {
+    return Observable.create((observer) => {
+        this.servidor.on('confirmacionPreparadoParaKahoot', (nick) => {
+          console.log ('recibo nick: ' + nick);
+          observer.next(nick);
+        });
+    });
+  }
+
+  public EsperoConfirmacionPreparadoKahoot(): any {
+    return Observable.create((observer) => {
+      this.servidor.on('confirmacionPreparadoParaKahoot', (nick) => {
+          console.log ('recibo nick: ' + nick);
+          observer.next(nick);
+      });
+    });
+  }
+
+  
+  public NotificarLanzarSiguientePregunta(claveJuego: string, info: any) {
+    this.servidor.emit ('lanzarSiguientePregunta' , {clave: claveJuego, opcionesDesordenadas: info});
+
+  }
+
+  public NotificarResultadoFinalKahoot(claveJuego: string, res: any) {
+    this.servidor.emit ('resultadoFinalKahoot' , {clave: claveJuego, resultado: res});
+
+  }
+  public EsperoRespuestasCuestionarioKahootRapido(): any  {
+    return Observable.create((observer) => {
+        this.servidor.on('respuestaAlumnoKahootRapido', (respuesta) => {
+            console.log ('recibo respuesta kahoot ');
+            console.log (respuesta);
+            observer.next(respuesta);
+        });
+    });
+  }
+
 
 
 

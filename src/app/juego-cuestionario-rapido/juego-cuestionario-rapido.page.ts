@@ -2,9 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
 import { Router } from '@angular/router';
 import { AlertController, IonSlides } from '@ionic/angular';
+import { Subscription } from 'rxjs';
 import { Pregunta } from '../clases';
 import { Cuestionario } from '../clases/Cuestionario';
 import { CalculosService, SesionService, PeticionesAPIService, ComServerService } from '../servicios';
+import * as URL from '../URLs/urls';
 
 @Component({
   selector: 'app-juego-cuestionario-rapido',
@@ -18,7 +20,7 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
 
   juegoSeleccionado: any;
   participantes: any[];
-  respuestas: any[];
+  respuestas: any[] = [];;
   cuestionario: Cuestionario;
   preguntas: Pregunta[];
   histogramaAciertos: number[] = [];
@@ -36,6 +38,38 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
   grafico;
   donuts: any[] = [];
   misDonuts: any[] = [];
+
+
+  ///////////para kahoot ////////////
+
+  
+  mostrarCuentaAtras = false;
+  interval;
+  cuentaAtras: number;
+  interval2;
+  cuentaAtras2: number;
+  mostrarSiguientePregunta = false;
+  preguntaAMostrar: Pregunta;
+  siguientePregunta = 0;
+  mostrarBotonLanzarPregunta = true;
+  imagenesPreguntas: any[];
+  imagenPreguntaAMostrar: string;
+  contadorRespuestasKahoot: number;
+  subscripcion: Subscription;
+  opcionesDesordenadas: any[];
+  listaAlumnos: any [] = [];
+  displayedColumnsKahoot: string[] = ['nick', 'incremento', 'puntos'];
+  dataSourceKahoot;
+  finKahoot = false;
+  respuestasPreguntaActual: any[];
+  donutsKahoot: any[] = [];
+  muestraClasificacion = true;
+  muestraRespuestas = false;
+  slideActual = 0;
+  ultimoSlide = false;
+
+ 
+
   @ViewChild(IonSlides, { static: false }) slides: IonSlides;
   
   constructor(
@@ -47,10 +81,12 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
     private route: Router ) { }
   
   ngOnInit() {
+    console.log ('estoy');
 
     this.participantes = [];
     this.respuestas = [];
     this.clasificacion = [];
+    this.listaAlumnos = [];
 
     console.log ('tengo juego');
     this.profesorId = this.sesion.DameProfesor().id;
@@ -64,9 +100,23 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
         console.log ('se ha conectado ' + nick);
         this.participantes.push ({
           nickName: nick,
+          preparado: false,
           contestado: false
         });
     });
+    if (this.juegoSeleccionado.Modalidad === 'Kahoot') {
+      this.comServer.Espero()
+      .subscribe((nick) => {
+        console.log ('recibo confirmacion preparado' + nick);
+        this.participantes.filter (participante => participante.nickName === nick)[0].preparado = true;
+        this.listaAlumnos.push ( {
+          nickName: nick,
+          incremento: 0,
+          puntos: 0,
+          aciertos: 0 // esto es para el histograma
+        });
+      });
+    }
 
     this.comServer.EsperoRespuestasCuestionarioRapido()
     .subscribe((respuesta) => {
@@ -142,8 +192,6 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
           }
         });
 
-        this.dataSource = new MatTableDataSource(this.clasificacion);
-
         this.participantes.filter (participante => participante.nickName === respuesta.nick)[0].contestado = true;
         // vuelvo a cargar los gráficos con las novedades
         this.PrepararGraficos();
@@ -161,9 +209,13 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
         this.preguntas = preguntas;
         // preparo el histograma
         this.histogramaAciertos = Array(this.preguntas.length + 1).fill(0);
+        this.imagenesPreguntas = [];
         // preparo los donuts
         // preparo un donut para cada pregunta
         this.preguntas.forEach (pregunta => {
+          this.imagenesPreguntas.push(URL.ImagenesPregunta + pregunta.Imagen);
+          console.log ('ya tengo imagenes');
+          console.log (this.imagenesPreguntas);
           let miDonut: any;
           miDonut = [];
           // preparo los datos del donut
@@ -307,7 +359,7 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
         }
       });
     });
-    this.dataSource = new MatTableDataSource(this.clasificacion);
+
   }
 
 
@@ -542,7 +594,14 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
     // Para decidir si hay que mostrar los botones de previo o siguiente slide
     const prom1 = this.slides.isBeginning();
     const prom2 = this.slides.isEnd();
-  
+    this.slides.getActiveIndex ().then (index => {
+      this.slideActual = index;
+    });
+
+    this.slides.isEnd().then((istrue) => {
+      this.ultimoSlide = istrue;
+    });
+
     Promise.all([prom1, prom2]).then((data) => {
       data[0] ? this.disablePrevBtn = true : this.disablePrevBtn = false;
       data[1] ? this.disableNextBtn = true : this.disableNextBtn = false;
@@ -557,5 +616,422 @@ export class JuegoCuestionarioRapidoPage implements OnInit {
   prev() {
     this.slides.slidePrev();
   }
+
+  
+LanzarPregunta() {
+
+  this.mostrarBotonLanzarPregunta = false;
+  this.mostrarCuentaAtras = true;
+  this.cuentaAtras = 3;
+  this.preguntaAMostrar = this.preguntas [this.siguientePregunta];
+  this.imagenPreguntaAMostrar = this.imagenesPreguntas[this.siguientePregunta];
+  this.opcionesDesordenadas = [];
+  // El el caso de 'Cuatro opciones' o 'Emparejamiento' desordeno las opciones y se las envio a todos
+  // los alumnos. En el resto de casos la info es irrelevante
+  if (this.preguntaAMostrar.Tipo === 'Cuatro opciones') {
+    this.opcionesDesordenadas.push (this.preguntaAMostrar.RespuestaCorrecta);
+    this.opcionesDesordenadas.push (this.preguntaAMostrar.RespuestaIncorrecta1);
+    this.opcionesDesordenadas.push (this.preguntaAMostrar.RespuestaIncorrecta2);
+    this.opcionesDesordenadas.push (this.preguntaAMostrar.RespuestaIncorrecta3);
+    this.DesordenarVector (this.opcionesDesordenadas);
+  } else if (this.preguntaAMostrar.Tipo === 'Emparejamiento') {
+    this.preguntaAMostrar.Emparejamientos.forEach (pareja => {
+      this.opcionesDesordenadas.push (pareja.r);
+    });
+    this.DesordenarVector (this.opcionesDesordenadas);
+  }
+
+
+  this.comServer.NotificarLanzarSiguientePregunta (this.juegoSeleccionado.Clave, this.opcionesDesordenadas);
+  this.interval = setInterval(() => {
+    this.cuentaAtras--;
+    if (this.cuentaAtras === 0) {
+      clearInterval(this.interval);
+
+
+      this.mostrarSiguientePregunta = true;
+      this.mostrarCuentaAtras = false;
+      this.contadorRespuestasKahoot = 0;
+      this.respuestasPreguntaActual = [];
+      this.listaAlumnos.forEach (alumno => alumno.incremento = 0);
+      this.subscripcion = this.comServer.EsperoRespuestasCuestionarioKahootRapido ()
+      .subscribe( respuesta => {
+           // La respuesta es undefined si respondió en blanco. En caso contrario la estructura es la siguiente siguiente:
+        //    nick
+        //    puntosObtenidos
+        //    respuesta (Es un vector que contiene en la primera posición la respuesta en el caso de "Cuatro opciones", "Verdadero o
+        //    falso" o "Respuesta abierta". En el caso de "Emparejamientos" contiene las partes derecha de las parejas. Está undefined
+        //    su el participante la dejó sin contestar).
+        //
+
+        this.respuestasPreguntaActual.push (respuesta);
+        const alumno = this.listaAlumnos.find (a => a.nickName === respuesta.nick);
+        if (respuesta !== undefined) {
+          alumno.incremento = respuesta.puntosObtenidos;
+          alumno.puntos = alumno.puntos + respuesta.puntosObtenidos;
+        }
+        this.contadorRespuestasKahoot++;
+
+      });
+      this.cuentaAtras2 = this.juegoSeleccionado.TiempoLimite;
+      this.interval2 = setInterval(() => {
+        this.cuentaAtras2--;
+        if (this.cuentaAtras2 === 0) {
+            clearInterval(this.interval2);
+            this.subscripcion.unsubscribe();
+            this.listaAlumnos = this.listaAlumnos.sort(function(a, b) {
+              return b.puntos - a.puntos;
+            });
+     
+            // se acabo el tiempo
+            // voy a ver cuántos no han respondido
+            const sinRespuesta = this.listaAlumnos.length - this.contadorRespuestasKahoot;
+            // ahora introduzco tantas respuestas en blanco como gente sin responder
+            for (let i = 0; i < sinRespuesta; i++) {
+              this.respuestasPreguntaActual.push (undefined);
+            }
+
+            this.MostrarDonut (this.preguntaAMostrar, this.respuestasPreguntaActual );
+            this.respuestas.push (this.respuestasPreguntaActual);
+            this.mostrarSiguientePregunta = false;
+            this.mostrarBotonLanzarPregunta = true;
+            this.siguientePregunta++;
+            if (this.siguientePregunta === this.preguntas.length) {
+              this.alertCtrl.create({
+                header: 'Ya no hay más preguntas',
+                buttons: ['OK']
+              }).then (res => res.present());
+              this.finKahoot = true;
+              this.comServer.NotificarResultadoFinalKahoot (this.juegoSeleccionado.Clave, this.listaAlumnos);
+              this.PrepararHistogramaKahoot ();
+            }
+
+        }
+      }, 1000);
+    }
+  }, 1000);
+}
+
+DesordenarVector(vector: any[]) {
+  // genera una permutación aleatoria de los elementos del vector
+
+  let currentIndex = vector.length;
+  let temporaryValue;
+  let randomIndex;
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    // And swap it with the current element.
+    temporaryValue = vector[currentIndex];
+    vector[currentIndex] = vector[randomIndex];
+    vector[randomIndex] = temporaryValue;
+  }
+  console.log ('he terminado');
+}
+
+MostrarDonut (pregunta: Pregunta,  respuestas: any[]) {
+
+  const miDonut = this.misDonuts.find (elemento => elemento[0].preguntaId === pregunta.id);
+
+  if (pregunta.Tipo === 'Emparejamiento') {
+    respuestas.forEach (r => {
+      if (r === undefined || r.respuesta === undefined) {
+        // respuesta en blanco
+        miDonut[3].cont++; 
+      } else if (r.puntosObtenidos > 0) {
+        // acierto
+        miDonut[1].cont++; // respuesta correcta
+      } else {
+        // fallo
+        miDonut[2].cont++; // fallo
+      }
+    });
+  } else if (pregunta.Tipo === 'Cuatro opciones') {
+    respuestas.forEach (r => {
+      if (r === undefined) {
+        miDonut[5].cont++; // respuesta en blanco
+      } else {miDonut.filter (entrada => entrada.respuesta === r.respuesta[0])[0].cont++;
+       }
+    });
+  } else {
+    respuestas.forEach (r => {
+      if (r === undefined) {
+        miDonut[3].cont++;  // respuesta en blanco
+      } else if (pregunta.RespuestaCorrecta === r.respuesta[0]) {
+        miDonut[1].cont++;  // respuesta correcta
+      } else if (r.respuesta[0] === '-') {
+        miDonut[3].cont++;  // respuesta en blanco
+      } else {
+        miDonut[2].cont++;  // respuesta mal
+      }
+    });
+  }
+  // Ahora preparamos el grafico
+  // ahora los donuts
+
+  if (miDonut[0].Tipo === 'Cuatro opciones') {
+      const datos = [
+        // las respuestas correctas siempre en verde
+        {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'green'}},
+        {value: miDonut[2].cont, name: miDonut[2].respuesta, itemStyle: {color: 'rgb(50,50,50)'}},
+        {value: miDonut[3].cont, name: miDonut[3].respuesta, itemStyle: {color: 'rgb(100,100,100)'}},
+        {value: miDonut[4].cont, name: miDonut[4].respuesta, itemStyle: {color: 'rgb(125,125,125)'}},
+        {value: miDonut[5].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+      ];
+      const  donut = {
+        title: {
+          // text: 'Respuesta correcta',
+          // subtext: miDonut[1].respuesta ,
+          // left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{c} alumnos <br/> ({d}%)'
+        },
+        series: [
+            {
+                name: '',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: datos
+            }
+        ]
+      };
+      this.donuts.push (donut);
+    } else if (miDonut[0].Tipo === 'Respuesta abierta') {
+      const datos = [
+        // las respuestas correctas siempre en verde
+        {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'green'}},
+        {value: miDonut[2].cont, name: 'Otras respuestas', itemStyle: {color: 'rgb(50,50,50)'}},
+        {value: miDonut[3].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+      ];
+      const  donut = {
+        title: {
+          // text: 'Respuesta correcta',
+          // subtext: miDonut[1].respuesta ,
+          // left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{c} alumnos <br/> ({d}%)'
+        },
+        series: [
+            {
+                name: '',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: datos
+            }
+        ]
+      };
+      this.donuts.push (donut);
+    } else if (miDonut[0].Tipo === 'Verdadero o falso') {
+      const datos = [
+        // las respuestas correctas siempre en verde
+        {value: miDonut[1].cont, name: miDonut[1].respuesta, itemStyle: {color: 'green'}},
+        {value: miDonut[2].cont, name: 'Mal', itemStyle: {color: 'rgb(50,50,50)'}},
+        {value: miDonut[3].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+      ];
+      const  donut = {
+        title: {
+          // text: 'Respuesta correcta',
+          // subtext: 'Respuesta correcta: ' + miDonut[1].respuesta ,
+          // left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{c} alumnos <br/> ({d}%)'
+        },
+        series: [
+            {
+                name: '',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: datos
+            }
+        ]
+      };
+      this.donuts.push (donut);
+    } else {
+      const datos = [
+        // las respuestas correctas siempre en verde
+        {value: miDonut[1].cont, name: 'Emparejamientos correctos', itemStyle: {color: 'green'}},
+        {value: miDonut[2].cont, name: 'Otros emparejamientos incorrectos', itemStyle: {color: 'rgb(50,50,50)'}},
+        {value: miDonut[3].cont, name: 'No contesta ' , itemStyle: {color: 'rgb(150,150,150)'}}
+      ];
+      const  donut = {
+        title: {
+          // text: 'Respuesta correcta',
+          // subtext: miDonut[1].respuesta ,
+          // left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{c} alumnos <br/> ({d}%)'
+        },
+        series: [
+            {
+                name: '',
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: datos
+            }
+        ]
+      };
+      this.donuts.push (donut);
+
+    }
+}
+
+PrepararHistogramaKahoot () {
+    console.log ('voy a preparar histograma');
+    console.log (this.respuestas);
+
+    for (let i = 0; i < this.preguntas.length; i++) {
+      const pregunta = this.preguntas[i];
+      const respuestasPregunta = this.respuestas [i];
+      if (pregunta.Tipo === 'Emparejamiento') {
+        // Recorro todas las respuestas a esa pregunta y computo el posible acierto al
+        // nick correspondiente
+        respuestasPregunta.forEach (r => {
+          if (r !== undefined && r.respuesta !== undefined) {
+            let n = 0;
+            for (let j = 0; j < pregunta.Emparejamientos.length; j++) {
+              if (pregunta.Emparejamientos[j].r === r.respuesta[j]) {
+                n++;
+              }
+            }
+            if (n === pregunta.Emparejamientos.length) {
+              this.listaAlumnos.find (alumno => alumno.nickName === r.nick).aciertos++;
+            }
+          }
+        });
+
+      } else {
+        // Para cualquier otro tipo de pregunta
+        respuestasPregunta.forEach (r => {
+          if (r !== undefined && pregunta.RespuestaCorrecta === r.respuesta[0]) {
+            this.listaAlumnos.find (alumno => alumno.nickName === r.nick).aciertos++;
+          }
+        });
+      }
+    }
+    this.histogramaAciertos = Array(this.preguntas.length + 1).fill (0);
+
+    this.listaAlumnos.forEach (alumno => {
+      this.histogramaAciertos[alumno.aciertos]++;
+    });
+    // Histograda de número de aciertos
+    this.categoriasEjeX = [];
+    for (let n = 0; n < this.histogramaAciertos.length ; n++) {
+      this.categoriasEjeX.push (n.toString());
+    }
+
+
+    this.grafico = {
+      color: ['#3398DB'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: 'aciertos: {b}  <br/>{c}'
+      },
+      grid: {
+        left: '20%',
+        right: '20%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: [
+        {
+          type: 'category',
+          name: '# aciertos',
+          data: this.categoriasEjeX,
+          axisTick: {
+            alignWithLabel: true
+          }
+        }
+      ],
+      yAxis: [{
+        type: 'value',
+        name: '# alumnos'
+      }],
+      series: [{
+        type: 'bar',
+        barWidth: '60%',
+        data: this.histogramaAciertos,
+      }]
+    };
+
+
+
+
+}
+Cerrar() {
+  this.route.navigateByUrl('/inici');
+}
 
 }

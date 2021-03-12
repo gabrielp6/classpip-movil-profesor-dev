@@ -15,6 +15,7 @@
   
    
   <ion-slides  #slides  #slides (ionSlideWillChange)="doCheck()">
+    
     <ion-slide>
       <br>
       <ion-list   style="text-align: center;">
@@ -31,6 +32,7 @@
       </ion-list>
     
     </ion-slide>
+    
     <ion-slide>
       <br>
       <ion-list   style="text-align: center;">
@@ -65,6 +67,7 @@
    
     
     </ion-slide>
+    
     <ion-slide>
       
       <div *ngIf = "tipoDeJuegoRapido === 'Juego De Encuesta Rápida'">
@@ -150,23 +153,26 @@
    
       </div>
     </ion-slide>
+    
     <ion-slide>
       <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
         <br>
-        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Criterio de puntuación</strong></h1></label>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Modalidad del juego</strong></h1></label>
         <br>
       
-        <ion-item>
-              <ion-label style="font-size: larger;" position="floating">Sumar por respuesta correcta</ion-label>
-              <br>
-              <ion-input style="font-size: larger;" placeholder="puntos a sumar..."  [(ngModel)]="puntuacionCorrecta"></ion-input>
-        </ion-item>
-        <br>
-        <ion-item>
-              <ion-label style="font-size: larger;" position="floating">Restar por respuesta incorrecta</ion-label>
-              <br>
-              <ion-input style="font-size: larger;" placeholder="puntos a restar ..."  [(ngModel)]="puntuacionIncorrecta"></ion-input>
-        </ion-item>
+       
+        <p>Elije la modalidad del juego</p>
+        <ion-radio-group (ionChange)= "GuardaModalidad($event)">
+              <ion-item>
+                <ion-label>Clásico</ion-label>
+                <ion-radio slot="start"  value="Clásico"></ion-radio>
+              </ion-item>
+    
+              <ion-item>
+                <ion-label>Kahoot</ion-label>
+                <ion-radio slot="start"  value="Kahoot"></ion-radio>
+              </ion-item>
+        </ion-radio-group>
       </div>
       <div *ngIf = "tipoDeJuegoRapido === 'Juego De Coger Turno Rápido'">
         <br>
@@ -293,8 +299,50 @@
         
       </div>
     </ion-slide>
+    
     <ion-slide>
-      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido' && modalidadJuegoCuestionario === 'Clásico'">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Criterio de puntuación</strong></h1></label>
+        <br>
+      
+        <ion-item>
+              <ion-label style="font-size: larger;" position="floating">Sumar por respuesta correcta</ion-label>
+              <br>
+              <ion-input style="font-size: larger;" placeholder="puntos a sumar..."  [(ngModel)]="puntuacionCorrecta"></ion-input>
+        </ion-item>
+        <br>
+        <ion-item>
+              <ion-label style="font-size: larger;" position="floating">Restar por respuesta incorrecta</ion-label>
+              <br>
+              <ion-input style="font-size: larger;" placeholder="puntos a restar ..."  [(ngModel)]="puntuacionIncorrecta"></ion-input>
+        </ion-item>
+      </div>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido' && modalidadJuegoCuestionario === 'Kahoot'">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Modo de presentación</strong></h1></label>
+        <br>
+
+        <p>Elije el modo de presentación </p>
+        <ion-radio-group (ionChange)= "GuardaModoDePresentacion($event)">
+              <ion-item>
+                <ion-label>Mostrar pregunta en el móvil del alumno</ion-label>
+                <ion-radio slot="start"  value="Mostrar pregunta"></ion-radio>
+              </ion-item>
+    
+              <ion-item>
+                <ion-label>No mostrar pregunta</ion-label>
+                <ion-radio slot="start"  value="No mostrar pregunta"></ion-radio>
+              </ion-item>
+    
+        </ion-radio-group>
+         
+
+      </div>
+    </ion-slide>   
+     
+    <ion-slide>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido' && modalidadJuegoCuestionario === 'Clásico'">
         <br>
         <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Modo de presentación</strong></h1></label>
         <br>
@@ -319,21 +367,40 @@
          
 
       </div>
-    </ion-slide>      
-    <ion-slide>
-      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido'">
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido' && modalidadJuegoCuestionario === 'Kahoot'">
         <br>
         <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Tiempo de respuesta</strong></h1></label>
         <br>
 
         <ion-item>
-              <ion-label style="font-size: larger;" position="floating">Tiempo (en segundos) para responder</ion-label>
+              <ion-label class="ion-text-wrap" style="font-size: larger;" position="floating">Tiempo (en segundos) para responder cada pregunta del cuestionario</ion-label>
               <br>
               <ion-input style="font-size: larger;" placeholder="tiempo ..."  [(ngModel)]="tiempoLimite"></ion-input>
         </ion-item>
 
       </div>
     </ion-slide>
+      
+    <ion-slide>
+      <div *ngIf = "tipoDeJuegoRapido === 'Juego De Cuestionario Rápido' && modalidadJuegoCuestionario === 'Clásico'">
+        <br>
+        <label align = "center"><h1 style="color:rgb(109, 11, 19)"><strong>Tiempo de respuesta</strong></h1></label>
+        <br>
+
+        <ion-item>
+              <ion-label class="ion-text-wrap" style="font-size: larger;" position="floating">Tiempo (en segundos) para responder el cuestionario</ion-label>
+              <br>
+              <ion-input style="font-size: larger;" placeholder="tiempo ..."  [(ngModel)]="tiempoLimite"></ion-input>
+        </ion-item>
+
+      </div>
+    </ion-slide>
+
+
   </ion-slides>
+
+
+
+
 
 </ion-content>

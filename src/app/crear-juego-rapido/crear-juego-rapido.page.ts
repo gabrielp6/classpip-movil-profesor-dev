@@ -52,6 +52,7 @@ export class CrearJuegoRapidoPage implements OnInit {
   disablePrevBtn = true;
   disableNextBtn = false;
   ultimoSlide = false;
+  modalidadJuegoCuestionario: string;
 
 
 
@@ -261,11 +262,12 @@ export class CrearJuegoRapidoPage implements OnInit {
                     const clave = Math.random().toString().substr(2, 8);
                     const juegoDeCuestionarioRapido = new JuegoDeCuestionarioRapido (
                       this.nombreDelJuego, this.tipoDeJuegoRapido,
+                      this.modalidadJuegoCuestionario,
                       clave,
                       this.puntuacionCorrecta,
                       this.puntuacionIncorrecta, this.modoPresentacion,
                       false, false, this.profesor.id, this.cuestionarioElegidoId, this.tiempoLimite);
-
+ 
                     // tslint:disable-next-line:max-line-length
                     this.peticionesAPI.CreaJuegoDeCuestionarioRapido(juegoDeCuestionarioRapido)
                     .subscribe(juegoCreado => {
@@ -306,7 +308,11 @@ export class CrearJuegoRapidoPage implements OnInit {
       // tslint:disable-next-line:max-line-length
       } else if (( index === 3) && ((this.tipoDeJuegoRapido === 'Juego De Coger Turno Rápido')  || (this.tipoDeJuegoRapido === 'Juego De Votación Rápida'))) {
         this.ultimoSlide = true;
-      } else if ((index === 5) &&  (this.tipoDeJuegoRapido === 'Juego De Cuestionario Rápido')) {
+      // tslint:disable-next-line:max-line-length
+      } else if ((index === 5) &&  (this.tipoDeJuegoRapido === 'Juego De Cuestionario Rápido') && (this.modalidadJuegoCuestionario === 'Kahoot')) {
+        this.ultimoSlide = true;
+      // tslint:disable-next-line:max-line-length
+      } else if ((index === 6) &&  (this.tipoDeJuegoRapido === 'Juego De Cuestionario Rápido') && (this.modalidadJuegoCuestionario === 'Clásico')) {
         this.ultimoSlide = true;
       } else {
         this.ultimoSlide = false;
@@ -465,6 +471,11 @@ export class CrearJuegoRapidoPage implements OnInit {
     console.log ('modo de reparto ' + this.modoPresentacion);
   }
  
+  GuardaModalidad (event){
+    this.modalidadJuegoCuestionario = event.detail.value;
+   
+  }
+ 
 
   Decrementar(i) {
     if (this.puntuaciones[i] > 0) {
@@ -539,7 +550,7 @@ export class CrearJuegoRapidoPage implements OnInit {
 
     if (!this.nombreDelJuego || !this.tipoDeJuegoRapido) {
       this.alertCtrl.create({
-        header: 'Faltan datos para poder crear el juego 1',
+        header: 'Faltan datos para poder crear el juego',
         buttons: ['OK']
       }).then (res => res.present());
     } else {
@@ -549,18 +560,31 @@ export class CrearJuegoRapidoPage implements OnInit {
 
         } else {
           this.alertCtrl.create({
-            header: 'Faltan datos para poder crear el juego 2',
+            header: 'Faltan datos para poder crear el juego',
             buttons: ['OK']
           }).then (res => res.present());
         }
 
-      } else if (this.tipoDeJuegoRapido === 'Juego De Cuestionario Rápido') {
+      } else if ((this.tipoDeJuegoRapido === 'Juego De Cuestionario Rápido') && (this.modalidadJuegoCuestionario === 'Clásico')) {
           // tslint:disable-next-line:max-line-length
           if ( this.puntuacionCorrecta && this.puntuacionIncorrecta && this.modoPresentacion && this.cuestionarioElegidoId && this.tiempoLimite) {
             this.CrearJuegoDeCuestionarioRapido();
           } else {
             this.alertCtrl.create({
-              header: 'Faltan datos para poder crear el juego 3',
+              header: 'Faltan datos para poder crear el juego',
+              buttons: ['OK']
+            }).then (res => res.present());
+          }
+      } else if ((this.tipoDeJuegoRapido === 'Juego De Cuestionario Rápido') && (this.modalidadJuegoCuestionario === 'Kahoot')) {
+          // tslint:disable-next-line:max-line-length
+          if ( this.modoPresentacion && this.cuestionarioElegidoId && this.tiempoLimite) {
+            // algo hay que poner en estos atributos para que pueda crear bien el modelo, porque son obligatorios
+            this.puntuacionCorrecta = 0;
+            this.puntuacionIncorrecta = 0;
+            this.CrearJuegoDeCuestionarioRapido();
+          } else {
+            this.alertCtrl.create({
+              header: 'Faltan datos para poder crear el juego',
               buttons: ['OK']
             }).then (res => res.present());
           }
@@ -575,14 +599,14 @@ export class CrearJuegoRapidoPage implements OnInit {
               this.CrearJuegoDeVotacionRapida ();
             } else {
               this.alertCtrl.create({
-                header: 'Faltan datos para poder crear el juego 4',
+                header: 'Faltan datos para poder crear el juego',
                 buttons: ['OK']
               }).then (res => res.present());
             }
 
           } else {
             this.alertCtrl.create({
-              header: 'Faltan datos para poder crear el juego 5',
+              header: 'Faltan datos para poder crear el juego',
               buttons: ['OK']
             }).then (res => res.present());
           }
@@ -591,7 +615,7 @@ export class CrearJuegoRapidoPage implements OnInit {
             this.CrearJuegoDeCogerTurnoRapido();
           } else {
             this.alertCtrl.create({
-              header: 'Faltan datos para poder crear el juego 6',
+              header: 'Faltan datos para poder crear el juego',
               buttons: ['OK']
             }).then (res => res.present());
           }
