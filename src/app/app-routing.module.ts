@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'slides', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)},
   { path: 'inici', loadChildren: './inici/inici.module#IniciPageModule' },
   { path: 'juego-seleccionado', loadChildren: './juego-seleccionado/juego-seleccionado.module#JuegoSeleccionadoPageModule' },
@@ -47,7 +47,8 @@ const routes: Routes = [
   { path: 'seleccionar-cromo', loadChildren: './seleccionar-cromo/seleccionar-cromo.module#SeleccionarCromoPageModule' },
   { path: 'seleccionar-alumnos', loadChildren: './seleccionar-alumnos/seleccionar-alumnos.module#SeleccionarAlumnosPageModule' },
   { path: 'avatar-alumno', loadChildren: './avatar-alumno/avatar-alumno.module#AvatarAlumnoPageModule' },
-  { path: 'crear-juego-rapido', loadChildren: './crear-juego-rapido/crear-juego-rapido.module#CrearJuegoRapidoPageModule' },  { path: 'ver-grupo', loadChildren: './ver-grupo/ver-grupo.module#VerGrupoPageModule' },
+  { path: 'crear-juego-rapido', loadChildren: './crear-juego-rapido/crear-juego-rapido.module#CrearJuegoRapidoPageModule' },
+  { path: 'ver-grupo', loadChildren: './ver-grupo/ver-grupo.module#VerGrupoPageModule' },
   { path: 'mis-juegos-rapidos', loadChildren: './mis-juegos-rapidos/mis-juegos-rapidos.module#MisJuegosRapidosPageModule' },
   { path: 'juego-encuesta-rapida', loadChildren: './juego-encuesta-rapida/juego-encuesta-rapida.module#JuegoEncuestaRapidaPageModule' },
   { path: 'juego-cuestionario-rapido', loadChildren: './juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },

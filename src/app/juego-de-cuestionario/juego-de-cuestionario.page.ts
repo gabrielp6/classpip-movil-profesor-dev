@@ -581,9 +581,9 @@ export class JuegoDeCuestionarioPage implements OnInit {
         ];
         const  donut = {
           title: {
-            text: 'Respuesta correcta',
-            subtext: miDonut[1].respuesta ,
-            left: 'center'
+            // text: 'Respuesta correcta',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
           },
           tooltip: {
               trigger: 'item',
@@ -623,9 +623,9 @@ export class JuegoDeCuestionarioPage implements OnInit {
         ];
         const  donut = {
           title: {
-            text: 'Respuesta correcta',
-            subtext: miDonut[1].respuesta ,
-            left: 'center'
+            // text: 'Respuesta correcta',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
           },
           tooltip: {
               trigger: 'item',
@@ -665,9 +665,9 @@ export class JuegoDeCuestionarioPage implements OnInit {
         ];
         const  donut = {
           title: {
-            text: 'Respuesta correcta',
-            subtext: miDonut[1].respuesta ,
-            left: 'center'
+            // text: 'Respuesta correcta',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
           },
           tooltip: {
               trigger: 'item',
@@ -707,9 +707,9 @@ export class JuegoDeCuestionarioPage implements OnInit {
         ];
         const  donut = {
           title: {
-            text: 'Respuesta correcta',
-            subtext: miDonut[1].respuesta ,
-            left: 'center'
+            // text: 'Respuesta correcta',
+            // subtext: miDonut[1].respuesta ,
+            // left: 'center'
           },
           tooltip: {
               trigger: 'item',

@@ -60,6 +60,7 @@ export class MisJuegosRapidosPage implements OnInit {
      } else if (juego.Tipo === 'Juego De Votación Rápida') {
        this.navCtrl.navigateForward('/juego-votacion-rapida');
      } else if (juego.Tipo === 'Juego De Cuestionario Rápido') {
+       console.log ('vaaaamos');
        this.navCtrl.navigateForward('/juego-cuestionario-rapido');
      } else if (juego.Tipo === 'Juego De Coger Turno Rápido') {
        this.navCtrl.navigateForward('/juego-coger-turno-rapido');

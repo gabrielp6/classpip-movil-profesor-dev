@@ -17,3 +17,62 @@ ion-slide.swiper-slide {
     overflow-y: scroll;    
     display: block;    
 }
+
+
+.enFila{
+
+    border: 10px solid transparent;
+  
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .enColumna{
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+  
+    justify-content: left ;
+    flex-direction: column;
+    // align-items: flex-start;
+    border: solid transparent;
+    align-items: center;
+    width: 100%;
+  }
+
+  .opcion {
+   
+    width: 150px; 
+    height: 20px;
+    line-height: 20px;
+    padding: 10%;
+    border-radius: 20px;
+    display: table;
+  }
+
+  
+  .opcion p{
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+ 
+
+
+  .rojo {
+    background-color: red; 
+    color:white; 
+  }
+  .verde {
+    background-color: green; 
+    color:white; 
+  }
+  .amarillo {
+    background-color: yellow; 
+  }
+  .azul {
+    background-color: blue; 
+    color:white; 
+  }

@@ -21,6 +21,7 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 import { MiAlumnoAMostrarJuegoDeCuestionario } from '../clases/MiAlumnoAMostrarJuegoDeCuestionario';
 import { AlumnoJuegoDeCuestionario } from '../clases/AlumnoJuegoDeCuestionario';
+import * as URL from './../URLs/urls';
 
 @Injectable({
   providedIn: 'root'
@@ -500,7 +501,9 @@ export class CalculosService {
     console.log(listaCromos.length);
     for (let i = 0; i < listaCromos.length; i++ ) {
       if (listaCromos[i].cromo.ImagenDelante !== undefined) {
-        this.https.get('http://localhost:3000/api/imagenes/ImagenCromo/download/' + listaCromos[i].cromo.ImagenDelante,
+        this.https.get(URL.ImagenesCromo + listaCromos[i].cromo.ImagenDelante,
+      
+        //this.https.get('http://localhost:3000/api/imagenes/ImagenCromo/download/' + listaCromos[i].cromo.ImagenDelante,
           { responseType: ResponseContentType.Blob }).subscribe(
             response => {
               const blob = new Blob([response.blob()], { type: 'image/jpg' });
@@ -523,7 +526,9 @@ export class CalculosService {
     console.log(listaCromos.length);
     for (let i = 0; i < (listaCromos.length); i++) {
       if (listaCromos[i].cromo.ImagenDetras !== undefined) {
-        this.https.get('http://localhost:3000/api/imagenes/ImagenCromo/download/' + listaCromos[i].cromo.ImagenDetras,
+        this.https.get(URL.ImagenesCromo + listaCromos[i].cromo.ImagenDetras,
+      
+        //this.https.get('http://localhost:3000/api/imagenes/ImagenCromo/download/' + listaCromos[i].cromo.ImagenDetras,
           { responseType: ResponseContentType.Blob }).subscribe(
             response => {
               const blob = new Blob([response.blob()], { type: 'image/jpg' });
@@ -545,7 +550,9 @@ export class CalculosService {
 
   public DameImagenCromo(cromo: any) {
     if (cromo.cromo.Imagen !== undefined) {
-      this.https.get('http://localhost:3000/api/imagenes/ImagenCromo/download/' + cromo.cromo.Imagen,
+      this.https.get(URL.ImagenesCromo + cromo.cromo.Imagen,
+    
+    //  this.https.get('http://localhost:3000/api/imagenes/ImagenCromo/download/' + cromo.cromo.Imagen,
         { responseType: ResponseContentType.Blob }).subscribe(
           response => {
             const blob = new Blob([response.blob()], { type: 'image/jpg' });
@@ -565,7 +572,9 @@ export class CalculosService {
   public VisualizarImagenAlumno(MiImagen: string) {
     const ImagenAlumno: string[] = [];
     if (MiImagen !== undefined) {
-      this.https.get('http://localhost:3000/api/imagenes/ImagenAlumno/download/' + MiImagen,
+      this.https.get(URL.ImagenesAlumno + MiImagen,
+   
+     // this.https.get('http://localhost:3000/api/imagenes/ImagenAlumno/download/' + MiImagen,
         { responseType: ResponseContentType.Blob }).subscribe(
           response => {
             const blob = new Blob([response.blob()], { type: 'image/jpg' });
