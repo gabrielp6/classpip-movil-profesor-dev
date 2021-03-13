@@ -152,6 +152,10 @@ export class PeticionesAPIService {
     return this.http.get<Alumno[]>(this.APIUrlAlumnos);
   }
 
+  public DameTodosLosProfesores(): Observable<Profesor[]> {
+    return this.http.get<Profesor[]>(this.APIUrlProfesores);
+  }
+
   public CreaAlumno(alumno: Alumno): Observable<Alumno> {
     return this.http.post<Alumno>(this.APIUrlAlumnos, alumno);
   }
