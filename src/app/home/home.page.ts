@@ -71,7 +71,7 @@ export class HomePage {
   contrasena: string;
   contrasenaRep: string;
   identificador: string;
-  private alumnosEnClasspip: Alumno[];
+  private profesoresEnClasspip: Profesor[];
 
 
   constructor(
@@ -100,8 +100,8 @@ export class HomePage {
 
 
     ionViewDidEnter() {
-      this.peticionesAPI.DameTodosLosAlumnos()
-      .subscribe (alumnos => this.alumnosEnClasspip = alumnos);
+      this.peticionesAPI.DameTodosLosProfesores()
+      .subscribe (profesores => this.profesoresEnClasspip = profesores);
 
 
       // this.StartTimer();
@@ -202,7 +202,7 @@ export class HomePage {
     }
 
     UsernameUsado(username: string) {
-      return this.alumnosEnClasspip.some (alumno => alumno.Username === username);
+      return this.profesoresEnClasspip.some (profesor => profesor.NombreUsuario === username);
     }
     async Registro() {
       console.log ('registro');
