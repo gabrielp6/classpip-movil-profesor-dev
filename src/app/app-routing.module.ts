@@ -51,7 +51,8 @@ const routes: Routes = [
   { path: 'ver-grupo', loadChildren: './ver-grupo/ver-grupo.module#VerGrupoPageModule' },
   { path: 'mis-juegos-rapidos', loadChildren: './mis-juegos-rapidos/mis-juegos-rapidos.module#MisJuegosRapidosPageModule' },
   { path: 'juego-encuesta-rapida', loadChildren: './juego-encuesta-rapida/juego-encuesta-rapida.module#JuegoEncuestaRapidaPageModule' },
-  { path: 'juego-cuestionario-rapido', loadChildren: './juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },
+  { path: 'juego-cuestionario-rapido', loadChildren: './juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },  { path: 'editar-jornadas', loadChildren: './editar-jornadas/editar-jornadas.module#EditarJornadasPageModule' },
+
 
 
 

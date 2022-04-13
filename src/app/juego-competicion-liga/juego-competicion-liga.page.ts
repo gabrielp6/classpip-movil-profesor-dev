@@ -245,6 +245,29 @@ export class JuegoCompeticionLigaPage implements OnInit {
     this.navCtrl.navigateForward('/informacion-jornadas');
   }
 
+  /*EditarJornadas(){
+    this.navCtrl.navigateForward('/editar-jornadas');
+  }*/
+
+
+
+  EditarJornadas() {
+
+    console.log('Tomo las jornadas' + this.jornadas);
+    console.log ('Aquí estará la información del juego');
+    this.sesion.TomaJuego (this.juegoSeleccionado);
+    this.JornadasCompeticion = this.calculos.GenerarTablaJornadasLiga(this.juegoSeleccionado, this.jornadas, this.enfrentamientosDelJuego);
+    console.log('Juego activo' + this.JornadasCompeticion);
+
+    this.sesion.TomaDatosJornadas(
+      this.jornadas,
+      this.JornadasCompeticion
+    );
+    
+    this.navCtrl.navigateForward('/editar-jornadas');
+  }
+
+
   MuestraElRanking() {
     this.hideMe = true;
     this.scrollToBottom();
