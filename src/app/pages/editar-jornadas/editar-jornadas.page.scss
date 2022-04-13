@@ -1,0 +1,28 @@
+.contenedor{
+
+    width: 70%;
+    margin-left: 15%;
+    height: auto;
+    padding: 10px;
+    border: 10px solid transparent;
+    background-color: transparent;
+  
+}
+
+.enColumna{
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+  
+    justify-content: left ;
+    flex-direction: column;
+    // align-items: flex-start;
+    border: solid transparent;
+    align-items: center;
+    width: 100%;
+}
+
+.btn.Aceptar{
+    background-color: rgb(92, 184, 92);
+  }
+
