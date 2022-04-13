@@ -16,7 +16,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
-import { IniciPageModule } from './inici/inici.module';
+import { IniciPageModule } from './pages/inici/inici.module';
 
 import { Camera } from '@ionic-native/camera/ngx';
 //import { Camera, CameraOptions } from '@ionic-native/camera';
@@ -48,8 +48,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 // import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 // import { Transfer } from '@ionic-native/transfer';
 import { Media, MediaObject } from '@ionic-native/media/ngx';
-import { IntercambiarCromosPageModule } from './intercambiar-cromos/intercambiar-cromos.module';
-import { AvatarEditorPageModule } from './avatar-editor/avatar-editor.module';
+import { IntercambiarCromosPageModule } from './pagesPrevias/intercambiar-cromos/intercambiar-cromos.module';
+import { AvatarEditorPageModule } from './pagesPrevias/avatar-editor/avatar-editor.module';
 import { LongPressModule } from 'ionic-long-press';
 import { IonicGestureConfig } from '../ionicGestureConfig';
 import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
@@ -57,8 +57,8 @@ import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
 import { DateAdapter } from '@angular/material';
 import { CustomDateAdapter } from './customDataAdapter';
 import {DatePipe} from '@angular/common';
-import {  SeleccionarCromoPageModule } from './seleccionar-cromo/seleccionar-cromo.module';
-import { SeleccionarAlumnosPageModule } from './seleccionar-alumnos/seleccionar-alumnos.module';
+import {  SeleccionarCromoPageModule } from './pagesPrevias/seleccionar-cromo/seleccionar-cromo.module';
+import { SeleccionarAlumnosPageModule } from './pagesPrevias/seleccionar-alumnos/seleccionar-alumnos.module';
 
 import {NgxEchartsModule} from 'ngx-echarts';
 

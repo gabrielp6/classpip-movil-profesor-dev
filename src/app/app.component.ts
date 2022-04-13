@@ -5,7 +5,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Router } from '@angular/router';
 import { Alumno } from '../app/clases/Alumno';
-import { SesionService, ComServerService } from '../app/servicios';
+import { SesionService, ComServerService } from './services';
 import * as URL from '../app//URLs/urls';
 import { Profesor } from './clases';
 
