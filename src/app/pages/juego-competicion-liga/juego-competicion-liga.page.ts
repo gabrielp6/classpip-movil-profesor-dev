@@ -16,7 +16,7 @@ import { IonContent } from '@ionic/angular';
 })
 export class JuegoCompeticionLigaPage implements OnInit {
 
-  /*juegoSeleccionado: Juego;
+  juegoSeleccionado: Juego;
   MiAlumno: Alumno;
   MiEquipo: Equipo;
   MiAlumnoJuegoCompLiga: AlumnoJuegoDeCompeticionLiga;
@@ -37,7 +37,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
   enfrentamientosDelJuego: Array<Array<EnfrentamientoLiga>>;
   juegosActivosPuntos: Juego[] = [];
 
-  public hideMe: boolean = false;*/
+  public hideMe: boolean = false;
 
   public items: any = [];
   
@@ -53,8 +53,8 @@ export class JuegoCompeticionLigaPage implements OnInit {
   @ViewChild('content', { static: false }) content: IonContent;
 
   ngOnInit() {
-    //this.juegoSeleccionado = this.sesion.DameJuego();
-    //this.MiAlumno = this.sesion.DameAlumno();
+    this.juegoSeleccionado = this.sesion.DameJuego();
+    this.MiAlumno = this.sesion.DameAlumno();
     //this.DameJornadasDelJuegoDeCompeticionSeleccionado();
   }
 
@@ -283,6 +283,29 @@ export class JuegoCompeticionLigaPage implements OnInit {
     this.navCtrl.navigateForward('/informacion-jornadas');
   }
 
+  /*EditarJornadas(){
+    this.navCtrl.navigateForward('/editar-jornadas');
+  }*/
+
+
+
+  EditarJornadas() {
+
+    console.log('Tomo las jornadas' + this.jornadas);
+    console.log ('Aquí estará la información del juego');
+    this.sesion.TomaJuego (this.juegoSeleccionado);
+    this.JornadasCompeticion = this.calculos.GenerarTablaJornadasLiga(this.juegoSeleccionado, this.jornadas, this.enfrentamientosDelJuego);
+    console.log('Juego activo' + this.JornadasCompeticion);
+
+    this.sesion.TomaDatosJornadas(
+      this.jornadas,
+      this.JornadasCompeticion
+    );
+    
+    this.navCtrl.navigateForward('/editar-jornadas');
+  }
+
+
   MuestraElRanking() {
     this.hideMe = true;
     this.scrollToBottom();
@@ -296,6 +319,6 @@ export class JuegoCompeticionLigaPage implements OnInit {
   }
   scrollToTop() {
     this.content.scrollToTop();
-  }*/
+  }
 
 }

@@ -37,12 +37,13 @@
     </div>
 
 
-
-    <ion-button class="ranking-btn" (click)="InformacionJornadas();">Jornadas</ion-button>
-
+    
+    <ion-button class="ranking-btn" (click)="EditarJornadas();">Editar Jornadas</ion-button>
+    <!--
     <ion-button *ngIf="!hideMe" class="ranking-btn" (click)="MuestraElRanking();">Mostrar Clasificación</ion-button>
     <ion-button *ngIf="hideMe" class="ranking-btn" (click)="OcultarElRanking();">Ocultar Clasificación</ion-button>
-  
+    -->
+
     <div *ngIf="hideMe">
       <mat-accordion>
         <div *ngFor="let alumno of rankingAlumnoJuegoDeCompeticion">
@@ -88,6 +89,8 @@
       </mat-accordion>
     </div>
   </div>
+
+
   <div *ngIf="juegoSeleccionado.Modo !== 'Individual'">
     <div *ngIf="MiEquipo !== undefined" class="info-equipo">
       <img class="logo" src="../../assets/img/ligaicon.svg" width="100px">
@@ -96,12 +99,13 @@
       <h2> que tiene </h2>
       <h3> {{ infoMiEquipo.puntos }} puntos</h3>
       
-
-      <ion-button class="ranking-btn" (click)="InformacionJornadas();">Jornadas</ion-button>
-
+      
+      <ion-button class="ranking-btn" (click)="EditarJornadas();">Editar Jornadas</ion-button>
+      <!--
       <ion-button *ngIf="!hideMe" class="ranking-btn" (click)="MuestraElRanking();">Mostrar Clasificación</ion-button>
       <ion-button *ngIf="hideMe" class="ranking-btn" (click)="OcultarElRanking();">Ocultar Clasificación</ion-button>
-    
+      -->
+
       <div *ngIf="hideMe">
         <mat-accordion>
           <mat-expansion-panel  *ngFor="let equipo of rankingEquiposJuegoDeCompeticion">

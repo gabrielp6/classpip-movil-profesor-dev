@@ -142,6 +142,10 @@ export class PeticionesAPIService {
     return this.http.get<Profesor>(this.APIUrlProfesores + '?filter[where][Identificador]=' + identificador);
   }
 
+  public ModificarJornada(JornadaNueva: Jornada, JornadaId: number): Observable<Jornada> {
+    return this.http.patch<Jornada>(this.APIUrlJornadasJuegoDeCompeticionLiga + '/' + JornadaId, JornadaNueva);
+  }
+
   public DameAlumno(nombreUsuario: string, password: string): Observable<Alumno> {
 
     return this.http.get<Alumno>(this.APIUrlAlumnos + '?filter[where][Username]=' + nombreUsuario
