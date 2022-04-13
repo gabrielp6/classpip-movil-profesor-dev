@@ -17,7 +17,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../inici/inici.module#IniciPageModule'
+            loadChildren: '../pages/inici/inici.module#IniciPageModule'
           }
         ]
       },
@@ -26,7 +26,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../mis-juegos-inactivos/mis-juegos-inactivos.module#MisJuegosInactivosPageModule'
+            loadChildren: '../pagesPrevias/mis-juegos-inactivos/mis-juegos-inactivos.module#MisJuegosInactivosPageModule'
           }
         ]
       },
@@ -35,7 +35,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../mi-perfil/mi-perfil.module#MiPerfilPageModule'
+            loadChildren: '../pagesPrevias/mi-perfil/mi-perfil.module#MiPerfilPageModule'
           }
         ]
       },
@@ -44,7 +44,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../mis-grupos/mis-grupos.module#MisGruposPageModule'
+            loadChildren: '../pagesPrevias/mis-grupos/mis-grupos.module#MisGruposPageModule'
           }
         ]
       },

@@ -1185,6 +1185,31 @@ ion-tab-bar, ion-tab-button{
       color: black;
     }
   }
+  .liga-inici-card{
+    background: white;
+    margin-top: 20px;
+    max-height: fit-content;
+    text-align: center;
+    width: 240px !important;
+    height: 200px !important;
+    .card-img {
+      width: 80%;
+      height: 90%;
+      margin: auto;
+    }
+  }
+  .expand-card1{
+    background: white;
+    max-height: fit-content;
+    text-align: center;
+    width: 200px !important;
+  }
+  .expand-card2{
+    background: white;
+    max-height: fit-content;
+    text-align: center;
+    width: 250px !important;
+  }
 }
 
 /* +++++++++++++++++++++++++++++++ JUEGO  F 1 +++++++++++++++++++++++++++++*/
