@@ -8,8 +8,10 @@
   </ion-toolbar>
 </ion-header>
 
-<!--<ion-content class="juegocompliga-content" #content>
+
+<ion-content class="juegocompliga-content" #content>
   <div *ngIf="juegoSeleccionado.Modo === 'Individual'">
+    
     <div *ngIf="infomialumno !== undefined" class="info-alumno">
       <img class="logo-liga" src="../../assets/img/ligaicon.svg" width="100px">
       <h2> Tienes </h2>
@@ -35,9 +37,7 @@
         <p>De un total de <b>{{infomialumno.partidosTotales}}</b> partidos. </p>
       </ion-list>
     </div>
-
-
-    
+  
     <ion-button class="ranking-btn" (click)="EditarJornadas();">Editar Jornadas</ion-button>
     <!--
     <ion-button *ngIf="!hideMe" class="ranking-btn" (click)="MuestraElRanking();">Mostrar Clasificación</ion-button>
@@ -90,7 +90,6 @@
     </div>
   </div>
 
-
   <div *ngIf="juegoSeleccionado.Modo !== 'Individual'">
     <div *ngIf="MiEquipo !== undefined" class="info-equipo">
       <img class="logo" src="../../assets/img/ligaicon.svg" width="100px">
@@ -101,11 +100,11 @@
       
       
       <ion-button class="ranking-btn" (click)="EditarJornadas();">Editar Jornadas</ion-button>
+      
       <!--
       <ion-button *ngIf="!hideMe" class="ranking-btn" (click)="MuestraElRanking();">Mostrar Clasificación</ion-button>
       <ion-button *ngIf="hideMe" class="ranking-btn" (click)="OcultarElRanking();">Ocultar Clasificación</ion-button>
-      -->
-
+       -->
       <div *ngIf="hideMe">
         <mat-accordion>
           <mat-expansion-panel  *ngFor="let equipo of rankingEquiposJuegoDeCompeticion">
@@ -156,9 +155,13 @@
       </div>
     </div>
   </div>
-</ion-content>-->
+</ion-content>
 
+
+
+<!--
 <ion-content class="juegocompliga-content" #content>
+
   <div style="display: flex; align-items: center; justify-content: center; padding-top: 50px;">
     <img class="card-img" src="../../assets/img/juegos-competicion/jornada.png" height="200"/>
   </div>
@@ -198,3 +201,5 @@
     <ion-button color="danger" style="width: 200px;">Desactivar juego</ion-button>
   </div>
 </ion-content>
+
+-->
