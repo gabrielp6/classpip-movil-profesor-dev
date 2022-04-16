@@ -59,6 +59,7 @@ export class PeticionesAPIService {
   private APIRUrlJuegoDeCompeticionLiga = this.base + '3000/api/JuegoDeCompeticionLiga';
   private APIUrlAlumnoJuegoDeCompeticionLiga = this.base + '3000/api/AlumnosJuegoDeCompeticionLiga';
   private APIUrlJornadasJuegoDeCompeticionLiga = this.base + '3000/api/JornadasDeCompeticionLiga';
+  private APIUrlJornadasJuegoDeCompeticionTorneo = this.base + '3000/api/JornadasDeCompeticionTorneo';
   private APIUrlJuegoDeCompeticionLiga = this.base + '3000/api/JuegosDeCompeticionLiga';
   private APIUrlEquipoJuegoDeCompeticionLiga = this.base + '3000/api/EquiposJuegoDeCompeticionLiga';
 
@@ -164,6 +165,17 @@ export class PeticionesAPIService {
     return this.http.post<Alumno>(this.APIUrlAlumnos, alumno);
   }
 
+  public CambiaEstadoJuegoDeCompeticionLiga(juego: Juego): Observable<Juego> {
+    return this.http.put<Juego>(this.APIUrlJuegoDeCompeticionLiga + '/' + juego.id , juego);
+  }
+
+  public CambiaEstadoJuegoDeCompeticionTorneo(juego: Juego): Observable<Juego> {
+    return this.http.put<Juego>(this.APIUrlJornadasJuegoDeCompeticionTorneo + '/' + juego.id , juego);
+  }
+
+  public CambiaEstadoJuegoDeCompeticionFormulaUno(juego: Juego): Observable<Juego> {
+    return this.http.put<Juego>(this.APIUrlJuegoDeCompeticionFormulaUno + '/' + juego.id , juego);
+  }
 
   
   public DameContrasenaProfesor(nombre: string): Observable<Profesor> {
@@ -830,16 +842,16 @@ export class PeticionesAPIService {
       + '?filter[where][JuegoDeCompeticionLigaId]=' + juegoDeCompeticionLigaId);
   }
 
-  public DameJornadasDeCompeticionLiga(juegoDeCompeticionLigaId: number): Observable<Jornada[]> {
-    return this.http.get<Jornada[]>(this.APIUrlJornadasJuegoDeCompeticionLiga + '?filter[where][JuegoDeCompeticionLigaId]='
-      + juegoDeCompeticionLigaId);
-    // return this.http.get<Jornada[]>(this.APIUrlJuegoDeCompeticionLiga + '/' + juegoDeCompeticionID + '/JornadasDeCompeticionLiga');
-  }
-
   public DameEnfrentamientosDeCadaJornadaLiga(jornadasDeCompeticionLigaId: number): Observable<Array<EnfrentamientoLiga>> {
     return this.http.get<Array<EnfrentamientoLiga>>(this.APIUrlJornadasJuegoDeCompeticionLiga + '/' + jornadasDeCompeticionLigaId +
       '/enfrentamientosLiga');
   }
+
+  /*public DameEnfrentamientosDeCadaJornadaFormulaUno(jornadasDeCompeticionFormulaUnoId: number): Observable<Array<EnfrentamientoFormulaUno>> {
+    return this.http.get<Array<EnfrentamientoFormulaUno>>(this.APIUrlJornadasJuegoDeCompeticionFormulaUno + '/' + jornadasDeCompeticionFormulaUnoId +
+      '/enfrentamientoFormulaUno');
+  }*/
+
 
   public DameAlumnosJuegoDeCompeticionLiga(juegoDeCompeticionLigaId: number): Observable<Alumno[]> {
     console.log('Voy a por los alumnos');
@@ -868,9 +880,19 @@ export class PeticionesAPIService {
   }
 
   // Accedo a las Jornadas del juego de competicion f1.
-  public DameJornadasDeCompeticionFormulaUno(juegoDeCompeticionId: number): Observable<Jornada[]> {
-    return this.http.get<Jornada[]>(this.APIUrlJuegoDeCompeticionFormulaUno + '/' + juegoDeCompeticionId
-      + '/jornadasDeCompeticionFormulaUno');
+  public DameJornadasDeCompeticionFormulaUno(juegoDeCompeticionFormulaUnoId: number): Observable<Jornada[]> {
+    return this.http.get<Jornada[]>(this.APIUrlJornadasJuegoDeCompeticionFormulaUno + '?filter[where][JuegoDeCompeticionFormulaUnoId]='
+    + juegoDeCompeticionFormulaUnoId);
+  }
+
+  public DameJornadasDeCompeticionLiga(juegoDeCompeticionLigaId: number): Observable<Jornada[]> {
+    return this.http.get<Jornada[]>(this.APIUrlJornadasJuegoDeCompeticionLiga + '?filter[where][JuegoDeCompeticionLigaId]='
+      + juegoDeCompeticionLigaId);
+  }
+
+  public DameJornadasDeCompeticionTorneo(juegoDeCompeticionTorneoId: number): Observable<Jornada[]> {
+    return this.http.get<Jornada[]>(this.APIUrlJornadasJuegoDeCompeticionTorneo + '?filter[where][JuegoDeCompeticionTorneoId]='
+      + juegoDeCompeticionTorneoId);
   }
 
   // Gestion del juego de competiciones, equipos

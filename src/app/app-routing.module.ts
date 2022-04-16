@@ -16,7 +16,6 @@ const routes: Routes = [
   { path: 'tabs', loadChildren: './tabs/tabs.module#TabsPageModule' },
   { path: 'mis-colecciones', loadChildren: './pagesPrevias/mis-colecciones/mis-colecciones.module#MisColeccionesPageModule' },
   { path: 'juego-de-cuestionario', loadChildren: './pagesPrevias/juego-de-cuestionario/juego-de-cuestionario.module#JuegoDeCuestionarioPageModule' },
-  { path: 'juego-competicion-f1', loadChildren: './pagesPrevias/juego-competicion-f1/juego-competicion-f1.module#JuegoCompeticionF1PageModule' },
   { path: 'juego-competicion-liga', loadChildren: './pages/juego-competicion-liga/juego-competicion-liga.module#JuegoCompeticionLigaPageModule' },
   { path: 'informacion-jornadas', loadChildren: './pages/informacion-jornadas/informacion-jornadas.module#InformacionJornadasPageModule' },
   { path: 'juego-colleccion', loadChildren: './pagesPrevias/juego-colleccion/juego-colleccion.module#JuegoColleccionPageModule' },
@@ -52,6 +51,7 @@ const routes: Routes = [
   { path: 'juego-encuesta-rapida', loadChildren: './pagesPrevias/juego-encuesta-rapida/juego-encuesta-rapida.module#JuegoEncuestaRapidaPageModule' },
   { path: 'juego-cuestionario-rapido', loadChildren: './pagesPrevias/juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },
   { path: 'editar-jornadas', loadChildren: './pages/editar-jornadas/editar-jornadas.module#EditarJornadasPageModule' },
+  
 
 
 

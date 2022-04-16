@@ -12,12 +12,9 @@ import { Router } from '@angular/router';
 import { File } from '@ionic-native/file/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 //import { Camera, CameraOptions } from '@ionic-native/camera';
-
 import { Transfer } from '@ionic-native/transfer';
 import { Media, MediaObject } from '@ionic-native/media/ngx';
-
 import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
-
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 
@@ -38,31 +35,21 @@ export class HomePage {
   maxTime: any = 30;
   hidevalue = false;
   timer: any;
-
   coords: any = { lat: 0, lng: 0 };
   latitud;
   longitud;
-
-
-
-
   panelOpenState = false;
-   
   data: any;
   answer: any[] = [];
   cont: any[];
   jsonData: any;
-
-
   midiendo = false;
-
   contNotif = 0;
   juegoRapido = false;
   clave: string;
   nickname: string;
   registro = false;
   login = true;
-
   primerApellido: string;
   segundoApellido: string;
   username = "talleres";
@@ -87,27 +74,14 @@ export class HomePage {
     private media: Media,
     private comServer: ComServerService,
     private selector: WheelSelector,
-    private localNotifications: LocalNotifications,
-   
+    private localNotifications: LocalNotifications, 
+  ){}
 
-    )  {
-
-  
+  ionViewDidEnter() {
+    this.peticionesAPI.DameTodosLosProfesores()
+    .subscribe (profesores => this.profesoresEnClasspip = profesores);
+    // this.StartTimer();
   }
-
-
-   
-
-
-    ionViewDidEnter() {
-      this.peticionesAPI.DameTodosLosProfesores()
-      .subscribe (profesores => this.profesoresEnClasspip = profesores);
-
-
-      // this.StartTimer();
-    }
-
-
 
   StartTimer() {
     this.timer = setTimeout(x => {
@@ -119,177 +93,175 @@ export class HomePage {
           } else {
               this.hidevalue = true;
           }
-
       }, 1000);
-
   }
 
 
+  async presentLoading() {
+    const loading = await this.loadingController.create({
+      message: 'Verificando Usuario',
+      duration: 1500
+    });
+    await loading.present();
 
+    const { role, data } = await loading.onDidDismiss();
 
+    console.log('Loading dismissed!');
+  }
 
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      // subHeader: 'Subtitle',
+      message: 'Usuario y/o contraseña incorrectos',
+      buttons: ['OK']
+    });
 
-    async presentLoading() {
-      const loading = await this.loadingController.create({
-        message: 'Verificando Usuario',
-        duration: 1500
-      });
-      await loading.present();
+    await alert.present();
+  }
 
-      const { role, data } = await loading.onDidDismiss();
+  Autentificar() {
+       
+    this.presentLoading();
+    this.peticionesAPI.DameProfesor(this.username, this.password)
+    .subscribe( (res) => {
+      if (res[0] !== undefined) {
+        this.profesor = res[0];
+        this.sesion.TomaProfesor(this.profesor);
+        this.comServer.Conectar(this.profesor.id);
 
-      console.log('Loading dismissed!');
-    }
+        setTimeout(() => {
+          this.route.navigateByUrl('inici');
+        }, 1500);
 
-    async presentAlert() {
+      } else {
+
+        setTimeout(() => {
+          this.presentAlert();
+        }, 1500);
+        console.log('Este profesor no existe');
+
+      }
+    });
+ }
+
+  AccesoJuegoRapido() {
+  this.juegoRapido = true;
+  this.login = false;
+  }
+
+  AccesoRegistro() {
+    this.registro = true;
+    this.login = false;
+  }
+
+  VolverDeJuegoRapido() {
+    this.juegoRapido = false;
+    this.login = true;
+  }
+    
+  VolverDeRegistro() {
+    this.registro = false;
+    this.login = true;
+  }
+
+  ValidaEmail(email) {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  }
+    
+  UsernameUsado(username: string) {
+    return this.profesoresEnClasspip.some (profesor => profesor.NombreUsuario === username);
+  }
+
+  async Registro() {
+    console.log ('registro');
+    console.log (this.nombre);
+    console.log (this.contrasena);
+    if (this.UsernameUsado (this.username)) {
       const alert = await this.alertController.create({
-        header: 'Error',
-        // subHeader: 'Subtitle',
-        message: 'Usuario y/o contraseña incorrectos',
+        header: 'Ya existe el nombre de usuario en Classpip',
         buttons: ['OK']
       });
-
       await alert.present();
+
+    } else if (this.contrasena !== this.contrasenaRep) {
+      const alert = await this.alertController.create({
+        header: 'No coincide la contraseña con la contraseña repetida',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } else if (!this.ValidaEmail (this.email)) {
+      const alert = await this.alertController.create({
+        header: 'El email es incorrecto',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } else {
+      const identificador = Math.random().toString().substr(2, 5);
+      const profesor = new Profesor (
+        this.nombre,
+        this.primerApellido,
+        this.segundoApellido,
+        this.username,
+        this.email,
+        this.contrasena,
+        null,
+        identificador
+      );
+      this.peticionesAPI.RegistraProfesor (profesor)
+      .subscribe (
+          // tslint:disable-next-line:no-shadowed-variable
+          (res) =>  this.alertController.create({
+                      header: 'Registro realizado con éxito',
+                      buttons: ['OK']
+                    // tslint:disable-next-line:no-shadowed-variable
+                    }).then (res => res.present()),
+          (err) =>  this.alertController.create({
+                      header: 'Fallo en la conexion con la base de datos',
+                      buttons: ['OK']
+                    }).then (res => res.present()),
+      );
     }
- 
-    Autentificar() {
-       
-        this.presentLoading();
-        console.log ('voy a autentificar a: ' + this.username + ' ' + this.password);
-        this.peticionesAPI.DameProfesor(this.username, this.password)
-        .subscribe( (res) => {
-          console.log ('ya esta');
-          console.log (res);
+    this.nombre = undefined;
+    this.contrasena = undefined;
+    this.login = true;
+    this.registro = false;
+  }
+      
+  async EnviarContrasena() {
+    if (this.username === undefined) {
+      const alert = await this.alertController.create({
+        header: 'Atención: Introduce un nombre de usuario en el formulario',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } else {
+      console.log ('voy a pedir contraseña');
+      this.peticionesAPI.DameContrasenaProfesor (this.username)
+      .subscribe (async (res) => {
           if (res[0] !== undefined) {
-            this.profesor = res[0];
-            this.sesion.TomaProfesor(this.profesor);
-            this.comServer.Conectar(this.profesor.id);
-
-            setTimeout(() => {
-              this.route.navigateByUrl('inici');
-            }, 1500);
+            const profesor = res[0]; // Si es diferente de null, el alumno existe
+            // le enviamos la contraseña
+            this.comServer.RecordarContrasena (profesor);
+            const alert = await this.alertController.create({
+              header: 'En breve recibirás un email con tu contraseña',
+              buttons: ['OK']
+            });
+            await alert.present();
           } else {
-            // Aqui habría que mostrar alguna alerta al usuario
-            setTimeout(() => {
-              this.presentAlert();
-            }, 1500);
-            console.log('profesor no existe');
+            const alert = await this.alertController.create({
+              header: 'No hay ningun profesor con este nombre de usuario',
+              buttons: ['OK']
+            });
+            await alert.present();
           }
-        });
+      });
     }
 
-    AccesoJuegoRapido() {
-      this.juegoRapido = true;
-      this.login = false;
-    }
+  }
     
-    AccesoRegistro() {
-      this.registro = true;
-      this.login = false;
-    }
-    VolverDeJuegoRapido() {
-      this.juegoRapido = false;
-      this.login = true;
-    }
-    VolverDeRegistro() {
-      this.registro = false;
-      this.login = true;
-    }
-
-    ValidaEmail(email) {
-      const re = /\S+@\S+\.\S+/;
-      return re.test(email);
-    }
-
-    UsernameUsado(username: string) {
-      return this.profesoresEnClasspip.some (profesor => profesor.NombreUsuario === username);
-    }
-    async Registro() {
-      console.log ('registro');
-      console.log (this.nombre);
-      console.log (this.contrasena);
-      if (this.UsernameUsado (this.username)) {
-        const alert = await this.alertController.create({
-          header: 'Ya existe el nombre de usuario en Classpip',
-          buttons: ['OK']
-        });
-        await alert.present();
-
-      } else if (this.contrasena !== this.contrasenaRep) {
-        const alert = await this.alertController.create({
-          header: 'No coincide la contraseña con la contraseña repetida',
-          buttons: ['OK']
-        });
-        await alert.present();
-      } else if (!this.ValidaEmail (this.email)) {
-        const alert = await this.alertController.create({
-          header: 'El email es incorrecto',
-          buttons: ['OK']
-        });
-        await alert.present();
-      } else {
-        const identificador = Math.random().toString().substr(2, 5);
-        const profesor = new Profesor (
-          this.nombre,
-          this.primerApellido,
-          this.segundoApellido,
-          this.username,
-          this.email,
-          this.contrasena,
-          null,
-          identificador
-        );
-        this.peticionesAPI.RegistraProfesor (profesor)
-        .subscribe (
-            // tslint:disable-next-line:no-shadowed-variable
-            (res) =>  this.alertController.create({
-                        header: 'Registro realizado con éxito',
-                        buttons: ['OK']
-                      // tslint:disable-next-line:no-shadowed-variable
-                      }).then (res => res.present()),
-            (err) =>  this.alertController.create({
-                        header: 'Fallo en la conexion con la base de datos',
-                        buttons: ['OK']
-                      }).then (res => res.present()),
-        );
-      }
-      this.nombre = undefined;
-      this.contrasena = undefined;
-      this.login = true;
-      this.registro = false;
-    }
-
-    async EnviarContrasena() {
-      if (this.username === undefined) {
-        const alert = await this.alertController.create({
-          header: 'Atención: Introduce un nombre de usuario en el formulario',
-          buttons: ['OK']
-        });
-        await alert.present();
-      } else {
-        console.log ('voy a pedir contraseña');
-        this.peticionesAPI.DameContrasenaProfesor (this.username)
-        .subscribe (async (res) => {
-            if (res[0] !== undefined) {
-              const profesor = res[0]; // Si es diferente de null, el alumno existe
-              // le enviamos la contraseña
-              this.comServer.RecordarContrasena (profesor);
-              const alert = await this.alertController.create({
-                header: 'En breve recibirás un email con tu contraseña',
-                buttons: ['OK']
-              });
-              await alert.present();
-            } else {
-              const alert = await this.alertController.create({
-                header: 'No hay ningun profesor con este nombre de usuario',
-                buttons: ['OK']
-              });
-              await alert.present();
-            }
-        });
-      }
-  
-    }
+    
 }
 
 

@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content class="infojornadas-content">
+
   <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Liga'">
     <img class="logo-liga" src="../../assets/img/jornadasligaicon.svg" width="100px">
     <p>Resultados de cada jornada</p>  
@@ -16,6 +17,7 @@
     <img class="logo-liga" src="../../assets/img/jornadasf1icon.svg" width="100px">
     <p>Resultados de cada jornada</p>  
   </div>
+  
   
 
   <mat-accordion *ngIf="numeroTotalJornadas!==0">
@@ -39,61 +41,16 @@
 
         </mat-expansion-panel-header>
 
-        <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Liga'">
+        <div>
           <p *ngIf="jornada.Fecha != undefined"><b>Fecha</b>: {{jornada.Fecha | date: 'dd-MM-yyyy'}}</p>
           <p *ngIf="jornada.Fecha === undefined"><b>Fecha</b>: Sin especificar</p>
           <p><b>Criterio</b>: {{jornada.CriterioGanador}}</p>
-          <ion-slides [options]="sliderConfig">
-            <ion-slide *ngFor="let enfrentamiento of EnfrentamientosJornadaSeleccionada">
-              <div>
-                <!-- Si el enfrentamiento es de mi alumno o equipo-->
-                <ion-card class="enfrentamiento-card-mialumno" *ngIf= "ImplicadoEnEnfrentamiento (enfrentamiento)">
-                    <h2> Enfrentamiento </h2>
-                    <h3>{{enfrentamiento.nombreJugadorUno}}</h3>
-                    <img class="versus-icon" width="80px" src="../../assets/img/versus.svg">
-                    <h3>{{enfrentamiento.nombreJugadorDos}}</h3>
-                    
-                    <h3><b>Ganador: {{enfrentamiento.nombreGanador}} </b> </h3>
-                </ion-card>
-             
-                <!-- Si el enfrentamiento es de otros alumnos  o equipos-->
-                
-                <ion-card class="enfrentamiento-card" *ngIf= "!ImplicadoEnEnfrentamiento (enfrentamiento)">
-                  
-                    <h2> Enfrentamiento </h2>
-                    <h3>{{enfrentamiento.nombreJugadorUno}}</h3>
-                    <img class="versus-icon" width="80px" src="../../assets/img/versus2.svg">
-                    <h3>{{enfrentamiento.nombreJugadorDos}}</h3>
-                    
-                    <h3><b>Ganador: {{enfrentamiento.nombreGanador}} </b> </h3>
-                </ion-card>
-
-              </div>
-            </ion-slide>
-          </ion-slides>
         </div>
-        
-        <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Fórmula Uno'">
-          <p *ngIf="jornada.Fecha != undefined"><b>Fecha</b>: {{jornada.Fecha | date: 'dd-MM-yyyy'}}</p>
-          <p *ngIf="jornada.Fecha === undefined"><b>Fecha</b>: Sin especificar</p>
-          <div *ngIf="JornadaFinalizada(jornada) === false">
-            <p>Esta Jornada aún no ha finalizado. No hay ganadores todavía.</p>
-          </div>
-          <div *ngIf="JornadaFinalizada(jornada) === true">
-            <ion-card *ngFor="let participante of GanadoresJornadaF1; let i=index">
-              <ion-item lines="none" >
-                <ion-avatar slot="start">
-                  <img src="../../assets/img/usuario.svg">
-                </ion-avatar>
-                <ion-label>
-                  <h2> {{participante.participante}} </h2>
-                  <p>Posicion: {{participante.posicion}} - Puntos: {{participante.puntos}}</p>
-                </ion-label>
-              </ion-item> 
-            </ion-card>
-          </div>
 
+        <div *ngIf="JornadaFinalizada(jornada) === false">
+          <p>Esta Jornada aún no ha finalizado. No hay ganadores todavía.</p>
         </div>
+
       </mat-expansion-panel>
     </div>
   </mat-accordion>

@@ -398,26 +398,14 @@ export class SesionService {
 
   public TomaDatosJornadas(
     jornadas: Jornada[],
-    JornadasCompeticion: TablaJornadas[]
   ) {
-  this.JornadasCompeticion = JornadasCompeticion;
   this.jornadas = jornadas;
-  console.log ('jornadas:');
-  console.log ( this.JornadasCompeticion);
-  console.log ('TablaJornadas:');
-  console.log ( this.jornadas);
-
 }
 
   public DameDatosJornadas(): any {
     const datos = {
       jornadas: this.jornadas,
-      JornadasCompeticion: this.JornadasCompeticion
     };
-    console.log('Aqui estan las jornadas guardadas y la tabla de jornadas: ');
-    console.log(this.jornadas);
-    console.log(this.JornadasCompeticion);
-
     return datos;
   }
 
