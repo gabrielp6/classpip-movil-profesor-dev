@@ -33,7 +33,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
 
   jornadas: Jornada[];
   JornadasCompeticion: TablaJornadas[] = [];
-  // enfrentamientosDelJuego: EnfrentamientoLiga[] = [];
+  //enfrentamientosDelJuego: EnfrentamientoLiga[] = [];
   enfrentamientosDelJuego: Array<Array<EnfrentamientoLiga>>;
   juegosActivosPuntos: Juego[] = [];
 
@@ -55,7 +55,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
   ngOnInit() {
     this.juegoSeleccionado = this.sesion.DameJuego();
     this.MiAlumno = this.sesion.DameAlumno();
-    //this.DameJornadasDelJuegoDeCompeticionSeleccionado();
+    this.DameJornadasDelJuegoDeCompeticionSeleccionado();
   }
 
   expandItem(item): void {
