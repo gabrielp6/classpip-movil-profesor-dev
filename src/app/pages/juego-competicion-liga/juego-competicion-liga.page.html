@@ -38,13 +38,12 @@
 
 
     
-    <ion-button class="ranking-btn" (click)="EditarJornadas();">Editar Jornadas</ion-button>
-    <!--
+    
     <ion-button *ngIf="!hideMe" class="ranking-btn" (click)="MuestraElRanking();">Mostrar Clasificación</ion-button>
     <ion-button *ngIf="hideMe" class="ranking-btn" (click)="OcultarElRanking();">Ocultar Clasificación</ion-button>
     -->
 
-    <div *ngIf="hideMe">
+    <!--<div *ngIf="hideMe">
       <mat-accordion>
         <div *ngFor="let alumno of rankingAlumnoJuegoDeCompeticion">
           <mat-expansion-panel>
@@ -101,10 +100,8 @@
       
       
       <ion-button class="ranking-btn" (click)="EditarJornadas();">Editar Jornadas</ion-button>
-      <!--
       <ion-button *ngIf="!hideMe" class="ranking-btn" (click)="MuestraElRanking();">Mostrar Clasificación</ion-button>
       <ion-button *ngIf="hideMe" class="ranking-btn" (click)="OcultarElRanking();">Ocultar Clasificación</ion-button>
-      -->
 
       <div *ngIf="hideMe">
         <mat-accordion>
@@ -169,8 +166,8 @@
       </ion-card-header>
       <ion-card-content>
         <app-expandable expandHeight="200px" [expanded]="item.expanded">
-          <ion-button color="medium" style="width: 150px;">Ver</ion-button>
-          <ion-button color="medium" style="width: 150px;">Editar</ion-button>
+          <ion-button color="medium" style="width: 150px;" (click)="InformacionJornadas();">Ver</ion-button>
+          <ion-button color="medium" style="width: 150px;" (click)="EditarJornadas();">Editar</ion-button>
         </app-expandable>
       </ion-card-content>
     </ion-card>

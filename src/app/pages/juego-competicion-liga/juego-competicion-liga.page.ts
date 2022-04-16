@@ -33,7 +33,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
 
   jornadas: Jornada[];
   JornadasCompeticion: TablaJornadas[] = [];
-  // enfrentamientosDelJuego: EnfrentamientoLiga[] = [];
+  //enfrentamientosDelJuego: EnfrentamientoLiga[] = [];
   enfrentamientosDelJuego: Array<Array<EnfrentamientoLiga>>;
   juegosActivosPuntos: Juego[] = [];
 
@@ -55,7 +55,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
   ngOnInit() {
     this.juegoSeleccionado = this.sesion.DameJuego();
     this.MiAlumno = this.sesion.DameAlumno();
-    //this.DameJornadasDelJuegoDeCompeticionSeleccionado();
+    this.DameJornadasDelJuegoDeCompeticionSeleccionado();
   }
 
   expandItem(item): void {
@@ -93,7 +93,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
     this.navCtrl.navigateForward('/informacion-jornadas');
   }
 
-  /*DameJornadasDelJuegoDeCompeticionSeleccionado() {
+  DameJornadasDelJuegoDeCompeticionSeleccionado() {
     this.peticionesAPI.DameJornadasDeCompeticionLiga(this.juegoSeleccionado.id)
       .subscribe(inscripciones => {
         this.jornadas = inscripciones;
@@ -282,12 +282,6 @@ export class JuegoCompeticionLigaPage implements OnInit {
     this.sesion.TomaEquipo(this.MiEquipo);
     this.navCtrl.navigateForward('/informacion-jornadas');
   }
-
-  /*EditarJornadas(){
-    this.navCtrl.navigateForward('/editar-jornadas');
-  }*/
-
-
 
   EditarJornadas() {
 
