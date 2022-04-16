@@ -1,0 +1,57 @@
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Jornadas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="infojornadas-content">
+
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Liga'">
+    <img class="logo-liga" src="../../assets/img/jornadasligaicon.svg" width="100px">
+    <p>Resultados de cada jornada</p>  
+  </div>
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Fórmula Uno'">
+    <img class="logo-liga" src="../../assets/img/jornadasf1icon.svg" width="100px">
+    <p>Resultados de cada jornada</p>  
+  </div>
+  
+  
+
+  <mat-accordion *ngIf="numeroTotalJornadas!==0">
+
+    <div *ngFor="let jornada of JornadasCompeticion; let i=index">
+      <mat-expansion-panel class="ranking-acordeon" (click)="ObtenerEnfrentamientosDeCadaJornada(jornada)">
+        
+        <mat-expansion-panel-header>
+          
+          <mat-panel-title>
+            <div class="span">
+              <img class="icono-jornada" *ngIf="JornadaFinalizada(JornadasCompeticion[i]) === true"
+                src="../../assets/img/check.svg">
+              <img class="icono-jornada" *ngIf="JornadaFinalizada(JornadasCompeticion[i]) === false"
+                src="../../assets/img/timer.svg">
+              <ion-label>
+                <h2> <b>Jornada {{i + 1}}</b> </h2>
+              </ion-label>
+            </div>
+          </mat-panel-title>
+
+        </mat-expansion-panel-header>
+
+        <div>
+          <p *ngIf="jornada.Fecha != undefined"><b>Fecha</b>: {{jornada.Fecha | date: 'dd-MM-yyyy'}}</p>
+          <p *ngIf="jornada.Fecha === undefined"><b>Fecha</b>: Sin especificar</p>
+          <p><b>Criterio</b>: {{jornada.CriterioGanador}}</p>
+        </div>
+
+        <div *ngIf="JornadaFinalizada(jornada) === false">
+          <p>Esta Jornada aún no ha finalizado. No hay ganadores todavía.</p>
+        </div>
+
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+</ion-content>
