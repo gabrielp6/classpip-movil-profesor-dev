@@ -274,8 +274,7 @@ export class JuegoCompeticionLigaPage implements OnInit {
     console.log('Las tablas JornadasCompeticionLiga son: ');
     console.log(this.JornadasCompeticion);
     console.log ('Voy a por la información de las jornadas del juego');
-    this.sesion.TomaDatosJornadas(this.jornadas,
-                                      this.JornadasCompeticion);
+    this.sesion.TomaDatosJornadas(this.jornadas,this.JornadasCompeticion);
     this.sesion.TomaTablaAlumnoJuegoDeCompeticion(this.rankingAlumnoJuegoDeCompeticion);
     this.sesion.TomaTablaEquipoJuegoDeCompeticion(this.rankingEquiposJuegoDeCompeticion);
     this.sesion.TomaAlumno (this.MiAlumno);
@@ -285,16 +284,10 @@ export class JuegoCompeticionLigaPage implements OnInit {
 
   EditarJornadas() {
 
-    console.log('Tomo las jornadas' + this.jornadas);
-    console.log ('Aquí estará la información del juego');
+    console.log("hola k hace" + this.jornadas);
     this.sesion.TomaJuego (this.juegoSeleccionado);
-    this.JornadasCompeticion = this.calculos.GenerarTablaJornadasLiga(this.juegoSeleccionado, this.jornadas, this.enfrentamientosDelJuego);
-    console.log('Juego activo' + this.JornadasCompeticion);
-
-    this.sesion.TomaDatosJornadas(
-      this.jornadas,
-      this.JornadasCompeticion
-    );
+    this.calculos.GenerarTablaJornadasLiga(this.juegoSeleccionado, this.jornadas, this.enfrentamientosDelJuego);
+    this.sesion.TomaDatosJornadas(this.jornadas,this.JornadasCompeticion);
     
     this.navCtrl.navigateForward('/editar-jornadas');
   }
