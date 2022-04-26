@@ -53,6 +53,7 @@ import { AvatarEditorPageModule } from './pagesPrevias/avatar-editor/avatar-edit
 import { LongPressModule } from 'ionic-long-press';
 import { IonicGestureConfig } from '../ionicGestureConfig';
 import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
+import { DialogData } from './pages/juego-evaluacion/evaluacion-dialogo/evaluacion-dialogo.component';
 
 import { DateAdapter } from '@angular/material';
 import { CustomDateAdapter } from './customDataAdapter';
@@ -83,7 +84,6 @@ import * as echarts from 'echarts';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     LongPressModule,
-
     SocketIoModule.forRoot(config),
     IntercambiarCromosPageModule,
     AvatarEditorPageModule,

@@ -45,12 +45,12 @@
             </div>
 
             <div class="logo-btn">
-       
+      
               <img *ngIf="juego.Tipo == 'Juego De Puntos'" class = "card-img" src="../../assets/img/puntosicon.svg">
               <img *ngIf="juego.Tipo == 'Juego De Colección'" class = "card-img" src="../../assets/img/collectionicon.svg">
               <img *ngIf="juego.Tipo == 'Juego De Competición Fórmula Uno'" class = "card-img" src="../../assets/img/f1icon.svg">
               <img *ngIf="juego.Tipo == 'Juego De Competición Liga'" class = "card-img" src="../../assets/img/ligaicon.svg">
-              <img *ngIf="juego.Tipo == 'Juego De Competición Torneo'" class = "card-img" src="../../assets/img/torneoicon.webp">
+              <img *ngIf="juego.Tipo == 'Juego De Competición Torneo'" class = "card-img" src="../../assets/img/torneoicon.png">
               <img *ngIf="juego.Tipo == 'Juego De Cuestionario'" class = "card-img" src="../../assets/img/cuestionariosicon.svg">
               <img *ngIf="juego.Tipo == 'Juego De Geocaching'" class = "card-img" src="../../assets/img/location_icon.svg">
               <img *ngIf="juego.Tipo == 'Juego De Avatar'" class = "card-img" src="../../assets/img/avataricon.svg">
@@ -60,7 +60,7 @@
               <img *ngIf="juego.Tipo == 'Juego De Cuestionario de Satisfacción'" class = "card-img" src="../../assets/img/satisfaccion.png">
               <img *ngIf="juego.Tipo == 'Evaluacion'" class = "card-img" src="../../assets/img/evaluacion.png">
               <img *ngIf="juego.Tipo == 'Control de trabajo en equipo'" class = "card-img" src="../../assets/img/TrabajoEnEquipo.jpg">
-
+              
               <ion-button class="card-btn" expand="full" (click)=JuegoSeleccionado(juego) shape="round">Ver más</ion-button>
             </div>
 

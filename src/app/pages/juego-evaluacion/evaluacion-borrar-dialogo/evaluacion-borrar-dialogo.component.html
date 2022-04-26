@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Eliminar evaluación</h1>
+<div mat-dialog-content>
+  <p>¿Estás seguro de que quieres eliminar esta evaluación?</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="close()">No</button>
+  <button mat-raised-button class="spinner-button" (click)="delete()" color="warn" [disabled]="isDeleting">
+    <mat-spinner *ngIf="isDeleting" diameter="25" color="primary"></mat-spinner>
+    <span>Borrar</span>
+  </button>
+</div>

@@ -82,7 +82,6 @@ export class IniciPage implements OnInit {
     return this.listaGrupos.filter (grupo => grupo.id === grupoId)[0].Nombre;
   }
 
-
   JuegoSeleccionado(juego: any) {
 
     this.sesion.TomaJuego(juego);
@@ -107,7 +106,9 @@ export class IniciPage implements OnInit {
       this.navCtrl.navigateForward('/juego-votacion-todos-auno');
     } else if (juego.Tipo === 'Juego De Cuestionario de Satisfacción') {
         this.navCtrl.navigateForward('/juego-cuestionario-satisfaccion');
-    } else {
+    } else if (juego.Tipo === 'Evaluacion'){
+      this.navCtrl.navigateForward('/juego-evaluacion');
+    }else {
       this.navCtrl.navigateForward('/juego-colleccion');
     }
   }
