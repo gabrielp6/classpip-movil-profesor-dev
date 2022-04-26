@@ -92,6 +92,25 @@ export class CalculosService {
       });
   }
 
+  public async EliminarJuegoDeEvaluacion(juego: any) {
+    let inscripciones;
+    if (juego.Modo === 'Individual') {
+      inscripciones = await this.peticionesAPI.DameRelacionAlumnosJuegoDeEvaluacion(juego.id).toPromise();
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < inscripciones.length ; i++ ) {
+        await this.peticionesAPI.BorrarAlumnoJuegoDeEvaluacion (inscripciones[i].id).toPromise();
+      }
+    } else {
+      inscripciones = await this.peticionesAPI.DameRelacionEquiposJuegoDeEvaluacion(juego.id).toPromise();
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < inscripciones.length ; i++ ) {
+         await this.peticionesAPI.BorrarEquipoJuegoDeEvaluacion (inscripciones[i].id).toPromise();
+      }
+    }
+  
+    await this.peticionesAPI.BorrarJuegoDeEvaluacion (juego.id).toPromise();
+  }
+  
   public DameJuegosAlumno(AlumnoId: number): any {
     const Observables = new Observable(obs => {
       console.log('ya estoy dentro de dame juegos alumno');
@@ -111,7 +130,6 @@ export class CalculosService {
           }
           console.log('* voy a por los juegos de colecciones del alumno');
           this.peticionesAPI.DameJuegoDeColeccionesAlumno(AlumnoId)
-          // tslint:disable-next-line:no-shadowed-variable
           .subscribe( lista => {
               console.log('* ya tengo los juegos de coleccion del alumno');
               console.log (lista);
@@ -125,7 +143,6 @@ export class CalculosService {
               console.log('voy a por los juegos de geocaching');
               this.peticionesAPI.DameJuegoDeGeocachingAlumno(AlumnoId)
 
-              // tslint:disable-next-line:no-shadowed-variable
               .subscribe( lista => {
                 console.log(lista);
                 for (let i = 0; i < (lista.length); i++) {
@@ -2361,8 +2378,37 @@ export class CalculosService {
                             }
                           }
 
-                          const resultado = { activos: juegosActivos, inactivos: juegosInactivos, preparados: juegosPreparados};
-                          obs.next (resultado);
+                          // Ahora vamos a por los juegos de competición
+                          console.log ('vamos a por los juegos de competicion torneo del grupo: ' + grupoID);
+                          this.peticionesAPI.DameJuegoDeCompeticionTorneoGrupo(grupoID)
+                            .subscribe(juegosCompeticion => {
+                            console.log('He recibido los juegos de Torneo');
+                            console.log(juegosCompeticion);
+                            for (let i = 0; i < juegosCompeticion.length; i++) {
+                              if (juegosCompeticion[i].JuegoActivo === true) {
+                                juegosActivos.push(juegosCompeticion[i]);
+                              } else {
+                                juegosInactivos.push(juegosCompeticion[i]);
+                              }
+                            }
+
+                            console.log ('vamos a por los juegos de evaluacion del grupo: ' + grupoID);
+                            this.peticionesAPI.DameJuegoDeEvaluacion(grupoID)
+                              .subscribe(juegosCompeticion => {
+                              console.log('He recibido los juegos de evaluacion');
+                              console.log(juegosCompeticion);
+                              for (let i = 0; i < juegosCompeticion.length; i++) {
+                                if (juegosCompeticion[i].JuegoActivo === true) {
+                                  juegosActivos.push(juegosCompeticion[i]);
+                                } else {
+                                  juegosInactivos.push(juegosCompeticion[i]);
+                                }
+                              }
+
+                              const resultado = { activos: juegosActivos, inactivos: juegosInactivos, preparados: juegosPreparados};
+                              obs.next (resultado);
+                            });
+                          });
                         });
                       });
                     });

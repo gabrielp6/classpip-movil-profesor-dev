@@ -1,0 +1,18 @@
+.spinner-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  margin: 20px;
+}
+
+mat-spinner {
+  margin-top: -2px;
+  display: inline-flex;
+
+  + span {
+    padding-left: 8px;
+  }
+}

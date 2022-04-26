@@ -50,7 +50,8 @@ const routes: Routes = [
   { path: 'mis-juegos-rapidos', loadChildren: './pagesPrevias/mis-juegos-rapidos/mis-juegos-rapidos.module#MisJuegosRapidosPageModule' },
   { path: 'juego-encuesta-rapida', loadChildren: './pagesPrevias/juego-encuesta-rapida/juego-encuesta-rapida.module#JuegoEncuestaRapidaPageModule' },
   { path: 'juego-cuestionario-rapido', loadChildren: './pagesPrevias/juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },
-  { path: 'editar-jornadas', loadChildren: './pages/editar-jornadas/editar-jornadas.module#EditarJornadasPageModule' },
+  { path: 'editar-jornadas', loadChildren: './pages/editar-jornadas/editar-jornadas.module#EditarJornadasPageModule' },  { path: 'juego-evaluacion', loadChildren: './pages/juego-evaluacion/juego-evaluacion.module#JuegoEvaluacionPageModule' },
+
   
 
 
