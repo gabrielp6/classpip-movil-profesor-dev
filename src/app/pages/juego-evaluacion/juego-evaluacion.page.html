@@ -40,11 +40,14 @@
           </mat-accordion>
           <br>
   
+          
           <mat-checkbox align = "right" (change)="MostrarCriterios($event.checked)" [checked]="true"><span style="color: black">Mostrar criterios</span></mat-checkbox> 
+
           <div class="table-container mat-elevation-z8" style="margin-top: 10px;">
 
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns; let i = index" [sticky]="i === 0" [stickyEnd]="i === displayedColumns.length - 1 || column === 'Profesor' || column.startsWith('criterio_')">
+                
                 <th mat-header-cell class="tituloTabla column100 column-0" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" *matHeaderCellDef [mat-sort-header]="column.startsWith('criterio_') ? column : null" [disabled]="!column.startsWith('criterio_') && column !== 'Nota Media'">
                   <div *ngIf="column != 'Nombre' && !column.startsWith('criterio_')">
                     {{column}}
@@ -55,32 +58,39 @@
                   <div *ngIf="column == 'Nombre'">
                     <div class="tag1">Evaluadores</div>
                     <div class="tag2">Evaluados</div>
-                  </div>
+                  </div>            
                   <div *ngIf="column.startsWith('criterio_')">
                     {{NombreCriterio(column)}}
                   </div>
                 </th>
+
                 <td mat-cell class="column100 column-{{i}}" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" [ngClass]="{'hov-column': hoverColumn[i], 'final-column': i === displayedColumns.length - 1, 'shadowed': element[column] === 'X', 'col-profesor': column === 'Profesor', 'col-criterio': column.startsWith('criterio_')}" *matCellDef="let element">
                   {{element[column]}}
                   <div *ngIf="!column.startsWith('criterio_')">
-                    <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id)" mat-icon-button aria-label="Info">
+                    <!--
+                      <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id)" mat-icon-button aria-label="Info">
                       <mat-icon>remove_red_eye</mat-icon>
                     </button>
+                    -->
                     <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id)" mat-icon-button aria-label="Delete">
                       <mat-icon style="color: red;">delete_forever</mat-icon>
                     </button>
                     <button *ngIf="column === 'Profesor' && !isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, true)" mat-icon-button aria-label="Create">
                       <mat-icon>create</mat-icon>
                     </button>
+                    <!--
                     <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, false)" mat-icon-button aria-label="Info">
                       <mat-icon>remove_red_eye</mat-icon>
                     </button>
+                    -->
                     <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id, true)" mat-icon-button aria-label="Delete">
                       <mat-icon style="color: red;">delete_forever</mat-icon>
                     </button>
+                    <!--
                     <button *ngIf="column === 'Nota Media' && isNumber(element[column])" (click)="openDialog(i, element, false, false, true)" mat-icon-button aria-label="Info">
                       <mat-icon>remove_red_eye</mat-icon>
                     </button>
+                    -->
                   </div>
                 </td>
               </ng-container>

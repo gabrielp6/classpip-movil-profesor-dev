@@ -69,6 +69,9 @@ export class SesionService {
   juegosInactivos: any;
   juegosPreparados: any;
   juegosRapidos: any;
+  JuegosDePuntos: Juego[];
+  JuegosDeCuestionariosAcabados: Juego[];
+  juegosDeVotacionUnoATodosAcabados: Juego[];
 
   constructor() { }
   public TomaProfesor(profesor: Profesor) {
@@ -306,6 +309,7 @@ export class SesionService {
 
     return datos;
   }
+
   public DameRankingEquipos(): any {
     return this.rankingEquiposJuegoDePuntos;
   }
@@ -396,11 +400,14 @@ export class SesionService {
     return Tabla;
   }
 
-  public TomaDatosJornadas(
-    jornadas: Jornada[],
-  ) {
-  this.jornadas = jornadas;
-}
+  public TomaDatosJornadas(jornadas: Jornada[],JornadasCompeticion: TablaJornadas[]) {
+    this.JornadasCompeticion = JornadasCompeticion;
+    this.jornadas = jornadas;
+    console.log ('jornadas:');
+    console.log ( this.JornadasCompeticion);
+    console.log ('TablaJornadas:');
+    console.log ( this.jornadas);
+  }
 
   public DameDatosJornadas(): any {
     const datos = {
@@ -497,6 +504,33 @@ export class SesionService {
     this.juegosRapidos = juegosRapidos;
   }
 
+  public TomaJuegosDePuntos(juegosPuntos: Juego[]) {
+    this.JuegosDePuntos = juegosPuntos;
+  }
+  public DameJuegosDePuntos(): Juego[] {
+    return this.JuegosDePuntos;
+  }
+
+  public DameJuegosDeCuestionariosAcabados(): Juego[] {
+    return this.JuegosDeCuestionariosAcabados;
+  }
+  
+  public TomaJuegosDeVotacionUnoATodos(juegosDeVotacionUnoATodos: Juego[]) {
+    console.log ('guardo juegos de votacion Uno A Todos acabados');
+    console.log (juegosDeVotacionUnoATodos);
+    this.juegosDeVotacionUnoATodosAcabados = juegosDeVotacionUnoATodos;
+  }
+
+  public TomaJuegosDeCuestionario(juegosCuestionarios: Juego[]) {
+    console.log ('guardo juegos cuestionarios acabados');
+    console.log (juegosCuestionarios);
+    this.JuegosDeCuestionariosAcabados = juegosCuestionarios;
+  }
+ 
+  
+  public DameJuegosDeVotacionUnoATodosAcabados(): Juego[] {
+   return this.juegosDeVotacionUnoATodosAcabados;
+  }
 
 }
 
