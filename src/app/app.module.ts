@@ -25,12 +25,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule, MatRadioModule } from '@angular/material';
+import { MatInputModule } from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as URL from './URLs/urls';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
  
 
 
@@ -80,6 +84,9 @@ import * as echarts from 'echarts';
     MatStepperModule,
     MatFormFieldModule,
     MatInputModule,
+    MatTableModule,
+    MatListModule,
+    MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

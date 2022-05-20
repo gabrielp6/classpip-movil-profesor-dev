@@ -52,13 +52,15 @@ export class JuegoEvaluacionPage implements OnInit {
 
   ngOnInit() {
 
-    
     this.comServer.EsperoResultadosJuegoEvaluacion().subscribe((data) => {
+
+    
       if (data.profesorId !== this.sesion.profesor.id || data.juegoId !== this.juego.id) {
         return;
       }
       const fila = this.datosTabla.find((item) => item.id === data.evaluadoId);
       if (this.juego.Modo === 'Individual') {
+
         const username = this.alumnos.find((item) => item.id === data.alumnoId).Username;
         if (this.juego.rubricaId > 0) {
           fila[username] = this.CalcularNota(data.respuesta);
@@ -72,7 +74,8 @@ export class JuegoEvaluacionPage implements OnInit {
         alumnoEvaluado.respuestas.push({alumnoId: data.alumnoId, respuesta: data.respuesta});
         console.log('alumnoEvaluado', alumnoEvaluado);
 
-      } else if (this.juego.Modo === 'Equipos') {   
+      } else if (this.juego.Modo === 'Equipos') { 
+
         if (this.equiposRelacion[0].alumnosEvaluadoresIds !== null) {
           const username = this.alumnos.find((item) => item.id === data.alumnoId).Username;
           fila[username] = this.CalcularNota(data.respuesta);
@@ -102,6 +105,7 @@ export class JuegoEvaluacionPage implements OnInit {
       } else {
         fila['Resumen'] = -1;
       }
+
     });
 
     this.juego = this.sesion.DameJuego() as unknown as JuegoDeEvaluacion;
