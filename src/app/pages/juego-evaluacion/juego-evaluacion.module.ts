@@ -9,11 +9,15 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatDialogModule} from '@angular/material/dialog';
-
-
+import {MatDividerModule} from '@angular/material/divider';
+import {MatBadgeModule} from '@angular/material/badge';
+import {MatCardModule} from '@angular/material/card';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { IonicModule } from '@ionic/angular';
-
 import { JuegoEvaluacionPage } from './juego-evaluacion.page';
+import { EvaluacionDialogoComponent } from '../../../components/evaluacion-dialogo/evaluacion-dialogo.component';
+import{ EvaluacionBorrarDialogoComponent } from '../../../components/evaluacion-borrar-dialogo/evaluacion-borrar-dialogo.component';
+
 
 const routes: Routes = [
   {
@@ -34,8 +38,16 @@ const routes: Routes = [
     MatIconModule,
     MatTabsModule,
     MatDialogModule,
+    MatDividerModule,
+    MatBadgeModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [JuegoEvaluacionPage]
+  declarations: [JuegoEvaluacionPage,
+  EvaluacionDialogoComponent, EvaluacionBorrarDialogoComponent],
+  entryComponents: [EvaluacionDialogoComponent, EvaluacionBorrarDialogoComponent]
+  
 })
+
 export class JuegoEvaluacionPageModule {}

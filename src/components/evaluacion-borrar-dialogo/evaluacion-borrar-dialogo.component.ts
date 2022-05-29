@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {DialogData} from '../evaluacion-dialogo/evaluacion-dialogo.component';
-import {JuegoDeEvaluacion} from '../../../clases/JuegoDeEvaluacion';
-import {PeticionesAPIService} from '../../../services';
-import {AlumnoJuegoDeEvaluacion} from '../../../clases/AlumnoJuegoDeEvaluacion';
-import {EquipoJuegoDeEvaluacion} from '../../../clases/EquipoJuegoDeEvaluacion';
+import {DialogData} from '../../components/evaluacion-dialogo/evaluacion-dialogo.component';
+import {JuegoDeEvaluacion} from '../../app/clases/JuegoDeEvaluacion';
+import {PeticionesAPIService} from '../../app/services';
+import {AlumnoJuegoDeEvaluacion} from '../../app/clases/AlumnoJuegoDeEvaluacion';
+import {EquipoJuegoDeEvaluacion} from '../../app/clases/EquipoJuegoDeEvaluacion';
 
 export interface DialogData {
   juego: JuegoDeEvaluacion;

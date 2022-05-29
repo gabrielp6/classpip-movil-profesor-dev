@@ -5,12 +5,13 @@ import {Alumno, Equipo, Rubrica} from '../../clases';
 import {AlumnoJuegoDeEvaluacion} from '../../clases/AlumnoJuegoDeEvaluacion';
 import {EquipoJuegoDeEvaluacion} from '../../clases/EquipoJuegoDeEvaluacion';
 import {MatDialog} from '@angular/material/dialog';
-import {EvaluacionDialogoComponent} from './evaluacion-dialogo/evaluacion-dialogo.component';
-import {EvaluacionBorrarDialogoComponent} from './evaluacion-borrar-dialogo/evaluacion-borrar-dialogo.component';
+import {EvaluacionDialogoComponent} from '../../../components/evaluacion-dialogo/evaluacion-dialogo.component';
+import {EvaluacionBorrarDialogoComponent} from '../../../components/evaluacion-borrar-dialogo/evaluacion-borrar-dialogo.component';
 import Swal from 'sweetalert2';
 import { Location } from '@angular/common';
 import { MatSort } from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import { NavController} from '@ionic/angular';
 
 
 @Component({
@@ -47,6 +48,7 @@ export class JuegoEvaluacionPage implements OnInit {
     private calculos: CalculosService,
     private dialog: MatDialog,
     private location: Location,
+    public navCtrl: NavController,
     private comServer: ComServerService
   ) { }
 
@@ -54,7 +56,6 @@ export class JuegoEvaluacionPage implements OnInit {
 
     this.comServer.EsperoResultadosJuegoEvaluacion().subscribe((data) => {
 
-    
       if (data.profesorId !== this.sesion.profesor.id || data.juegoId !== this.juego.id) {
         return;
       }
@@ -112,57 +113,49 @@ export class JuegoEvaluacionPage implements OnInit {
 
     console.log(this.juego);
     console.log(this.juego.rubricaId);
-    
-    
+  
     if (this.juego.rubricaId > 0) {
-      this.peticionesAPI.DameRubrica(this.juego.rubricaId)
-        .subscribe((res: Rubrica) => {
+      this.peticionesAPI.DameRubrica(this.juego.rubricaId).subscribe((res: Rubrica) => {
           this.rubrica = res;
+          console.log ('Rubrica');
+          console.log(this.rubrica);
       });
     }
-
-    
+ 
     if (this.juego.Modo === 'Individual') {
-      this.peticionesAPI.DameRelacionAlumnosJuegoDeEvaluacion(this.juego.id)
-        .subscribe((res: AlumnoJuegoDeEvaluacion[]) => {
-          this.alumnosRelacion = res;
-          console.log ('vamos a construir la tabla');
-          console.log ('Alumnos relacion ooooooooooooooooo');
-          console.log (this.alumnosRelacion);
-          this.ConstruirTablaIndividual();
-          console.log ('VAMOS A PREPARAR ANALISIS');
-        });
-      this.peticionesAPI.DameAlumnosJuegoDeEvaluacion(this.juego.id)
-        .subscribe((res: Alumno[]) => {
-          this.alumnos = res;
-          this.ConstruirTablaIndividual();
-        });
+      this.peticionesAPI.DameRelacionAlumnosJuegoDeEvaluacion(this.juego.id).subscribe((res: AlumnoJuegoDeEvaluacion[]) => {
+        this.alumnosRelacion = res;
+        console.log ('vamos a construir la tabla');
+        console.log ('Alumnos relacion');
+        console.log (this.alumnosRelacion);
+        this.ConstruirTablaIndividual();
+        console.log ('VAMOS A PREPARAR ANALISIS');
+      });
+      this.peticionesAPI.DameAlumnosJuegoDeEvaluacion(this.juego.id).subscribe((res: Alumno[]) => {
+        this.alumnos = res;
+        this.ConstruirTablaIndividual();
+      });
     } else if (this.juego.Modo === 'Equipos') {
       // NECESITO LA LISTA DE ALUMNOS DEL GRUPO EN CASO DE EVALUACION DE EQUIPOS POR ALUMNOS, SIN RUBRICA
       // DE ESTA LISTA SACARÉ LOS NOMBRES DE LOS ALUMNOS PARA MOSTRARLOS
-      this.peticionesAPI.DameAlumnosGrupo(this.juego.grupoId)
-      .subscribe((res: Alumno[]) => {
+      this.peticionesAPI.DameAlumnosGrupo(this.juego.grupoId).subscribe((res: Alumno[]) => {
         this.alumnos = res;
       });
-      this.peticionesAPI.DameRelacionEquiposJuegoDeEvaluacion(this.juego.id)
-        .subscribe((res: EquipoJuegoDeEvaluacion[]) => {
-          this.equiposRelacion = res;
-          this.equiposRelacion.forEach((equipoRelacion: EquipoJuegoDeEvaluacion) => {
-            this.peticionesAPI.DameAlumnosEquipo(equipoRelacion.equipoId)
-              .subscribe((res2: Alumno[]) => {
-                const obj = {equipoId: equipoRelacion.equipoId, alumnos: res2};
-                this.alumnosDeEquipo.push(obj);
-                this.ConstruirTablaEquipos();
-              });
+      this.peticionesAPI.DameRelacionEquiposJuegoDeEvaluacion(this.juego.id).subscribe((res: EquipoJuegoDeEvaluacion[]) => {
+        this.equiposRelacion = res;
+        this.equiposRelacion.forEach((equipoRelacion: EquipoJuegoDeEvaluacion) => {
+          this.peticionesAPI.DameAlumnosEquipo(equipoRelacion.equipoId).subscribe((res2: Alumno[]) => {
+            const obj = {equipoId: equipoRelacion.equipoId, alumnos: res2};
+            this.alumnosDeEquipo.push(obj);
+            this.ConstruirTablaEquipos();
           });
         });
-      this.peticionesAPI.DameEquiposJuegoDeEvaluacion(this.juego.id)
-        .subscribe((res: Equipo[]) => {
-          this.equipos = res;
-          this.ConstruirTablaEquipos();
-        });
-    }
-    
+      });
+      this.peticionesAPI.DameEquiposJuegoDeEvaluacion(this.juego.id).subscribe((res: Equipo[]) => {
+        this.equipos = res;
+        this.ConstruirTablaEquipos();
+      });
+    }  
   }
 
   CalcularNota(respuesta: any[]): number {
@@ -389,7 +382,7 @@ export class JuegoEvaluacionPage implements OnInit {
     }
     console.log ('ya tengo las columnas');
     console.log (this.displayedColumns);
-    // @ts-ignore
+   
     this.dataSource = new MatTableDataSource (this.datosTabla);
     this.dataSource.sort = this.sort;
     console.log ('listo');
@@ -648,6 +641,7 @@ export class JuegoEvaluacionPage implements OnInit {
     }
   }
   openDialog(i: number, c: any, profesor: boolean = false, editar: boolean = false, global: boolean = false): void {
+
     if (profesor) {
       const dialogRef = this.dialog.open(EvaluacionDialogoComponent, {
         width: '800px',
@@ -787,7 +781,6 @@ export class JuegoEvaluacionPage implements OnInit {
         this.calculos.EliminarJuegoDeEvaluacion(this.juego);
         this.location.back();
         Swal.fire('Juego eliminado correctamente', ' ', 'success');
-
       }
     });
   }
@@ -807,7 +800,6 @@ export class JuegoEvaluacionPage implements OnInit {
       this.equiposRelacion.forEach (equipo => {
         this.peticionesAPI.PonNotaFinalEquipoJuegoDeEvaluacion (equipo).subscribe();
       });
-
     }
   }
 
@@ -824,7 +816,6 @@ export class JuegoEvaluacionPage implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.GuardarNotasFinales();
-
         this.juego.JuegoActivo = false;
         this.peticionesAPI.CambiaEstadoJuegoDeEvaluacion (this.juego)
         .subscribe(res => {
@@ -854,14 +845,11 @@ export class JuegoEvaluacionPage implements OnInit {
 
   PrepararAnalisisDiscrepancia () {
     this.tablaLista = false;
-
     // En esta tabla guardaremos todos los indices de coincidencia (uno por cada elemento de cada criterio)
-
     this.tablaDiscrepancias = [];
     this.rubrica.Criterios.forEach (criterio => {
       this.tablaDiscrepancias.push (Array(criterio.Elementos.length).fill (0));
     });
-
 
     this.numRespuestas = 0;
     let numEvaluaciones = 0;
@@ -873,7 +861,6 @@ export class JuegoEvaluacionPage implements OnInit {
       if (this.equiposRelacion[0].equiposEvaluadoresIds) {
         this.numEvaluadores = this.equiposRelacion[0].equiposEvaluadoresIds.length;
       } else {
-        // Juego de equipo con evaluación individual
         this.numEvaluadores = this.equiposRelacion[0].alumnosEvaluadoresIds.length;
       }
     }
@@ -933,11 +920,11 @@ export class JuegoEvaluacionPage implements OnInit {
     console.log (this.tablaDiscrepancias);
     this.tablaLista = true;
   }
+
   onTabChanged($event) {
     if ($event.index === 1) {
       this.PrepararAnalisisDiscrepancia();
     }
-   
   }
 
 }
