@@ -1,0 +1,87 @@
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Puntuacion</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="contenedor" align="center">
+    <div class="enColumna" align="center" >
+
+      <form [formGroup]="myForm1" class = "enFila" style="width: 80%" align="center">
+  
+        <div style="margin-top: 15px;">
+
+          <span>Introduzca el Número de Puntos y Seleccione la Posición a la que desea asignarlos: </span>
+          
+          <div>
+            <mat-form-field>
+              <mat-label>Introduzca los Puntos deseados</mat-label>
+              <input matInput formControlName="NuevaPuntuacion" placeholder="Escriba los Puntos" requiered [(ngModel)]="NuevaPuntuacion" (change) = "ActualizarBotonTabla()">
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 10px">
+          <button type="button"class="btn Aceptar" [disabled]="botonTablaDesactivado" (click) = AnadirPuntos()>Establecer Puntuación</button>
+        </div>
+
+        <br>
+
+      </form>
+  
+      <form style="width: 100%" align="center">
+        <table style="width: 100%" align="center" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
+              <mat-checkbox
+                (change)="$event ? MasterToggle() : null; ActualizarBotonTabla ();"
+                [checked]="selection.hasValue() && IsAllSelected()"
+                [indeterminate]="selection.hasValue() && !IsAllSelected()">
+              </mat-checkbox>
+            </th>
+
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(row) : null; ActualizarBotonTabla ();"
+                [checked]="selection.isSelected(row)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+  
+          <!-- Posicion Column -->
+          <ng-container matColumnDef="Posicion">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Posición </th>
+            <td mat-cell style= "text-align: center" *matCellDef="let tablaPuntuacion"> {{tablaPuntuacion.Posicion}} </td>
+          </ng-container>
+  
+          <!-- Puntos Column -->
+          <ng-container matColumnDef="Puntos">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Puntos </th>
+            <td mat-cell *matCellDef="let tablaPuntuacion; "> {{tablaPuntuacion.Puntuacion}} </td>
+          </ng-container>
+  
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsTablaPuntuacion"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsTablaPuntuacion;"></tr>
+  
+        </table>
+      </form>
+  
+      <br>
+      
+      <div style="margin-top: 10px" align="center">
+        <button type="button"class="btn Agregar" (click) = AnadirJugadorconPuntos()>Añadir Fila<i class="material-icons">add</i></button>
+        <button type="button"class="btn Eliminar" (click) = EliminarJugadorconPuntos()>Eliminar Fila<i class="material-icons">delete</i></button>
+      </div>
+
+    </div>
+  </div>
+    
+</ion-content>

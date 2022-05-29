@@ -7,211 +7,752 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content align="center">
 
-  <div class="contenedor">
-    <div class="enColumna">
-      <div class = "enFila" style="width: 60%; align-content: left;"  >
-        <div>
-          Seleccione
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Fórmula Uno'">
+
+    <div class="contenedor" align="center">
+      <div class="enColumna" align="center">
+
+        <div class = "enFila" style="width: 60%; align-content: left;" align="center" >
+       
           <br>
-          <mat-form-field>
-            <mat-label>Jornada</mat-label>
-            <select matNativeControl [(ngModel)]="jornadaId"  (change) = "SeleccionaJornada()">
-              <option *ngFor="let jornada of JornadasCompeticion" [value]="jornada.id">
 
-                <p *ngIf= "!Disputada (jornada.id)">{{jornada.NumeroDeJornada}}</p>
-                <p *ngIf= "Disputada (jornada.id)">{{jornada.NumeroDeJornada}} (completada)</p>
-              </option>
-            </select>
-          </mat-form-field>
-        </div>
+          <div align="center">
+            <br>
+            Seleccione
+            <br>
+            <br>
+            <mat-form-field>
+              <mat-label>Jornada</mat-label>
+                <select matNativeControl [(ngModel)]="jornadaId"  (change) = "SeleccionaJornada()">
+                  <option *ngFor="let jornada of JornadasCompeticion" [value]="jornada.id">
+                    <p *ngIf= "!Disputada (jornada.id)">{{jornada.NumeroDeJornada}}</p>
+                    <p *ngIf= "Disputada (jornada.id)">{{jornada.NumeroDeJornada}} (completada)</p>
+                  </option>
+                </select>
+            </mat-form-field>
+          </div>
 
-        <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)">
-          <div>
+          <div *ngIf= "!Disputada (jornadaId) && jornadaId !== undefined" align="center">
             <br>
             <mat-form-field style="margin-left: 10%;">
               <mat-label>Modo</mat-label>
-              <select matNativeControl [(ngModel)]="modoAsignacionId" (change) = "SeleccionaModo()">
-                <option *ngFor="let modo of modoAsignacion" [value]="modo.id">
-                  {{modo.modo}}
+                <select matNativeControl [(ngModel)]="modoAsignacionId" (change) = "SeleccionaModo()">
+                  <option *ngFor="let modo of modoAsignacion" [value]="modo.id">
+                    {{modo.modo}}
+                  </option>
+                </select>
+            </mat-form-field>
+          </div>
+    
+          <div *ngIf="(modoAsignacionId == 3) && (juegosDisponibles.length !== 0) && !Disputada (jornadaId)"  style="margin-left: 5%;" align="center">
+            Seleccione un Juego
+            <br>
+            <mat-form-field >
+              <mat-label>Juegos</mat-label>
+              <select matNativeControl [(ngModel)]="juegoDisponibleSeleccionadoID" (change) = "TraerJuegoDisponibleSeleccionado()">
+                <option *ngFor="let juego of juegosDisponibles" [value]="juego.id">
+                  {{juego.NombreJuego}}
                 </option>
               </select>
             </mat-form-field>
           </div>
+    
+        </div>
+    
+        <!-- El boton de asignar mediante juego de puntos hay que visualizarlo si se a elegido esa opción y ya se ha elegido el juego de puntos -->
+        <!-- <div  *ngIf="modoAsignacionId == 3 && juegodePuntosSeleccionadoID !== undefined " style="margin-top: 10px;"  align="center">
+        <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadoresJuegoPuntos()"  [disabled]="botonAsignarPuntosDesactivado">Asignar Ganadores<i class="material-icons">emoji_events </i></button>
+        </div> -->
+    
+        <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)" align="center">
+
+          <div  *ngIf="(modoAsignacionId == 3) && (juegoDisponibleSeleccionadoID !== undefined)" style="margin-top: 10px; margin-right: 10px;" align="center">
+            <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadoresJuegoDisponibleSeleccionado()" [disabled]="botonAsignarJuegoDesactivado">Asignar ganadores mediante juego seleccionado<i class="material-icons">emoji_events </i></button>
+          </div>
+    
+          <!-- boton para asignar de forma aleatoria -->
+          <div  *ngIf="modoAsignacionId == 2" style="margin-top: 10px;"  align="center">
+            <button style= "width: 100%"  type="button"class="btn Aceptar"  (click) = AsignarGanadorAleatoriamente()  [disabled]="botonAsignarAleatorioDesactivado">Asignar ganadores aleatoriamente<i class="material-icons">emoji_events </i></button>
+          </div>
+
+        </div>
+    
+        <br>
+    
+        <!-- Mensaje en caso de que la jornada ya se haya disputado -->
+        <div style="width: 100%" *ngIf= "jornadaId != undefined && Disputada (jornadaId)">
+          <p class="subtitulo" align="center">Esta jornada ya se ha disputado</p>
+          <p class="subtitulo" align="center">Resultados de esta jornada</p>
         </div>
 
+        <!-- Tabla para mostrar los resultados de la jornada, si ya se ha disputado o si la asignación es aleatoria o por juego de puntos (si es manual
+        no queremos que salga la tabla aun, porque tienen que salir las opciones para elegir ganadores de forma manual) -->
+        <!-- Hay una tabla para cada modo (Individual o Equipo) porque las columnas son diferentes -->
+        
+        <table style="width: 80%" align="center" *ngIf= "(juegoSeleccionado.Modo == 'Individual') && (Disputada (jornadaId) || !Disputada(jornadaId) && (modoAsignacionId != 1))" mat-table [dataSource]="dataSourceJornada" class="mat-elevation-z8">
+   
+            <!-- Posición Column -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%"  align="center">Nombre</th>
+            <td mat-cell *matCellDef="let participante"> {{participante.nombre}} </td>
+          </ng-container>
 
-        <div *ngIf="(modoAsignacionId == 3) && (juegosDisponibles.length !== 0)  && !Disputada (jornadaId)"  style="margin-left: 5%;">
-          Seleccione un Juego
+          <!-- Nombre Alumno Column -->
+          <ng-container matColumnDef="primer">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%"  align="center">Primer Apellido</th>
+            <td mat-cell *matCellDef="let participante"> {{participante.primerApellido}} </td>
+          </ng-container>
+          <!-- Nombre Alumno Column -->
+          <ng-container matColumnDef="segundo">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%"  align="center">Segundo Apellido</th>
+            <td mat-cell *matCellDef="let participante"> {{participante.segundoApellido}} </td>
+          </ng-container>
+
+          <!-- Puntos Column -->
+          <ng-container matColumnDef="puntos">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%"  align="center">Puntuacion Jornada</th>
+              <td mat-cell *matCellDef="let participante"> {{participante.puntos}} </td>
+          </ng-container>
+          
+          <tr mat-header-row *matHeaderRowDef="columnasJornadaAlumnos; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnasJornadaAlumnos;"></tr>  
+
+        </table>
+
+        <br>
+        <br>
+
+        <table style="width: 80%" align="center" *ngIf= "(juegoSeleccionado.Modo !== 'Individual') && (Disputada (jornadaId) || !Disputada(jornadaId) && (modoAsignacionId != 1))" mat-table [dataSource]="dataSourceJornada" class="mat-elevation-z8">
+        
+          <!-- Posición Column -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%"  align="center">Nombre</th>
+            <td mat-cell *matCellDef="let participante"> {{participante.nombre}} </td>
+          </ng-container>
+
+          <!-- Puntos Column -->
+          <ng-container matColumnDef="puntos">
+            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%"  align="center">Puntos en la Jornada</th>
+            <td mat-cell *matCellDef="let participante"> {{participante.puntos}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnasJornadaEquipos; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnasJornadaEquipos;"></tr>   
+
+        </table>
+
+        <br>
+        <br>
+
+        <mat-tab-group  style="width: 90%" align="center"  *ngIf="!Disputada (jornadaId) && modoAsignacionId == 1" (selectedTabChange)="cambioTab($event)">
+
+          <mat-tab align="center" label=" Puntos Masivos">
+            <div class = "enFila">
+              <div>
+                <mat-card style = 'width: 100%' class="panel">
+
+                  <mat-card-header>
+                    <mat-card-title>Clasificación de la Jornada</mat-card-title>
+                  </mat-card-header>
+    
+                  <mat-card-content>
+                    <div class="form-group">
+                      <label  *ngIf="juegoSeleccionado.Modo === 'Individual'" for="inputNombres">Pega/escribe aquí, linea a linea, nombre y dos apellidos (separados por blancos) de los {{juegoSeleccionado.NumeroParticipantesPuntuan}} alumnos que puntúan (como en el ejemplo), de mayor puntuación a menor (como en el ejemplo)</label>
+                      <label *ngIf="juegoSeleccionado.Modo !== 'Individual'" for="inputNombres">Pega/escribe aquí, linea a linea, el nombre de los {{juegoSeleccionado.NumeroParticipantesPuntuan}} equipos que puntúan (como en el ejemplo), de mayor puntuación a menor</label>
+                      <textarea *ngIf="juegoSeleccionado.Modo === 'Individual'" rows="5" autofocus (keyup)="DisabledTexto()" matInput class="form-control" placeholder= "Àngels Català Sebastià Alejandro Gimeno Marés" requiered [(ngModel)]="textoParticipantesPuntuan"></textarea>
+                      <textarea *ngIf="juegoSeleccionado.Modo !== 'Individual'" rows="5" autofocus (keyup)="DisabledTexto()" matInput class="form-control" placeholder="Los Leones Los Elefantes" requiered [(ngModel)]="textoParticipantesPuntuan"></textarea>
+                    </div>
+                  </mat-card-content>
+
+                  <mat-card-actions  align="end">
+                    <button style="margin: 5px; width: 90%" (click) = "LimpiarCamposTexto()"  [disabled]="isDisabledAnadirGanadores" type="button" class="btn Back" >Limpiar campos<i class="material-icons">delete_sweep </i></button>
+                    <button  style="margin: 5px; width: 90%" (click) = "AsignarMasivoManualmente()" [disabled]="isDisabledAnadirGanadores"type="button" class="btn Aceptar" >Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button>
+                    <!-- <button style= "width: 100%"  type="button"class="btn Aceptar"  (click) = AsignarGanadoresAleatoriamente()  [disabled]="botonAsignarAleatorioDesactivado">Asignar Ganadores aleatoriamente<i class="material-icons">emoji_events </i></button> -->
+                  </mat-card-actions>
+
+                </mat-card>
+              </div>
+            </div>
+
+          </mat-tab>
+
           <br>
-          <mat-form-field >
-            <mat-label>Juegos</mat-label>
-            <select matNativeControl [(ngModel)]="juegoDisponibleSeleccionadoID" (change) = "TraerJuegoDisponibleSeleccionado()">
-              <option *ngFor="let juego of juegosDisponibles" [value]="juego.id">
-                {{juego.NombreJuego}}
-              </option>
-            </select>
-          </mat-form-field>
-        </div>
+          <br>
 
+          <mat-tab align="center" label="Puntos por Participantes">
+    
+            <!-- Hay un form para cada modo (individual o equipo) porque las columnas de las tablas son diferentes -->
+            <form *ngIf="juegoSeleccionado.Modo == 'Individual'" style="width: 100%">
+              <br>
+              <div class="subtitulo"> Alumnos que han puntuado en esta jornada</div>
+              <br>
+              <mat-divider></mat-divider>
+              <table style="width: 100%; table-layout:fixed;"  mat-table [dataSource]="dataSourceElegidos" class="example-container mat-elevation-z8">
+    
+                <ng-container matColumnDef="posicion">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Posicion</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante; index as pos"> {{pos+1}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="nombre">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Nombre</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.nombre}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="primer">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Primer Apellido</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.primerApellido}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="segundo">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Segundo Apellido</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.segundoApellido}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="quita" stickyEnd>
+                      <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+                      <td mat-cell *matCellDef="let participante">
+                          <button (click) = "QuitarGanador(participante)" mat-icon-button matTooltip = "Quitar a {{participante.nombre}} de los ganadores">
+                            <i class="material-icons red md-36">delete</i>
+                          </button>
+                      </td>
+                </ng-container>
+    
+                <tr mat-header-row *matHeaderRowDef="columnasAlumnosElegidos; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasAlumnosElegidos;"></tr>
+    
+              </table>
+
+              <br>
+              <br>
+
+              <br>
+              <div class="subtitulo"> Seleccione los alumnos que puntuan </div>
+              <br>
+    
+              <mat-divider></mat-divider>
+    
+              <table style="width: 100%; table-layout:fixed;"  mat-table [dataSource]="dataSourceParticipantes" class="example-container mat-elevation-z8">
+    
+                <ng-container matColumnDef="nombre">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Nombre</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.nombre}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="primer">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Primer Apellido</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.primerApellido}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="segundo">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Segundo Apellido</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.segundoApellido}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="pon" stickyEnd>
+                      <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+                      <td mat-cell *matCellDef="let participante">
+                          <button (click) = "AgregarGanador(participante)" mat-icon-button matTooltip = "Añadir a {{participante.nombre}} a los ganadores">
+                              <i class="material-icons green md-36">add_circle_outline</i>
+                          </button>
+                      </td>
+                </ng-container>
+    
+                <tr mat-header-row *matHeaderRowDef="columnasAlumnosParticipantes; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasAlumnosParticipantes;"></tr>
+
+              </table>
+
+              <br>
+              <br>
+
+              <mat-dialog-actions align= "center">
+                <button  style="margin: 5px; width: 90%" type="button" class="btn Aceptar" (click)="AsignarGanadoresElegidos()" cdkFocusInitial>Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button>
+              </mat-dialog-actions>
+               
+            </form>
+    
+            <form *ngIf="juegoSeleccionado.Modo != 'Individual'" style="width: 100%">
+
+              <br>
+              <div class="subtitulo"> Equipos que han puntuado en esta jornada</div>
+              <br>
+              <mat-divider></mat-divider>
+
+              <table style="width: 100%; table-layout:fixed;"  mat-table [dataSource]="dataSourceElegidos" class="example-container mat-elevation-z8">
+    
+                <ng-container matColumnDef="posicion">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 20%" >Posicion</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante; index as pos"> {{pos+1}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="nombre">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 40%" >Nombre</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.nombre}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="quita" stickyEnd>
+                      <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+                      <td mat-cell align = 'right' *matCellDef="let participante">
+                        <button (click) = "QuitarGanador(participante)" mat-icon-button matTooltip = "Quitar a {{participante.nombre}} de los ganadores">
+                          <i class="material-icons red md-36">delete</i>
+                        </button>
+                      </td>
+                </ng-container>
+    
+                <tr mat-header-row *matHeaderRowDef="columnasEquiposElegidos; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasEquiposElegidos;"></tr>
+    
+              </table>
+
+              <br>
+              <br>
+
+              <br>
+              <div class="subtitulo"> Seleccione los equipos que puntuan </div>
+              <br>
+    
+              <mat-divider></mat-divider>
+    
+              <table style="width: 100%; table-layout:fixed;"  mat-table [dataSource]="dataSourceParticipantes" class="example-container mat-elevation-z8">
+  
+                <ng-container matColumnDef="nombre">
+                  <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"  style="width: 40%" >Nombre</th>
+                  <td mat-cell align = 'left' *matCellDef="let participante"> {{participante.nombre}} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="pon" stickyEnd>
+                      <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+                      <td mat-cell align = 'right' *matCellDef="let participante">
+                          <button (click) = "AgregarGanador(participante)" mat-icon-button matTooltip = "Añadir a {{participante.nombre}} a los ganadores">
+                              <i class="material-icons green md-36">add_circle_outline</i>
+                          </button>
+                      </td>
+                </ng-container>
+    
+                <tr mat-header-row *matHeaderRowDef="columnasEquiposParticipantes; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasEquiposParticipantes;"></tr>
+  
+              </table>
+
+              <br>
+              <br>
+
+              <mat-dialog-actions align= "center">
+                <button  style="margin: 5px; width: 90%"  type="button" class="btn Aceptar" (click)="AsignarGanadoresElegidos()" cdkFocusInitial>Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button>
+                <!-- <button  style="margin: 5px; width: 40%" type="button" class="btn Aceptar" (click)="AsignarGanadoresElegidos()" cdkFocusInitial>Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button> -->
+              </mat-dialog-actions>
+       
+            </form>
+
+          </mat-tab>
+          <br>
+        </mat-tab-group>
+        <br>
       </div>
-
-
-      <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)">
-      <div  *ngIf="(modoAsignacionId == 3) && (juegoDisponibleSeleccionadoID !== undefined)" style="margin-top: 10px; margin-right: 10px;">
-        <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadoresJuegoDisponibleSeleccionado()"
-        [disabled]="botonAsignarJuegoDesactivado">Asignar ganadores mediante juego seleccionado<i class="material-icons">emoji_events </i></button>
-      </div>
-
-      <div  *ngIf="modoAsignacionId == 1" style="margin-top: 10px; margin-right: 10px;">
-        <button style= "width: 100%" type="button"class="btn Aceptar" (click)= "AsignarGanadorManualmente()" [disabled]="botonAsignarManualDesactivado">Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button>
-      </div>
-
-      <div  *ngIf="modoAsignacionId == 2" style="margin-top: 10px; margin-right: 10px;">
-        <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadorAleatoriamente()"  [disabled]="botonAsignarAleatorioDesactivado">Asignar ganadores aleatoriamente<i class="material-icons">emoji_events </i></button>
-      </div>
-
-      <br>
-    </div>
-    <div style="width: 100%" *ngIf = "jornadaId != undefined && Disputada (jornadaId)">
-    <p class="subtitulo" align="center">Esta jornada ya se ha disputado</p>
-    <p class="subtitulo" align="center">Resultados de esta jornada</p>
-    </div>
-
-
-      <form style="width: 100%">
-        <table  style="width: 80%" align="center" *ngIf="juegoSeleccionado.Modo === 'Individual'" mat-table [dataSource]="dataSourceTablaGanadorIndividual" class="mat-elevation-z8">
-
-          <!--    La primera columna será un checkbox -->
-          <ng-container matColumnDef="select1">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selectionUno.toggle(row) : null; Verificar (row, 1)"
-                    [checked]="selectionUno.isSelected(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-
-          <!-- Nombre Jugador 1 Column -->
-          <ng-container matColumnDef="nombreJugadorUno">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Alumno 1 </th>
-            <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorUno}} </td>
-          </ng-container>
-
-          <!--    La primera columna será un checkbox   -->
-          <ng-container matColumnDef="select2">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selectionDos.toggle(row) : null; Verificar (row, 2)"
-                    [checked]="selectionDos.isSelected(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-          <!-- Nombre Jugador 2 Column -->
-          <ng-container matColumnDef="nombreJugadorDos">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Alumno 2 </th>
-            <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorDos}} </td>
-          </ng-container>
-
-          <!--    La primera columna será un checkbox -->
-          <ng-container matColumnDef="select3">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selectionTres.toggle(row) : null; Verificar (row, 3)"
-                    [checked]="selectionTres.isSelected(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-          <!-- Nombre Empate Column -->
-          <ng-container matColumnDef="Empate">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Empate </th>
-            <td mat-cell *matCellDef="let enfrentamiento"> Empate </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumnsAlumno"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumno;"></tr>
-
-        </table>
-
-        <table style="width: 80%" align="center" *ngIf="juegoSeleccionado.Modo != 'Individual'" mat-table [dataSource]="dataSourceTablaGanadorEquipo" class="mat-elevation-z8">
-
-          <!--    La primera columna será un checkbox -->
-          <ng-container matColumnDef="select1">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selectionUno.toggle(row) : null; Verificar (row, 1)"
-                    [checked]="selectionUno.isSelected(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-                            <!-- Nombre Jugador 1 Column -->
-          <ng-container matColumnDef="nombreJugadorUno">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Equipo 1 </th>
-            <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorUno}} </td>
-          </ng-container>
-
-
-          <!--    La segunda columna será un checkbox   -->
-          <ng-container matColumnDef="select2">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selectionDos.toggle(row) : null;  Verificar (row, 2)"
-                    [checked]="selectionDos.isSelected(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-                        <!-- Nombre Jugador 2 Column -->
-          <ng-container matColumnDef="nombreJugadorDos">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Equipo 2 </th>
-            <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorDos}} </td>
-          </ng-container>
-
-
-          <!--    La tercera columna será un checkbox -->
-          <ng-container matColumnDef="select3">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selectionTres.toggle(row) : null;   Verificar (row, 3)"
-                    [checked]="selectionTres.isSelected(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-                          <!-- Nombre Empate Column -->
-          <ng-container matColumnDef="Empate">
-            <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Empate </th>
-            <td mat-cell *matCellDef="let enfrentamiento"> Empate </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumnsAlumno"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumno;"></tr>
-
-        </table>
-      </form>
-      <br>
-      <button type="button" class="btn Back" (click)="goBack()">Volver </button>
-    </div>
+    </div>  
   </div>
 
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Liga'" align="center">
+  
+    <div class="contenedor" align="center">
+      <div class="enColumna" align="center">
+        <div class = "enFila" style="width: 60%; align-content: left;" align="center" >
+
+          <div align="center">
+            <br>
+            Seleccione
+            <br>
+            <mat-form-field>
+              <mat-label>Jornada</mat-label>
+                <select matNativeControl [(ngModel)]="jornadaId"  (change) = "SeleccionaJornada()">
+                  <option *ngFor="let jornada of JornadasCompeticion" [value]="jornada.id">
+                    <p *ngIf= "!Disputada (jornada.id)">{{jornada.NumeroDeJornada}}</p>
+                    <p *ngIf= "Disputada (jornada.id)">{{jornada.NumeroDeJornada}} (completada)</p>
+                  </option>
+                </select>
+            </mat-form-field>
+          </div>
+
+          <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)" align="center">
+            <br>
+            <div>
+              <br>
+              <mat-form-field style="margin-left: 10%;">
+                <mat-label>Modo</mat-label>
+                <select matNativeControl [(ngModel)]="modoAsignacionId" (change) = "SeleccionaModo()">
+                  <option *ngFor="let modo of modoAsignacion" [value]="modo.id">
+                    {{modo.modo}}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div *ngIf="(modoAsignacionId == 3) && (juegosDisponibles.length !== 0)  && !Disputada (jornadaId)"  style="margin-left: 5%;" align="center">
+            Seleccione un Juego
+            <br>
+            <mat-form-field >
+              <mat-label>Juegos</mat-label>
+              <select matNativeControl [(ngModel)]="juegoDisponibleSeleccionadoID" (change) = "TraerJuegoDisponibleSeleccionado()">
+                <option *ngFor="let juego of juegosDisponibles" [value]="juego.id">
+                  {{juego.NombreJuego}}
+                </option>
+              </select>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+
+        <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)" align="center">
+          <div  *ngIf="(modoAsignacionId == 3) && (juegoDisponibleSeleccionadoID !== undefined)" style="margin-top: 10px; margin-right: 10px;">
+            <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadoresJuegoDisponibleSeleccionado()"
+            [disabled]="botonAsignarJuegoDesactivado">Asignar ganadores mediante juego seleccionado<i class="material-icons">emoji_events </i></button>
+          </div>
+
+          <div  *ngIf="modoAsignacionId == 1" style="margin-top: 10px; margin-right: 10px;" align="center">
+            <button style= "width: 100%" type="button"class="btn Aceptar" (click)= "AsignarGanadorManualmente()" [disabled]="botonAsignarManualDesactivado">Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button>
+          </div>
+
+          <div  *ngIf="modoAsignacionId == 2" style="margin-top: 10px; margin-right: 10px;" align="center">
+            <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadorAleatoriamente()"  [disabled]="botonAsignarAleatorioDesactivado">Asignar ganadores aleatoriamente<i class="material-icons">emoji_events </i></button>
+          </div>
+
+          <br>
+          <br>
+
+        </div>
+
+        <div style="width: 100%" *ngIf = "jornadaId != undefined && Disputada (jornadaId)">
+        <p class="subtitulo" align="center">Esta jornada ya se ha disputado</p>
+        <p class="subtitulo" align="center">Resultados de esta jornada</p>
+        </div>
+
+
+        <form style="width: 100%" align="center">
+          <br>
+          <table  style="width: 80%" align="center" *ngIf="juegoSeleccionado.Modo === 'Individual'" mat-table [dataSource]="dataSourceTablaGanadorIndividual" class="mat-elevation-z8">
+
+            <!--    La primera columna será un checkbox -->
+            <ng-container matColumnDef="select1">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionUno.toggle(row) : null; Verificar (row, 1)"
+                      [checked]="selectionUno.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+
+            <!-- Nombre Jugador 1 Column -->
+            <ng-container matColumnDef="nombreJugadorUno">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Alumno 1 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorUno}} </td>
+            </ng-container>
+
+            <!--    La primera columna será un checkbox   -->
+            <ng-container matColumnDef="select2">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionDos.toggle(row) : null; Verificar (row, 2)"
+                      [checked]="selectionDos.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- Nombre Jugador 2 Column -->
+            <ng-container matColumnDef="nombreJugadorDos">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Alumno 2 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorDos}} </td>
+            </ng-container>
+
+            <!--    La primera columna será un checkbox -->
+            <ng-container matColumnDef="select3">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionTres.toggle(row) : null; Verificar (row, 3)"
+                      [checked]="selectionTres.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- Nombre Empate Column -->
+            <ng-container matColumnDef="Empate">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Empate </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> Empate </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsAlumno"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumno;"></tr>
+
+          </table>
+          <br>
+          <br>
+
+          <table style="width: 80%" align="center" *ngIf="juegoSeleccionado.Modo != 'Individual'" mat-table [dataSource]="dataSourceTablaGanadorEquipo" class="mat-elevation-z8">
+
+            <!--    La primera columna será un checkbox -->
+            <ng-container matColumnDef="select1">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionUno.toggle(row) : null; Verificar (row, 1)"
+                      [checked]="selectionUno.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+                              <!-- Nombre Jugador 1 Column -->
+            <ng-container matColumnDef="nombreJugadorUno">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Equipo 1 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorUno}} </td>
+            </ng-container>
+
+
+            <!--    La segunda columna será un checkbox   -->
+            <ng-container matColumnDef="select2">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionDos.toggle(row) : null;  Verificar (row, 2)"
+                      [checked]="selectionDos.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+                          <!-- Nombre Jugador 2 Column -->
+            <ng-container matColumnDef="nombreJugadorDos">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Equipo 2 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorDos}} </td>
+            </ng-container>
+
+
+            <!--    La tercera columna será un checkbox -->
+            <ng-container matColumnDef="select3">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionTres.toggle(row) : null;   Verificar (row, 3)"
+                      [checked]="selectionTres.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+                            <!-- Nombre Empate Column -->
+            <ng-container matColumnDef="Empate">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Empate </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> Empate </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsAlumno"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumno;"></tr>
+
+          </table>
+          <br>
+          <br>
+        </form>
+        <br>
+        <button type="button" class="btn Back" (click)="goBack()">Volver </button>
+
+      </div>
+    </div>
+
+
+  </div>
+
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Torneo'" align="center">
+
+    <div class="contenedor" align="center">
+      <div class="enColumna" align="center">
+        <div class = "enFila" style="width: 60%; align-content: left;" align="center">
+    
+          <div align="center">
+            <br>
+            Seleccione
+            <br>
+            <mat-form-field>
+              <mat-label>Jornada</mat-label>
+              <select matNativeControl [(ngModel)]="jornadaId"  (change) = "SeleccionaJornada()">
+                <option *ngFor="let jornada of JornadasCompeticion" [value]="jornada.id">
+                  <p *ngIf= "!Disputada (jornada.id)">{{jornada.NumeroDeJornada}}</p>
+                  <p *ngIf= "Disputada (jornada.id)">{{jornada.NumeroDeJornada}} (completada)</p>
+                </option>
+              </select>
+            </mat-form-field>
+          </div>
+    
+          <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)" align="center">
+            <div>
+              <br>
+              <br>
+              <mat-form-field style="margin-left: 10%;">
+                <mat-label>Modo</mat-label>
+                <select matNativeControl [(ngModel)]="modoAsignacionId" (change) = "SeleccionaModo()">
+                  <option *ngFor="let modo of modoAsignacion" [value]="modo.id">
+                    {{modo.modo}}
+                  </option>
+                </select>
+              </mat-form-field>
+            </div>
+          </div>
+    
+    
+          <div *ngIf="(modoAsignacionId == 3) && (juegosDisponibles.length !== 0)  && !Disputada (jornadaId)"  style="margin-left: 5%;" align="center">
+            Seleccione un Juego
+            <br>
+            <br>
+            <mat-form-field >
+              <mat-label>Juegos</mat-label>
+              <select matNativeControl [(ngModel)]="juegoDisponibleSeleccionadoID" (change) = "TraerJuegoDisponibleSeleccionado()">
+                <option *ngFor="let juego of juegosDisponibles" [value]="juego.id">
+                  {{juego.NombreJuego}}
+                </option>
+              </select>
+            </mat-form-field>
+          </div>
+    
+        </div>
+    
+    
+        <div *ngIf = "jornadaId != undefined && !Disputada (jornadaId)" align="center">
+          <div  *ngIf="(modoAsignacionId == 3) && (juegoDisponibleSeleccionadoID !== undefined)" style="margin-top: 10px; margin-right: 10px;" align="center">
+            <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadoresJuegoDisponibleSeleccionado()"
+            [disabled]="botonAsignarJuegoDesactivado">Asignar ganadores mediante juego seleccionado<i class="material-icons">emoji_events </i></button>
+          </div>
+    
+          <div  *ngIf="modoAsignacionId == 1" style="margin-top: 10px; margin-right: 10px;" align="center">
+            <button style= "width: 100%" type="button"class="btn Aceptar" (click)= "AsignarGanadorManualmente()" [disabled]="botonAsignarManualDesactivado">Asignar ganadores manualmente<i class="material-icons">emoji_events </i></button>
+          </div>
+    
+          <div  *ngIf="modoAsignacionId == 2" style="margin-top: 10px; margin-right: 10px;" align="center">
+            <button style= "width: 100%"  type="button"class="btn Aceptar"  (click)= "AsignarGanadorAleatoriamente()"  [disabled]="botonAsignarAleatorioDesactivado">Asignar ganadores aleatoriamente<i class="material-icons">emoji_events </i></button>
+          </div>
+    
+          <br>
+        </div>
+        <div style="width: 100%" *ngIf = "jornadaId != undefined && Disputada (jornadaId)" align="center">
+        <p class="subtitulo" align="center">Esta jornada ya se ha disputado</p>
+        <p class="subtitulo" align="center">Resultados de esta jornada</p>
+        </div>
+    
+        <!-------------------------   TABLA TORNEO CLASICO ----------------------->
+    
+        <form style="width: 100%" align="center">
+
+          <table  style="width: 80%" align="center" *ngIf="juegoSeleccionado.Modo === 'Individual'" mat-table [dataSource]="dataSourceTablaGanadorIndividual" class="mat-elevation-z8" align="center">
+           
+            <!--    La primera columna será un checkbox -->
+            <ng-container matColumnDef="select1">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
+                </th>
+                <td mat-cell *matCellDef="let row" >
+                  <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionUno.toggle(row) : null; Verificar (row, 1)"
+                      [checked]="selectionUno.isSelected(row)">
+                  </mat-checkbox>
+                </td>
+            </ng-container>
+            
+    
+            <!-- Nombre Jugador 1 Column -->
+            <ng-container matColumnDef="nombreJugadorUno">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Alumno 1 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorUno}} </td>
+            </ng-container>
+    
+            <!--    La primera columna será un checkbox   -->
+            <ng-container matColumnDef="select2">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla">
+              </th>
+              <td mat-cell *matCellDef="let row">
+                    <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionDos.toggle(row) : null; Verificar (row, 2)"
+                      [checked]="selectionDos.isSelected(row)">
+                    </mat-checkbox>
+    
+              </td>
+            </ng-container>
+    
+            <!-- Nombre Jugador 2 Column -->
+            <ng-container matColumnDef="nombreJugadorDos">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Alumno 2 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorDos}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef=" displayedColumnsAlumnoTorneo"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumnoTorneo;"></tr>
+    
+          </table>
+          <br>
+          <br>
+          
+          <table style="width: 80%" align="center" *ngIf="juegoSeleccionado.Modo != 'Individual'" mat-table [dataSource]="dataSourceTablaGanadorEquipo" class="mat-elevation-z8" align="center">
+    
+            <!--    La primera columna será un checkbox -->
+            <ng-container matColumnDef="select1">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionUno.toggle(row) : null; Verificar (row, 1)"
+                      [checked]="selectionUno.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+    
+                              <!-- Nombre Jugador 1 Column -->
+            <ng-container matColumnDef="nombreJugadorUno">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Equipo 1 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorUno}} </td>
+            </ng-container>
+    
+    
+            <!--    La segunda columna será un checkbox   -->
+            <ng-container matColumnDef="select2">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"></th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selectionDos.toggle(row) : null;  Verificar (row, 2)"
+                      [checked]="selectionDos.isSelected(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+    
+                          <!-- Nombre Jugador 2 Column -->
+            <ng-container matColumnDef="nombreJugadorDos">
+              <th mat-header-cell *matHeaderCellDef class="tituloColumnaTabla"> Equipo 2 </th>
+              <td mat-cell *matCellDef="let enfrentamiento"> {{enfrentamiento.nombreJugadorDos}} </td>
+            </ng-container>
+    
+            <tr mat-header-row *matHeaderRowDef=" displayedColumnsAlumnoTorneo"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumnoTorneo;"></tr>
+    
+          </table>
+          <br>
+          <br>
+        </form>
+        
+      </div>
+    </div>
+
+  </div>
+ 
 </ion-content>

@@ -11,42 +11,32 @@
 <ion-content class="juegocompliga-content" #content>
 
   <div style="display: flex; align-items: center; justify-content: center; padding-top: 50px;">
-    <img class="card-img" src="../../assets/img/juegos-competicion/jornada.png" height="200"/>
+    <img class="card-img" src="../../assets/img/juegos-competicion/jornada.png" height="100"/>
   </div>
-  <div style="display: flex; align-items: center; justify-content: center;">
-    <ion-card (click)="expandItem(item)" *ngFor="let item of items" class="expand-card1">
-      <ion-card-header>
-        <ion-card-title>Jornadas</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <app-expandable expandHeight="200px" [expanded]="item.expanded">
-          <ion-button color="medium" style="width: 150px;" (click)="InformacionJornadas();">Ver</ion-button>
-          <ion-button color="medium" style="width: 150px;" (click)="EditarJornadas();">Editar</ion-button>
-        </app-expandable>
-      </ion-card-content>
-    </ion-card>
+
+  <div>
+      <ion-button color="medium" style="width: 90%;" (click)="InformacionJornadas();">Ver Jornadas</ion-button>
+  </div>
+
+  <div>
+    <ion-button color="medium" style="width: 90%;" (click)="EditarJornadas();">Editar Jornadas</ion-button>
+  </div>
+
+  
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Fórmula Uno'">
+    <ion-button color="medium" style="width: 90%;" (click)="EditarPuntuacion();">Editar Puntuacion</ion-button>
   </div>
 
   <div style="display: flex; align-items: center; justify-content: center; padding-top: 30px;">
-    <img class="card-img" src="../../assets/img/juegos-competicion/puntuacion.png" height="200"/>
-  </div>
-  <div style="display: flex; align-items: center; justify-content: center;">
-    <ion-card (click)="expandItem2(item)" *ngFor="let item of items" class="expand-card2">
-      <ion-card-header>
-        <ion-card-title>Asignar Ganadores</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <app-expandable expandHeight="200px" [expanded]="item.expanded2">
-          <ion-button color="medium" style="width: 200px;">Manual</ion-button>
-          <ion-button color="medium" style="width: 200px;">Aleatorio</ion-button>
-          <ion-button color="medium" style="width: 200px;">Resultados juego</ion-button>
-        </app-expandable>
-      </ion-card-content>
-    </ion-card>
+    <img class="card-img" src="../../assets/img/juegos-competicion/puntuacion.png" height="100"/>
   </div>
 
-  <div style="display: flex; align-items: center; justify-content: center; padding-top: 50px;">
-    <ion-button color="medium" style="width: 200px;" (click)="AsignacionGanador();">Asignacion Ganador</ion-button>
-    <ion-button color="danger" style="width: 200px;" (click)="Desactivar();">Desactivar juego</ion-button>
+  <div>
+    <ion-button color="medium" style="width: 90%;" (click)="AsignacionGanador();">Asignacion Ganador</ion-button>
   </div>
+
+  <div>
+    <ion-button color="danger" style="width: 90%;" (click)="Desactivar();">Desactivar juego</ion-button>
+  </div>
+
 </ion-content>

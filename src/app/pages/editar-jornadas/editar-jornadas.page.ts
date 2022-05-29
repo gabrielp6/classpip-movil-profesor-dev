@@ -11,11 +11,10 @@ import { SesionService, PeticionesAPIService, CalculosService } from '../../serv
   templateUrl: './editar-jornadas.page.html',
   styleUrls: ['./editar-jornadas.page.scss'],
 })
+
 export class EditarJornadasPage implements OnInit {
 
-  /* Estructura necesaria para determinar que filas son las que se han seleccionado */
   selection = new SelectionModel<any>(true, []);
-    // Juego De CompeticionLiga seleccionado
   juegoSeleccionado: Juego;
   numeroTotalJornadas: number;
   jornadasTabla: Jornada[];
@@ -30,23 +29,23 @@ export class EditarJornadasPage implements OnInit {
   seleccionados: boolean[];
   JornadasCompeticion: TablaJornadas[] = [];
   NuevaFecha: Date;
-
   displayedColumnsJornada: string[] = ['select', 'NumeroDeJornada', 'Fecha', 'CriterioGanador'];
 
   constructor(    
-    
     public sesion: SesionService,
     public location: Location,
     public calculos: CalculosService,
     public peticionesAPI: PeticionesAPIService,
-    private _formBuilder: FormBuilder) {}
+    private _formBuilder: FormBuilder
+  ){}
 
   ngOnInit() {
     const datos = this.sesion.DameDatosJornadas();
     this.jornadas = datos.jornadas;
     this.juegoSeleccionado = this.sesion.DameJuego();
-    this.dataSource = new MatTableDataSource (this.jornadas);
-    
+    this.JornadasCompeticion = datos.JornadasCompeticion;
+    this.dataSource = new MatTableDataSource (this.JornadasCompeticion);
+   
     this.myForm = this._formBuilder.group({
       CriterioGanador: ['', Validators.required],
       picker: ['', Validators.required],
@@ -62,13 +61,11 @@ export class EditarJornadasPage implements OnInit {
   }
 
   MasterToggle() {
-
     if (this.IsAllSelected()) {
       this.selection.clear();
     } else {
       this.dataSource.data.forEach(row => this.selection.select(row));
     }
-
   }
 
   ActualizarBotonTabla() {
@@ -84,7 +81,6 @@ export class EditarJornadasPage implements OnInit {
   }
 
   onChangeEvent(e): void {
-
     this.NuevaFecha = e.target.value;
     let NuevoCriterio: string;
     NuevoCriterio = this.myForm.value.CriterioGanador;
@@ -93,7 +89,6 @@ export class EditarJornadasPage implements OnInit {
     } else {
       this.botonTablaDesactivado = false;
     }
-
   }
 
   EditarJornada() {
@@ -104,16 +99,36 @@ export class EditarJornadasPage implements OnInit {
       if (this.selection.isSelected(this.dataSource.data[i]))  {
         this.IDJornada = this.jornadas[i].id;
         this.jornadas[i] = new Jornada (this.NuevaFecha, NuevoCriterio, this.jornadas[i].JuegoDeCompeticionLigaId);
-        this.peticionesAPI.ModificarJornada (this.jornadas[i], this.IDJornada)
-        .subscribe(JornadaCreada => {
-          this.jornadas[i] = JornadaCreada;
-        });
+
+        if (this.juegoSeleccionado.Tipo === 'Juego De Competición Fórmula Uno' ){
+
+          this.peticionesAPI.ModificarJornadaFormulaUno (this.jornadas[i], this.IDJornada)
+          .subscribe(JornadaCreada => {
+            this.jornadas[i] = JornadaCreada;
+          });
+
+        }else if (this.juegoSeleccionado.Tipo === 'Juego De Competición Liga'){
+
+          this.peticionesAPI.ModificarJornada (this.jornadas[i], this.IDJornada)
+          .subscribe(JornadaCreada => {
+            this.jornadas[i] = JornadaCreada;
+          });   
+
+        }else if (this.juegoSeleccionado.Tipo === 'Juego De Competición Torneo'){
+
+          this.peticionesAPI.ModificarJornadaTorneo (this.jornadas[i], this.IDJornada)
+          .subscribe(JornadaCreada => {
+            this.jornadas[i] = JornadaCreada;
+          });
+          
+        }
         console.log('Jornada Modificada');
         this.JornadasCompeticion[i].CriterioGanador = this.jornadas[i].CriterioGanador;
         this.JornadasCompeticion[i].Fecha = this.jornadas[i].Fecha;
         this.JornadasCompeticion[i].NumeroDeJornada = i + 1;
       }
     }
+
     this.dataSource = new MatTableDataSource (this.JornadasCompeticion);
     this.selection.clear();
     this.botonTablaDesactivado = true;
@@ -143,13 +158,16 @@ export class EditarJornadasPage implements OnInit {
   }
 
   Disabled() {
-
-      if (this.seleccionados.filter(res => res === true)[0] !== undefined) {
-        this.BotonDesactivado();
-      } else {
-        this.isDisabled = true;
-      }
-
+    if (this.seleccionados.filter(res => res === true)[0] !== undefined) {
+      this.BotonDesactivado();
+    } else {
+      this.isDisabled = true;
+    }
   }
+
+  goBack() {
+    this.location.back();
+  }
+
 
 }

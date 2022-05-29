@@ -52,7 +52,8 @@ const routes: Routes = [
   { path: 'juego-cuestionario-rapido', loadChildren: './pagesPrevias/juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },
   { path: 'editar-jornadas', loadChildren: './pages/editar-jornadas/editar-jornadas.module#EditarJornadasPageModule' },
   { path: 'juego-evaluacion', loadChildren: './pages/juego-evaluacion/juego-evaluacion.module#JuegoEvaluacionPageModule' },
-  { path: 'asignacion-ganador', loadChildren: './pages/asignacion-ganador/asignacion-ganador.module#AsignacionGanadorPageModule' },
+  { path: 'asignacion-ganador', loadChildren: './pages/asignacion-ganador/asignacion-ganador.module#AsignacionGanadorPageModule' },  { path: 'editar-puntuacion', loadChildren: './pages/editar-puntuacion/editar-puntuacion.module#EditarPuntuacionPageModule' },
+
 
   
 
