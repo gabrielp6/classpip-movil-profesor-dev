@@ -9,99 +9,209 @@
 
 <ion-content>
 
-  <div class="enColumna">
-
-    <div class="enFila" style="width:40%">
-      <ion-button color="danger" (click) = "DesactivarJuego()">Desactivar</ion-button>
-    </div>
-
-    <div style = "width:150%" *ngIf = "juego.rubricaId > 0  && rubrica !== undefined">
-        
-      <mat-tab-group (selectedTabChange)="onTabChanged($event);">
-        <mat-tab label="Resultados de las evaluaciones">
-          <mat-accordion>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>Detalles</mat-panel-title>
-              </mat-expansion-panel-header>
-
-              <p><strong>Descripcion: </strong> {{juego.Descripcion}}</p>
-              <p><strong>Modo: </strong>{{juego.Modo}}</p>
-              <p><strong>Rúbrica: </strong>{{rubrica.Nombre}}</p>
-              <p *ngIf="juego.metodoSubcriterios"><strong>Evaluación: </strong>Por pesos</p>
-              <p *ngIf="!juego.metodoSubcriterios"><strong>Evaluación: </strong>Por penalización</p>
-              <p *ngIf="juego.autoEvaluacion"><strong>Autoevaluable: </strong>Sí</p>
-              <p *ngIf="!juego.autoEvaluacion"><strong>Autoevaluable: </strong>No</p>
-              <p *ngIf="!juego.profesorEvalua"><strong>Profesor: </strong>No evalúa</p>
-              <p *ngIf="juego.profesorEvalua && juego.notaProfesorNormal"><strong>Profesor: </strong>Evalúa como un participante normal</p>
-              <p *ngIf="juego.profesorEvalua && !juego.notaProfesorNormal"><strong>Profesor: </strong>Su nota es un 50% del total</p>
-    
-            </mat-expansion-panel>
-          </mat-accordion>
-          <br>
+  <div class = "contenedor">
+    <div class="enColumna">
   
+      <br>
+      <br>
+      <div style = "width:150%" *ngIf = "juego.rubricaId > 0  && rubrica !== undefined">
+        <mat-accordion>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Detalles</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <p><strong>Descripcion: </strong> {{juego.Descripcion}}</p>
+            <p><strong>Modo: </strong>{{juego.Modo}}</p>
+            <p><strong>Rúbrica: </strong>{{rubrica.Nombre}}</p>
+            <p *ngIf="juego.metodoSubcriterios"><strong>Evaluación: </strong>Por pesos</p>
+            <p *ngIf="!juego.metodoSubcriterios"><strong>Evaluación: </strong>Por penalización</p>
+            <p *ngIf="juego.autoEvaluacion"><strong>Autoevaluable: </strong>Sí</p>
+            <p *ngIf="!juego.autoEvaluacion"><strong>Autoevaluable: </strong>No</p>
+            <p *ngIf="!juego.profesorEvalua"><strong>Profesor: </strong>No evalúa</p>
+            <p *ngIf="juego.profesorEvalua && juego.notaProfesorNormal"><strong>Profesor: </strong>Evalúa como un participante normal</p>
+            <p *ngIf="juego.profesorEvalua && !juego.notaProfesorNormal"><strong>Profesor: </strong>Su nota es un 50% del total</p>
+  
+          </mat-expansion-panel>
+        </mat-accordion>
+        <br>
+
+        
+        <mat-checkbox align = "right" (change)="MostrarCriterios($event.checked)" [checked]="true"><span style="color: black">Mostrar criterios</span></mat-checkbox> 
+
+        <div class="table-container mat-elevation-z8" style="margin-top: 10px; overflow-x:auto;">
+
+          <table mat-table [dataSource]="dataSource" matSort>
+            <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns; let i = index" [sticky]="i === 0" [stickyEnd]="i === displayedColumns.length - 1 || column === 'Profesor' || column.startsWith('criterio_')">
+              
+              <th mat-header-cell class="tituloTabla column100 column-0" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" *matHeaderCellDef [mat-sort-header]="column.startsWith('criterio_') ? column : null" [disabled]="!column.startsWith('criterio_') && column !== 'Nota Media'">
+                <div *ngIf="column != 'Nombre' && !column.startsWith('criterio_')">
+                  {{column}}
+                  <strong *ngIf="column === 'Profesor' && !juego.notaProfesorNormal" style="color: #e74c3c;">
+                    (50%)
+                  </strong>
+                </div>
+                <div *ngIf="column == 'Nombre'">
+                  <div class="tag1">Evaluadores</div>
+                  <div class="tag2">Evaluados</div>
+                </div>            
+                <div *ngIf="column.startsWith('criterio_')">
+                  {{NombreCriterio(column)}}
+                </div>
+              </th>
+
+              <td mat-cell class="column100 column-{{i}}" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" [ngClass]="{'hov-column': hoverColumn[i], 'final-column': i === displayedColumns.length - 1, 'shadowed': element[column] === 'X', 'col-profesor': column === 'Profesor', 'col-criterio': column.startsWith('criterio_')}" *matCellDef="let element">
+                {{element[column]}}
+                <div *ngIf="!column.startsWith('criterio_')">
+                  
+                  <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  
+                  <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id)" mat-icon-button aria-label="Delete">
+                    <mat-icon style="color: red;">delete_forever</mat-icon>
+                  </button>
+
+                  <button *ngIf="column === 'Profesor' && !isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, true)" mat-icon-button aria-label="Create">
+                    <mat-icon>create</mat-icon>
+                  </button>
+                  
+                  <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, false)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  
+                  <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id, true)" mat-icon-button aria-label="Delete">
+                    <mat-icon style="color: red;">delete_forever</mat-icon>
+                  </button>
+                  
+                  <button *ngIf="column === 'Nota Media' && isNumber(element[column])" (click)="openDialog(i, element, false, false, true)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row class="row100 head" *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row class="row100" *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
           
-          <mat-checkbox align = "right" (change)="MostrarCriterios($event.checked)" [checked]="true"><span style="color: black">Mostrar criterios</span></mat-checkbox> 
+        </div>  
+     
+      </div>
+      
+      <br>
 
-          <div class="table-container mat-elevation-z8" style="margin-top: 10px; overflow-x:auto;">
+      <div style = "width:150%" *ngIf = "juego.rubricaId === 0">
+        <mat-accordion>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Detalles</mat-panel-title>
+            </mat-expansion-panel-header>
+            <p><strong>Descripcion: </strong> {{juego.Descripcion}}</p>
+            <p><strong>Modo: </strong>{{juego.Modo}}</p>
+            <p><strong>Formato: </strong>Solo preguntas abiertas</p>
+            <p *ngIf="juego.autoEvaluacion"><strong>Autoevaluable: </strong>Sí</p>
+            <p *ngIf="!juego.autoEvaluacion"><strong>Autoevaluable: </strong>No</p>
+            <p *ngIf="!juego.profesorEvalua"><strong>Profesor: </strong>No evalúa</p>
+            <p *ngIf="juego.profesorEvalua"><strong>Profesor: </strong>Sí evalua</p>
+          </mat-expansion-panel>
+        </mat-accordion>
+    
+        <div class="table-container mat-elevation-z8" style = "overflow-x:auto">
+          <table mat-table [dataSource]="dataSource" style="height: 200px;">
 
-            <table mat-table [dataSource]="dataSource" matSort>
-              <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns; let i = index" [sticky]="i === 0" [stickyEnd]="i === displayedColumns.length - 1 || column === 'Profesor' || column.startsWith('criterio_')">
-                
-                <th mat-header-cell class="tituloTabla column100 column-0" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" *matHeaderCellDef [mat-sort-header]="column.startsWith('criterio_') ? column : null" [disabled]="!column.startsWith('criterio_') && column !== 'Nota Media'">
-                  <div *ngIf="column != 'Nombre' && !column.startsWith('criterio_')">
+            <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column"  [sticky]="(i===0)" [stickyEnd]="i === displayedColumns.length - 1 || column === 'Profesor'">
+    
+              <div *ngIf = "(i===0) || (i===displayedColumns.length - 1) " >
+    
+                <th mat-header-cell class="tituloTabla column100 column-0" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" *matHeaderCellDef>
+                  <div *ngIf="column != 'Nombre'">
                     {{column}}
-                    <strong *ngIf="column === 'Profesor' && !juego.notaProfesorNormal" style="color: #e74c3c;">
+                    <!-- <strong *ngIf="column === 'Profesor' && !juego.notaProfesorNormal" style="color: #e74c3c;">
                       (50%)
-                    </strong>
+                    </strong> -->
                   </div>
                   <div *ngIf="column == 'Nombre'">
                     <div class="tag1">Evaluadores</div>
                     <div class="tag2">Evaluados</div>
-                  </div>            
-                  <div *ngIf="column.startsWith('criterio_')">
-                    {{NombreCriterio(column)}}
                   </div>
                 </th>
-
-                <td mat-cell class="column100 column-{{i}}" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" [ngClass]="{'hov-column': hoverColumn[i], 'final-column': i === displayedColumns.length - 1, 'shadowed': element[column] === 'X', 'col-profesor': column === 'Profesor', 'col-criterio': column.startsWith('criterio_')}" *matCellDef="let element">
-                  {{element[column]}}
-                  <div *ngIf="!column.startsWith('criterio_')">
-                    <!--
-                      <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id)" mat-icon-button aria-label="Info">
-                      <mat-icon>remove_red_eye</mat-icon>
-                    </button>
-                    -->
-                    <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id)" mat-icon-button aria-label="Delete">
-                      <mat-icon style="color: red;">delete_forever</mat-icon>
-                    </button>
-                    <button *ngIf="column === 'Profesor' && !isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, true)" mat-icon-button aria-label="Create">
-                      <mat-icon>create</mat-icon>
-                    </button>
-                    <!--
-                    <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, false)" mat-icon-button aria-label="Info">
-                      <mat-icon>remove_red_eye</mat-icon>
-                    </button>
-                    -->
-                    <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id, true)" mat-icon-button aria-label="Delete">
-                      <mat-icon style="color: red;">delete_forever</mat-icon>
-                    </button>
-                    <!--
-                    <button *ngIf="column === 'Nota Media' && isNumber(element[column])" (click)="openDialog(i, element, false, false, true)" mat-icon-button aria-label="Info">
-                      <mat-icon>remove_red_eye</mat-icon>
-                    </button>
-                    -->
-                  </div>
+                <td mat-cell class="column100 column-0" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" [ngClass]="{'hov-column': hoverColumn[i], 'final-column': i === displayedColumns.length - 1, 'shadowed': element[column] === 'X', 'col-profesor': column === 'Profesor'}" *matCellDef="let element">
+                  <span *ngIf = "!isNumber(element[column])">{{element[column]}}</span>
+                  <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id)" mat-icon-button aria-label="Delete">
+                    <mat-icon style="color: red;">delete_forever</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Profesor' && !isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, true)" mat-icon-button aria-label="Create">
+                    <mat-icon>create</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, false)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id, true)" mat-icon-button aria-label="Delete">
+                    <mat-icon style="color: red;">delete_forever</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Resumen' && isNumber(element[column])" (click)="openDialog(i, element, false, false, true)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
                 </td>
-              </ng-container>
-              <tr mat-header-row class="row100 head" *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-              <tr mat-row class="row100" *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            
-          </div>
-        </mat-tab>
-      </mat-tab-group>
+              </div>
+              <div *ngIf = "(i!==0) && (i!==displayedColumns.length - 1) ">
+                <th mat-header-cell class="tituloTabla column100" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" *matHeaderCellDef>
+                  <div *ngIf="column != 'Nombre'">
+                    {{column}}
+                    <!-- <strong *ngIf="column === 'Profesor' && !juego.notaProfesorNormal" style="color: #e74c3c;">
+                      (50%)
+                    </strong> -->
+                  </div>
+                  <div *ngIf="column == 'Nombre'">
+                    <div class="tag1">Evaluadores</div>
+                    <div class="tag2">Evaluados</div>
+                  </div>
+                </th>
+                <td  mat-cell class="column100" (mouseover)="MouseOver(i)" (mouseout)="MouseOut(i)" [ngClass]="{'hov-column': hoverColumn[i], 'final-column': i === displayedColumns.length - 1, 'shadowed': element[column] === 'X', 'col-profesor': column === 'Profesor'}" *matCellDef="let element">
+                  <span *ngIf = "!isNumber(element[column])">{{element[column]}}</span>
+                  <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  <button *ngIf="column !== 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id)" mat-icon-button aria-label="Delete">
+                    <mat-icon style="color: red;">delete_forever</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Profesor' && !isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, true)" mat-icon-button aria-label="Create">
+                    <mat-icon>create</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="openDialog(i, element.id, true, false)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Profesor' && isNumber(element[column]) && i > 0 && i < displayedColumns.length - 1" (click)="eliminarNota(i, element.id, true)" mat-icon-button aria-label="Delete">
+                    <mat-icon style="color: red;">delete_forever</mat-icon>
+                  </button>
+                  <button *ngIf="column === 'Resumen' && isNumber(element[column])" (click)="openDialog(i, element.id, false, false, true)" mat-icon-button aria-label="Info">
+                    <mat-icon>remove_red_eye</mat-icon>
+                  </button>
+                </td>
+                </div>
+            </ng-container>
+          
+            <tr mat-header-row class="row100 head" *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row class="row100" *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          </table>
+        </div>
+      </div>
+
     </div>
+
+  </div>
+
+  <br>
+  <br>
+
+  <div align = "center">
+    <ion-button align = "center" style="width: 90%" color="danger" (click) = "DesactivarJuego()">Desactivar</ion-button>
   </div>
 
 </ion-content>
+
