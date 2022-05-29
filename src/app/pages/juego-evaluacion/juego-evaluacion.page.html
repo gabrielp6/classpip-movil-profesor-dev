@@ -43,7 +43,7 @@
           
           <mat-checkbox align = "right" (change)="MostrarCriterios($event.checked)" [checked]="true"><span style="color: black">Mostrar criterios</span></mat-checkbox> 
 
-          <div class="table-container mat-elevation-z8" style="margin-top: 10px;">
+          <div class="table-container mat-elevation-z8" style="margin-top: 10px; overflow-x:auto;">
 
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns; let i = index" [sticky]="i === 0" [stickyEnd]="i === displayedColumns.length - 1 || column === 'Profesor' || column.startsWith('criterio_')">

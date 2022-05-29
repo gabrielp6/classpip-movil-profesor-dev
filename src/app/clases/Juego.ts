@@ -1,6 +1,7 @@
 import { Nivel } from './Nivel';
 
 export class Juego {
+  [x: string]: any;
   Tipo: string;
   Modo: string;
   Asignacion: string;

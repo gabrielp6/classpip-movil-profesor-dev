@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Profesor, Grupo, Juego, Equipo, Alumno, Coleccion, Cromo, Punto, Insignia, TablaAlumnoJuegoDeCompeticion,
-         TablaJornadas, Jornada, TablaEquipoJuegoDeCompeticion, JuegoDeAvatar } from '../clases';
+import { Profesor, Grupo, Juego, Equipo, Alumno, Coleccion, Cromo, Punto, Insignia, TablaAlumnoJuegoDeCompeticion,TablaPuntosFormulaUno,
+         TablaJornadas, Jornada, TablaEquipoJuegoDeCompeticion, JuegoDeAvatar, AlumnoJuegoDeCompeticionLiga } from '../clases';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { ReplaySubject } from 'rxjs';
 
@@ -9,6 +9,7 @@ import { ReplaySubject } from 'rxjs';
 })
 export class SesionService {
 
+  juegosDeEvaluacionTerminados: Juego[];
   alumno: Alumno;
   alumnoObservable = new ReplaySubject(1);
   profesor: Profesor;
@@ -29,7 +30,7 @@ export class SesionService {
   inscripcionAlumnoJuego: any;
   equipoSeleccionado: any;
   inscripcionEquipoJuego: any;
-
+  TablaeditarPuntos: TablaPuntosFormulaUno[];
   alumnosDelJuego: any;
   listaAlumnosOrdenadaPorPuntos: any;
   rankingJuegoDePuntos: any;
@@ -72,6 +73,9 @@ export class SesionService {
   JuegosDePuntos: Juego[];
   JuegosDeCuestionariosAcabados: Juego[];
   juegosDeVotacionUnoATodosAcabados: Juego[];
+
+  AlumnoJuegoDeCompeticionTorneo: Alumno[];
+  EquipoJuegoDeCompeticionTorneo: Equipo[];
 
   constructor() { }
   public TomaProfesor(profesor: Profesor) {
@@ -138,6 +142,14 @@ export class SesionService {
 
   public TomaJuego(juego: Juego) {
     this.juego = juego;
+  }
+
+  public TomaTablaeditarPuntos( TablaeditarPuntos: TablaPuntosFormulaUno[]) {
+    this.TablaeditarPuntos = TablaeditarPuntos;
+  }
+  public DameTablaeditarPuntos(): TablaPuntosFormulaUno[] {
+    const TablaeditarPuntos = this.TablaeditarPuntos ;
+    return TablaeditarPuntos;
   }
 
   public DameJuego(): Juego {
@@ -400,6 +412,11 @@ export class SesionService {
     return Tabla;
   }
 
+  public DameAlumnoJuegoDeCompeticionTorneo(): Alumno[] {
+    const Tabla = this.AlumnoJuegoDeCompeticionTorneo;
+    return Tabla;
+  }
+
   public TomaDatosJornadas(jornadas: Jornada[],JornadasCompeticion: TablaJornadas[]) {
     this.JornadasCompeticion = JornadasCompeticion;
     this.jornadas = jornadas;
@@ -409,10 +426,16 @@ export class SesionService {
     console.log ( this.jornadas);
   }
 
+  
   public DameDatosJornadas(): any {
     const datos = {
       jornadas: this.jornadas,
+      JornadasCompeticion: this.JornadasCompeticion
     };
+
+    console.log ('Aqui estan las jornadas guardadas y la tabla de jornadas: ');
+    console.log(this.jornadas);
+    console.log(this.JornadasCompeticion);
     return datos;
   }
 
@@ -422,6 +445,11 @@ export class SesionService {
   
   public DameTablaEquipoJuegoDeCompeticion(): TablaEquipoJuegoDeCompeticion[] {
     const Tabla = this.TablaEquipoJuegoDeCompeticion;
+    return Tabla;
+  }
+
+  public DameEquipoJuegoDeCompeticionTorneo(): Equipo[] {
+    const Tabla = this.EquipoJuegoDeCompeticionTorneo;
     return Tabla;
   }
 
@@ -504,9 +532,18 @@ export class SesionService {
     this.juegosRapidos = juegosRapidos;
   }
 
+  public TomaAlumnoJuegoDeCompeticionTorneo(Tabla: Alumno[]) {
+    this.AlumnoJuegoDeCompeticionTorneo = Tabla;
+  }
+
+  public TomaEquipoJuegoDeCompeticionTorneo(Tabla: Equipo[]) {
+    this.EquipoJuegoDeCompeticionTorneo = Tabla;
+  }
+  
   public TomaJuegosDePuntos(juegosPuntos: Juego[]) {
     this.JuegosDePuntos = juegosPuntos;
   }
+  
   public DameJuegosDePuntos(): Juego[] {
     return this.JuegosDePuntos;
   }
@@ -521,6 +558,10 @@ export class SesionService {
     this.juegosDeVotacionUnoATodosAcabados = juegosDeVotacionUnoATodos;
   }
 
+  public TomaJuegosDeEvaluacion(juegosEvaluacion: Juego[]) {
+    this.juegosDeEvaluacionTerminados = juegosEvaluacion;
+  }
+
   public TomaJuegosDeCuestionario(juegosCuestionarios: Juego[]) {
     console.log ('guardo juegos cuestionarios acabados');
     console.log (juegosCuestionarios);
@@ -530,6 +571,18 @@ export class SesionService {
   
   public DameJuegosDeVotacionUnoATodosAcabados(): Juego[] {
    return this.juegosDeVotacionUnoATodosAcabados;
+  }
+
+  public DameJuegosDeEvaluacionTerminados(): Juego[] {
+    return this.juegosDeEvaluacionTerminados;
+  }
+
+
+  public TomaDatosEvolucionAlumnoJuegoCompeticionLiga( posicion: number,alumnoSeleccionado: Alumno,
+    inscripcionAlumnoJuego: AlumnoJuegoDeCompeticionLiga ) {
+    this.posicion = posicion;
+    this.alumnoSeleccionado = alumnoSeleccionado;
+    this.inscripcionAlumnoJuego = inscripcionAlumnoJuego;
   }
 
 }
