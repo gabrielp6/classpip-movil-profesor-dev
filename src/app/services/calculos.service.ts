@@ -117,14 +117,10 @@ export class CalculosService {
   
   public DameJuegosAlumno(AlumnoId: number): any {
     const Observables = new Observable(obs => {
-      console.log('ya estoy dentro de dame juegos alumno');
       const JuegosActivos: any[] = [];
       const JuegosInactivos: any[] = [];
-      console.log('* voy a por los juegos de puntos del alumno');
       this.peticionesAPI.DameJuegoDePuntosAlumno(AlumnoId)
       .subscribe( lista => {
-          console.log('* ya tengo los juegos de puntos del alumno');
-          console.log (lista);
           for (let i = 0; i < (lista.length); i++) {
             if (lista[i].JuegoActivo === true) {
               JuegosActivos.push(lista[i]);
@@ -132,11 +128,8 @@ export class CalculosService {
               JuegosInactivos.push(lista[i]);
             }
           }
-          console.log('* voy a por los juegos de colecciones del alumno');
           this.peticionesAPI.DameJuegoDeColeccionesAlumno(AlumnoId)
           .subscribe( lista => {
-              console.log('* ya tengo los juegos de coleccion del alumno');
-              console.log (lista);
               for (let i = 0; i < (lista.length); i++) {
                 if (lista[i].JuegoActivo === true) {
                   JuegosActivos.push(lista[i]);
@@ -144,11 +137,9 @@ export class CalculosService {
                   JuegosInactivos.push(lista[i]);
                 }
               }
-              console.log('voy a por los juegos de geocaching');
               this.peticionesAPI.DameJuegoDeGeocachingAlumno(AlumnoId)
 
               .subscribe( lista => {
-                console.log(lista);
                 for (let i = 0; i < (lista.length); i++) {
                     if (lista[i].JuegoActivo === true) {
                       lista[i].Tipo = 'Juego De Geocaching';
@@ -158,8 +149,6 @@ export class CalculosService {
                       JuegosInactivos.push(lista[i]);
                     }
                   }
-                console.log (JuegosActivos);
-                console.log('voy a por los juegos de F1 del alumno');
                 this.peticionesAPI.DameJuegoDeCompeticionF1Alumno(AlumnoId)
                 // tslint:disable-next-line:no-shadowed-variable
                 .subscribe( lista => {
@@ -170,8 +159,6 @@ export class CalculosService {
                       JuegosInactivos.push(lista[i]);
                     }
                   }
-                  console.log('yasta la lista de juegos de F1');
-                  console.log('voy a por los juegos de liga del alumno');
                   this.peticionesAPI.DameJuegoDeCompeticionLigaAlumno(AlumnoId)
                   // tslint:disable-next-line:no-shadowed-variable
                   .subscribe( lista => {
@@ -182,8 +169,6 @@ export class CalculosService {
                           JuegosInactivos.push(lista[i]);
                         }
                       }
-                      console.log('ya tengo los juegos de liga');
-                      console.log('voy a por los juegos de cuestionario del alumno');
 
                       this.peticionesAPI.DameJuegoDeCuestionarioAlumno(AlumnoId)
                       // tslint:disable-next-line:no-shadowed-variable
@@ -200,9 +185,6 @@ export class CalculosService {
                             }
                           }
 
-                          console.log('ya tengo los juegos de cuestionario');
-
-                          console.log('voy a por los juegos de avatar');
                           this.peticionesAPI.DameJuegoDeAvatarAlumno(AlumnoId)
                           // tslint:disable-next-line:no-shadowed-variable
                           .subscribe( lista => {
@@ -213,8 +195,6 @@ export class CalculosService {
                                   JuegosInactivos.push(lista[i]);
                                 }
                               }
-                              console.log('ya tengo los juegos de avatar');
-                              console.log('voy a por los juegos de votacion uno a todos');
                               this.peticionesAPI.DameJuegosDeVotacionUnoATodosAlumno(AlumnoId)
                               // tslint:disable-next-line:no-shadowed-variable
                               .subscribe( lista => {
@@ -225,8 +205,6 @@ export class CalculosService {
                                       JuegosInactivos.push(lista[i]);
                                     }
                                   }
-                                  console.log('ya tengo los juegos de votacion uno a todos');
-                                  console.log('voy a por los juegos de votacion todos a uno');
                                   this.peticionesAPI.DameJuegosDeVotacionTodosAUnoAlumno(AlumnoId)
                                   // tslint:disable-next-line:no-shadowed-variable
                                   .subscribe( lista => {
@@ -237,9 +215,6 @@ export class CalculosService {
                                           JuegosInactivos.push(lista[i]);
                                         }
                                       }
-                                      console.log('ya tengo los juegos de votacion todos a uno');
-                                      console.log (lista);
-                                      console.log('voy a por los juegos de cuestionario de satisfaccion');
                                       this.peticionesAPI.DameJuegosDeCuestiinarioSatisfaccionAlumno(AlumnoId)
                                       // tslint:disable-next-line:no-shadowed-variable
                                       .subscribe( lista => {
@@ -250,18 +225,11 @@ export class CalculosService {
                                               JuegosInactivos.push(lista[i]);
                                             }
                                           }
-                                          console.log('ya tengo los juegos de cuestionario de satisfaccion');
-                                          console.log (lista);
 
-
-
-                                          console.log('vamos a por los equipos');
                                           this.peticionesAPI.DameEquiposDelAlumno(AlumnoId)
                                           // tslint:disable-next-line:no-shadowed-variable
                                           .subscribe( lista => {
                                           this.equipos = lista;
-                                          console.log('yasta la lista de equipos');
-                                          console.log(this.equipos);
                                           if (this.equipos.length === 0) {
                                             // No hay equipos. Ya puedo retornar las listas de juegos
                                             const MisObservables = { activos: JuegosActivos, inactivos: JuegosInactivos };
@@ -269,12 +237,9 @@ export class CalculosService {
                                           } else {
                                             let cont = 0;
                                             for (let i = 0; i < (this.equipos.length); i++) {
-                                              console.log('voy a por los juegos de puntos del euqioi ' + this.equipos[i].id);
                                               this.peticionesAPI.DameJuegoDePuntosEquipo(this.equipos[i].id)
                                               // tslint:disable-next-line:no-shadowed-variable
                                               .subscribe( lista => {
-                                                  console.log('ya tengo los juegos de puntos del equipo ');
-                                                  console.log(lista);
                                                   for (let j = 0; j < (lista.length); j++) {
                                                     if (lista[j].JuegoActivo === true) {
                                                       JuegosActivos.push(lista[j]);
@@ -282,12 +247,9 @@ export class CalculosService {
                                                       JuegosInactivos.push(lista[j]);
                                                     }
                                                   }
-                                                  console.log('voy a por los juegos de coleccion del euqioi ' + this.equipos[i].id);
                                                   this.peticionesAPI.DameJuegoDeColeccionEquipo(this.equipos[i].id)
                                                   // tslint:disable-next-line:no-shadowed-variable
                                                   .subscribe( lista => {
-                                                      console.log('ya tengo los juegos de coleccion del equipo ');
-                                                      console.log(lista);
                                                       for (let j = 0; j < (lista.length); j++) {
                                                         if (lista[j].JuegoActivo === true) {
                                                           JuegosActivos.push(lista[j]);
@@ -295,12 +257,9 @@ export class CalculosService {
                                                           JuegosInactivos.push(lista[j]);
                                                         }
                                                       }
-                                                      console.log('voy a por los juegos de F1 del equipo ' + this.equipos[i].id);
                                                       this.peticionesAPI.DameJuegoDeCompeticionF1Equipo(this.equipos[i].id)
                                                       // tslint:disable-next-line:no-shadowed-variable
                                                       .subscribe( lista => {
-                                                          console.log('ya tengo los juegos de F1 del equipo');
-                                                          console.log(lista);
                                                           for (let j = 0; j < (lista.length); j++) {
                                                             if (lista[j].JuegoActivo === true) {
                                                               JuegosActivos.push(lista[j]);
@@ -308,12 +267,9 @@ export class CalculosService {
                                                               JuegosInactivos.push(lista[j]);
                                                             }
                                                           }
-                                                          console.log('voy a por los juegos de liga del equipo' + this.equipos[i].id);
                                                           this.peticionesAPI.DameJuegoDeCompeticionLigaEquipo(this.equipos[i].id)
                                                           // tslint:disable-next-line:no-shadowed-variable
                                                           .subscribe( lista => {
-                                                              console.log('ya tengo los juegos de liga del equipo');
-                                                              console.log(lista);
                                                               for (let j = 0; j < (lista.length); j++) {
                                                                 if (lista[j].JuegoActivo === true) {
                                                                   JuegosActivos.push(lista[j]);
@@ -358,7 +314,6 @@ export class CalculosService {
     let InformacionAlumno: MiAlumnoAMostrarJuegoDePuntos[] = [];
     this.peticionesAPI.DameAlumnosJuegoDePuntos(juegoId).subscribe(
       listaAlumnos => {
-        console.log('este es el numero de alumnos en este juego' + listaAlumnos.length);
         for (let i = 0; i < (listaAlumnos.length); i++) {
           const MiAlumno = new MiAlumnoAMostrarJuegoDePuntos();
           MiAlumno.Nombre = listaAlumnos[i].Nombre;
@@ -475,7 +430,6 @@ export class CalculosService {
     const InformacionEquipo: MiEquipoAMostrarJuegoDePuntos[] = [];
     this.peticionesAPI.DameEquiposJuegoDePuntos(juegoId).subscribe(
       listaEquipos => {
-        console.log('Equipos del Juego: ' + listaEquipos);
         for (let i = 0; i < (listaEquipos.length); i++) {
           const MiEquipo = new MiEquipoAMostrarJuegoDePuntos();
           MiEquipo.Nombre = listaEquipos[i].Nombre;
@@ -519,7 +473,6 @@ export class CalculosService {
 
   public VisualizarLosCromosDelante(listaCromos: any[]) {
     const imagenesCromo: string[] = [];
-    console.log(listaCromos.length);
     for (let i = 0; i < listaCromos.length; i++ ) {
       if (listaCromos[i].cromo.ImagenDelante !== undefined) {
         this.https.get(URL.ImagenesCromo + listaCromos[i].cromo.ImagenDelante,
@@ -538,13 +491,10 @@ export class CalculosService {
             });
       }
     }
-    console.log('he acabado el for');
-    console.log(listaCromos);
     return imagenesCromo;
   }
   public VisualizarLosCromosDetras(listaCromos: any[]) {
     const imagenesCromo: string[] = [];
-    console.log(listaCromos.length);
     for (let i = 0; i < (listaCromos.length); i++) {
       if (listaCromos[i].cromo.ImagenDetras !== undefined) {
         this.https.get(URL.ImagenesCromo + listaCromos[i].cromo.ImagenDetras,
@@ -563,8 +513,6 @@ export class CalculosService {
             });
       }
     }
-    console.log('he acabado el for');
-    console.log(listaCromos);
     return imagenesCromo;
   }
 
@@ -617,10 +565,8 @@ export class CalculosService {
         const listaGruposYAlumnos: any[] = [];
         let cont = 0;
         for (let i = 0; i < (listaGrupos.length); i++) {
-          console.log(listaGrupos[i].id);
           this.peticionesAPI.DameAlumnosGrupo(listaGrupos[i].id).subscribe(
             MisAlumnos => {
-              console.log(MisAlumnos);
               listaGruposYAlumnos.push({ Grupo: listaGrupos[i].Descripcion, Alumnos: MisAlumnos });
               cont++;
               if (cont === listaGrupos.length) {
@@ -665,13 +611,10 @@ export class CalculosService {
               for (let i = 0; i < TipoDePuntos.length; i++) {
                 this.peticionesAPI.DameHistorialDeUnPunto(MiAlumnoJuegoDePuntos[0].id, TipoDePuntos[i].id).subscribe(
                   HistorialDeUnPunto => {
-                    console.log(MiAlumnoJuegoDePuntos);
-                    console.log(HistorialDeUnPunto);
                     this.puntos = 0;
                     // tslint:disable-next-line:prefer-for-of
                     for (let j = 0; j < HistorialDeUnPunto.length; j++) {
                       this.puntos = this.puntos + HistorialDeUnPunto[j].ValorPunto;
-                      console.log('acumulo punto' + this.puntos);
                     }
                     HistorialPuntos.push({ Nombre: TipoDePuntos[i].Nombre, Puntos: this.puntos });
                   });
@@ -692,7 +635,6 @@ export class CalculosService {
       MiEquipo => {
         this.peticionesAPI.DameInscripcionEquipoJuegoDePuntos(juegoDePuntosId, MiEquipo[0].id).subscribe(
           MiEquipoJuegoDePuntos => {
-            console.log(MiEquipoJuegoDePuntos);
             this.peticionesAPI.DamePuntosJuegoDePuntos(juegoDePuntosId).subscribe(
               TipoDePuntos => {
                 // tslint:disable-next-line:prefer-for-of
@@ -717,9 +659,6 @@ export class CalculosService {
                                         equiposDelJuego: Equipo[], jornadasDelJuego: Jornada[],
                                         enfrentamientosDelJuego: EnfrentamientoLiga[][]): TablaEquipoJuegoDeCompeticion[] {
     const rankingJuegoDeCompeticion: TablaEquipoJuegoDeCompeticion[] = [];
-    console.log(' Vamos a preparar la tabla del ranking por equipos de Competición Liga');
-    console.log('la lista de equipos ordenada es: ');
-    console.log(listaEquiposOrdenadaPorPuntos);
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < listaEquiposOrdenadaPorPuntos.length; i++) {
       let equipo: Equipo;
@@ -731,16 +670,12 @@ export class CalculosService {
     const individual = false;
     const informacionPartidos = this.ObtenerInformaciónPartidos(listaEquiposOrdenadaPorPuntos, jornadasDelJuego,
       individual, enfrentamientosDelJuego);
-    console.log('Vamos a rellenar la TablaEquipoJuegoDeCompeticion con la informacionPartidos');
     const rankingJuegoDeCompeticionFinal = this.RellenarTablaEquipoJuegoDeCompeticion(rankingJuegoDeCompeticion, informacionPartidos);
-    console.log('El ranking es: ');
-    console.log(rankingJuegoDeCompeticionFinal);
     return rankingJuegoDeCompeticionFinal;
   }
 
   public RellenarTablaEquipoJuegoDeCompeticion(rankingJuegoDeCompeticion: TablaEquipoJuegoDeCompeticion[],
                                                informacionPartidos: InformacionPartidosLiga[]): TablaEquipoJuegoDeCompeticion[] {
-    console.log();
     for (let cont = 0; cont < rankingJuegoDeCompeticion.length; cont++) {
       rankingJuegoDeCompeticion[cont].partidosTotales = informacionPartidos[cont].partidosTotales;
       rankingJuegoDeCompeticion[cont].partidosJugados = informacionPartidos[cont].partidosJugados;
@@ -845,21 +780,16 @@ export class CalculosService {
 
       let rankingJuegoDePuntos: any[] = [];
 
-      console.log('Dentro ranking2 ');
-      console.log('Recorremos los ' + listaAlumnosOrdenadaPorPuntos.length);
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < listaAlumnosOrdenadaPorPuntos.length; i++) {
-        console.log('alumno ' + i);
 
         let alumno: Alumno;
         let nivel: Nivel;
 
         // Busco al alumno
         alumno = alumnosDelJuego.filter(res => res.id === listaAlumnosOrdenadaPorPuntos[i].alumnoId)[0];
-        console.log('nombre ' + alumno.Nombre);
 
         if (listaAlumnosOrdenadaPorPuntos[i].nivelId !== undefined) {
-          console.log(listaAlumnosOrdenadaPorPuntos[i].alumnoId);
           // Busco el nivel
           nivel = nivelesDelJuego.filter(res => res.id === listaAlumnosOrdenadaPorPuntos[i].nivelId)[0];
         }
@@ -867,12 +797,10 @@ export class CalculosService {
         this.peticionesAPI.DameHistorialDeUnPunto(listaAlumnosOrdenadaPorPuntos[i].id, puntoSeleccionadoId)
           .subscribe(historial => {
             let puntos = 0;
-            console.log(alumno.Nombre + ' tieme ' + historial.length + 'asignaciones');
             // tslint:disable-next-line:prefer-for-of
             for (let j = 0; j < historial.length; j++) {
               puntos = puntos + historial[j].ValorPunto;
             }
-            console.log('Puntos ' + puntos);
 
             if (nivel !== undefined) {
               // tslint:disable-next-line:max-line-length
@@ -885,7 +813,6 @@ export class CalculosService {
             }
 
             if (i === listaAlumnosOrdenadaPorPuntos.length - 1) {
-              console.log('vamos a acabar');
               // tslint:disable-next-line:only-arrow-functions
               rankingJuegoDePuntos = rankingJuegoDePuntos.sort(function(obj1, obj2) {
                 return obj2.puntos - obj1.puntos;
@@ -905,8 +832,6 @@ export class CalculosService {
     const listasObservables = new Observable(obs => {
       this.peticionesAPI.DameAsignacionesEquipoDelGrupo(equipo.grupoId)
         .subscribe(asignaciones => {
-          console.log('Asignaciones equipo ' + equipo.id);
-          console.log(asignaciones);
           let asignacionesEquipo: any[];
           const alumnosConEquipo: Alumno[] = [];
           const alumnosSinEquipo: Alumno[] = [];
@@ -915,7 +840,6 @@ export class CalculosService {
             // cuando recibimos las asignaciones las metemos en su lista
             asignacionesEquipo = asignaciones;
           }
-          console.log('Alumnos del grupo: ' + alumnosGrupo);
           // Ahora preparamos dos listas, una de alumnos con equipo y otra de alumnos sin equipo
           // tslint:disable-next-line:prefer-for-of
           for (let i = 0; i < alumnosGrupo.length; i++) {
@@ -939,7 +863,6 @@ export class CalculosService {
           obs.next(resultado);
         });
     });
-    console.log('Id Equipo ' + equipo.id);
     return listasObservables;
   }
 
@@ -960,13 +883,11 @@ export class CalculosService {
     while ((i < nivelesDelJuego.length) && !encontrado) {
       if (nivelesDelJuego[i].PuntosAlcanzar > puntos) {
         encontrado = true;
-        console.log('encontrado');
       } else {
         i = i + 1;
       }
     }
     if (!encontrado) {
-      console.log('no encontrado');
       // Tiene el nivel máximo
       return nivelesDelJuego[nivelesDelJuego.length - 1].id;
     } else if (i > 0) {
@@ -1006,7 +927,6 @@ export class CalculosService {
     alumnoJuegoDePuntos.PuntosTotalesAlumno = alumnoJuegoDePuntos.PuntosTotalesAlumno - punto.valorPunto;
     if (nivelesDelJuego !== undefined) {
       // calculamos el nuevo nivel
-      console.log('calculo nuevo nivel ');
       const nivelId = this.DameNivelId(nivelesDelJuego, alumnoJuegoDePuntos.PuntosTotalesAlumno);
       alumnoJuegoDePuntos.nivelId = nivelId;
     }
@@ -1077,7 +997,6 @@ export class CalculosService {
     equipoJuegoDePuntos.PuntosTotalesEquipo = equipoJuegoDePuntos.PuntosTotalesEquipo - punto.valorPunto;
     if (nivelesDelJuego !== undefined) {
       // calculamos el nuevo nivel
-      console.log('calculo nuevo nivel ');
       const nivelId = this.DameNivelId(nivelesDelJuego, equipoJuegoDePuntos.PuntosTotalesEquipo);
       equipoJuegoDePuntos.nivelId = nivelId;
     }
@@ -1234,15 +1153,12 @@ export class CalculosService {
     const rankingEquiposJuegoDePuntos: any[] = [];
     // const rankingEquiposJuegoDePuntosTotal: any [] = [];
     for (let i = 0; i < listaEquiposOrdenadaPorPuntos.length; i++) {
-      console.log('Bucle principal');
       let equipo: Equipo;
       let nivel: Nivel;
       equipo = equiposDelJuego.filter(res => res.id === listaEquiposOrdenadaPorPuntos[i].equipoId)[0];
 
       if (listaEquiposOrdenadaPorPuntos[i].nivelId !== undefined) {
-        console.log(listaEquiposOrdenadaPorPuntos[i].equipoId);
         nivel = nivelesDelJuego.filter(res => res.id === listaEquiposOrdenadaPorPuntos[i].nivelId)[0];
-        console.log(listaEquiposOrdenadaPorPuntos[i].nivelId);
       }
 
       if (nivel !== undefined) {
@@ -1324,7 +1240,6 @@ export class CalculosService {
 
           if (his[0] !== null) {
             for (let i = 0; i < his.length; i++) {
-              console.log('voy ' + i);
               const punto = tiposPuntosDelJuego.filter(res => res.id === his[i].puntoId)[0];
 
               historial[i] = new TablaHistorialPuntosEquipo(punto.Nombre,
@@ -1352,7 +1267,6 @@ export class CalculosService {
 
           if (his[0] !== null) {
             for (let i = 0; i < his.length; i++) {
-              console.log('voy ' + i);
               const punto = tiposPuntosDelJuego.filter(res => res.id === his[i].puntoId)[0];
 
               historial[i] = new TablaHistorialPuntosAlumno(punto.Nombre,
@@ -1412,15 +1326,12 @@ export class CalculosService {
   ) {
     let alumnoJuegoDeColeccion: AlumnoJuegoDeColeccion;
     alumnoJuegoDeColeccion = inscripcionesAlumnos.filter(res => res.alumnoId === alumno.id)[0];
-    console.log(alumnoJuegoDeColeccion);
 
     // tslint:disable-next-line:prefer-const
     // let hits = this.probabilidadCromos.map(x => 0);
 
 
     for (let k = 0; k < numeroCromosRandom; k++) {
-
-      console.log('Voy a hacer el post del cromo ' + k);
 
       const indexCromo = this.randomIndex(probabilidadCromos);
       // hits[this.indexCromo]++;
@@ -1447,19 +1358,13 @@ export class CalculosService {
   ) {
     let equipoJuegoDeColeccion: EquipoJuegoDeColeccion;
     equipoJuegoDeColeccion = inscripcionesEquipos.filter(res => res.equipoId === equipo.id)[0];
-    console.log(equipoJuegoDeColeccion);
 
     for (let k = 0; k < numeroCromosRandom; k++) {
-
-      console.log('Voy a hacer el post del cromo ' + k);
 
       const indexCromo = this.randomIndex(probabilidadCromos);
 
       this.peticionesAPI.AsignarCromoEquipo(new AlbumEquipo(equipoJuegoDeColeccion.id,
         cromosColeccion[indexCromo].id)).subscribe(res => {
-
-          console.log(res);
-
         });
     }
 
@@ -1501,9 +1406,6 @@ export class CalculosService {
                                                     enfrentamientosDelJuego: EnfrentamientoLiga[][], miAlumnoid: number): TablaAlumnoJuegoDeCompeticion[] {
     const rankingJuegoDeCompeticion: TablaAlumnoJuegoDeCompeticion[] = [];
     let informacionAlumno: TablaAlumnoJuegoDeCompeticion[];
-    console.log(' Vamos a preparar la tabla del ranking individual de Competición Liga');
-    console.log('la lista de alumnos ordenada es: ');
-    console.log(listaAlumnosOrdenadaPorPuntos);
     // tslint:disable-next-line:prefer-for-oF
     for (let i = 0; i < listaAlumnosOrdenadaPorPuntos.length; i++) {
       let alumno: Alumno;
@@ -1515,15 +1417,12 @@ export class CalculosService {
     const individual = true;
     const informacionPartidos = this.ObtenerInformaciónPartidos(listaAlumnosOrdenadaPorPuntos, jornadasDelJuego,
       individual, enfrentamientosDelJuego);
-    console.log('Vamos a rellenar la TablaEquipoJuegoDeCompeticion con la informacionPartidos');
     const rankingJuegoDeCompeticionFinal = this.RellenarTablaAlumnoJuegoDeCompeticion(rankingJuegoDeCompeticion, informacionPartidos);
     for (let i = 0; i < rankingJuegoDeCompeticionFinal.length; i++) {
       if (rankingJuegoDeCompeticionFinal[i].id === miAlumnoid) {
         informacionAlumno[0] = rankingJuegoDeCompeticionFinal[i];
       }
     }
-    console.log('El ranking de tu alumno es: ');
-    console.log(informacionAlumno);
     return informacionAlumno;
   }
 
@@ -1531,9 +1430,6 @@ export class CalculosService {
                                             alumnosDelJuego: Alumno[], jornadasDelJuego: Jornada[],
                                             enfrentamientosDelJuego: EnfrentamientoLiga[][]): TablaAlumnoJuegoDeCompeticion[] {
     const rankingJuegoDeCompeticion: TablaAlumnoJuegoDeCompeticion[] = [];
-    console.log(' Vamos a preparar la tabla del ranking individual de Competición Liga');
-    console.log('la lista de alumnos ordenada es: ');
-    console.log(listaAlumnosOrdenadaPorPuntos);
     // tslint:disable-next-line:prefer-for-oF
     for (let i = 0; i < listaAlumnosOrdenadaPorPuntos.length; i++) {
       let alumno: Alumno;
@@ -1545,10 +1441,7 @@ export class CalculosService {
     const individual = true;
     const informacionPartidos = this.ObtenerInformaciónPartidos(listaAlumnosOrdenadaPorPuntos, jornadasDelJuego,
       individual, enfrentamientosDelJuego);
-    console.log('Vamos a rellenar la TablaEquipoJuegoDeCompeticion con la informacionPartidos');
     const rankingJuegoDeCompeticionFinal = this.RellenarTablaAlumnoJuegoDeCompeticion(rankingJuegoDeCompeticion, informacionPartidos);
-    console.log('El ranking es: ');
-    console.log(rankingJuegoDeCompeticionFinal);
     return rankingJuegoDeCompeticionFinal;
   }
 
@@ -1561,15 +1454,12 @@ export class CalculosService {
       rankingJuegoDeCompeticion[cont].partidosEmpatados = informacionPartidos[cont].partidosEmpatados;
       rankingJuegoDeCompeticion[cont].partidosPerdidos = informacionPartidos[cont].partidosPerdidos;
     }
-    console.log('----------------------------------');
-    console.log(rankingJuegoDeCompeticion);
     return rankingJuegoDeCompeticion;
   }
 
   public ObtenerInformaciónPartidos(listaParticipantesOrdenadaPorPuntos, jornadasDelJuego: Jornada[], individual: boolean,
                                     enfrentamientosDelJuego: Array<Array<EnfrentamientoLiga>>): InformacionPartidosLiga[] {
     this.informacionPartidos = [];
-    console.log('Estoy en ObtenerInformacionPartidos()');
     const listaInformacionPartidos: InformacionPartidosLiga[] = [];
     const listaEnfrentamientosDelJuego: EnfrentamientoLiga[] = this.ObtenerListaEnfrentamientosDelJuego(jornadasDelJuego,
       enfrentamientosDelJuego);
@@ -1577,7 +1467,6 @@ export class CalculosService {
       // tslint:disable-next-line:prefer-for-of
       for (let equipo = 0; equipo < listaParticipantesOrdenadaPorPuntos.length; equipo++) {
         const informacionPartido = new InformacionPartidosLiga(listaParticipantesOrdenadaPorPuntos[equipo].EquipoId, 0, 0, 0, 0, 0);
-        console.log(informacionPartido);
         informacionPartido.partidosTotales = this.CalcularPartidosTotales(listaEnfrentamientosDelJuego,
           listaParticipantesOrdenadaPorPuntos, equipo, individual);
         informacionPartido.partidosJugados = this.CalcularPartidosJugados(listaEnfrentamientosDelJuego,
@@ -1589,14 +1478,11 @@ export class CalculosService {
         informacionPartido.partidosPerdidos = this.CalcularPartidosPerdidos(listaEnfrentamientosDelJuego,
           listaParticipantesOrdenadaPorPuntos, equipo, individual);
         listaInformacionPartidos.push(informacionPartido);
-        console.log('Partidos perdidos del participante id ' + listaParticipantesOrdenadaPorPuntos[equipo].EquipoId + 'son: '
-          + informacionPartido.partidosPerdidos);
       }
     } else if (individual === true) {
       // tslint:disable-next-line:prefer-for-of
       for (let alumno = 0; alumno < listaParticipantesOrdenadaPorPuntos.length; alumno++) {
         const informacionPartido = new InformacionPartidosLiga(listaParticipantesOrdenadaPorPuntos[alumno].AlumnoId, 0, 0, 0, 0, 0);
-        console.log(informacionPartido);
         informacionPartido.partidosTotales = this.CalcularPartidosTotales(listaEnfrentamientosDelJuego,
           listaParticipantesOrdenadaPorPuntos, alumno, individual);
         informacionPartido.partidosJugados = this.CalcularPartidosJugados(listaEnfrentamientosDelJuego,
@@ -1608,12 +1494,8 @@ export class CalculosService {
         informacionPartido.partidosPerdidos = this.CalcularPartidosPerdidos(listaEnfrentamientosDelJuego,
           listaParticipantesOrdenadaPorPuntos, alumno, individual);
         listaInformacionPartidos.push(informacionPartido);
-        console.log('Partidos perdidos del participante id ' + listaParticipantesOrdenadaPorPuntos[alumno].AlumnoId + 'son: '
-          + informacionPartido.partidosPerdidos);
       }
     }
-    console.log('La listaInformacionPartidos es: ');
-    console.log(listaInformacionPartidos);
     return listaInformacionPartidos;
   }
 
@@ -1625,8 +1507,6 @@ export class CalculosService {
         listaEnfrentamientosDelJuego.push(enfrentamientosDelJuego[jornada][enfrentamiento]);
       }
     }
-    console.log('La lista de enfrentamientos del juego es: ');
-    console.log(listaEnfrentamientosDelJuego);
     return listaEnfrentamientosDelJuego;
   }
 
@@ -1778,9 +1658,6 @@ export class CalculosService {
                                        listaAlumnosClasificacion: TablaAlumnoJuegoDeCompeticion[],
                                        listaEquiposClasificacion: TablaEquipoJuegoDeCompeticion[],
                                        juegoSeleccionado: Juego) {
-    console.log('Aquí tendré la tabla de enfrentamientos, los enfrentamientos sonc:');
-    console.log(EnfrentamientosJornadaSeleccionada);
-    console.log('Distinción entre Individual y equipos');
     if (juegoSeleccionado.Modo === 'Individual') {
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < EnfrentamientosJornadaSeleccionada.length; i++) {
@@ -1817,7 +1694,6 @@ export class CalculosService {
       }
 
     } else {
-      console.log('Estoy en ConstruirTablaEnfrentamientos() equipos');
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < EnfrentamientosJornadaSeleccionada.length; i++) {
         // tslint:disable-next-line:prefer-for-of
@@ -1865,8 +1741,6 @@ export class CalculosService {
 
   public GenerarTablaJornadasLiga(juegoSeleccionado, jornadas, enfrentamientosJuego: EnfrentamientoLiga[][]) {
     const TablaJornada: TablaJornadas[] = [];
-    console.log('juego seleccionado:');
-    console.log(juegoSeleccionado);
     for (let i = 0; i < jornadas.length; i++) {
       let jornada: Jornada;
       const jornadaId = jornadas[i].id;
@@ -1877,8 +1751,6 @@ export class CalculosService {
           enfrentamientosJornada.push(enfrentamientoDeLaJornada);
         }
       });
-      console.log('Los enfrentamientosJornada con id ' + jornadaId + ' son:');
-      console.log(enfrentamientosJornada);
       const Disputada: boolean = this.JornadaFinalizadaLiga(jornada, enfrentamientosJornada);
       TablaJornada[i] = new TablaJornadas(i + 1, jornada.Fecha, jornada.CriterioGanador, jornada.id, undefined, undefined, Disputada);
     }
@@ -1954,9 +1826,6 @@ export class CalculosService {
   public PrepararTablaRankingIndividualFormulaUno(listaAlumnosOrdenadaPorPuntos: AlumnoJuegoDeCompeticionFormulaUno[],
                                                   alumnosDelJuego: Alumno[]): TablaAlumnoJuegoDeCompeticion[] {
     const rankingJuegoDeCompeticion: TablaAlumnoJuegoDeCompeticion[] = [];
-    console.log(' Vamos a preparar la tabla del ranking individual de Competición Fórmula Uno');
-    console.log('la lista de alumnos ordenada es: ');
-    console.log(listaAlumnosOrdenadaPorPuntos);
     // tslint:disable-next-line:prefer-for-oF
     for (let i = 0; i < listaAlumnosOrdenadaPorPuntos.length; i++) {
       let alumno: Alumno;
@@ -1971,9 +1840,6 @@ export class CalculosService {
   public PrepararTablaRankingEquipoFormulaUno(listaEquiposOrdenadaPorPuntos: EquipoJuegoDeCompeticionFormulaUno[],
                                               equiposDelJuego: Equipo[]) {
     const rankingJuegoDeCompeticion: TablaEquipoJuegoDeCompeticion[] = [];
-    console.log(' Vamos a preparar la tabla del ranking por equipos de Competición Fórmula Uno');
-    console.log('la lista de equipos ordenada es: ');
-    console.log(listaEquiposOrdenadaPorPuntos);
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < listaEquiposOrdenadaPorPuntos.length; i++) {
       let equipo: Equipo;
@@ -1989,7 +1855,6 @@ export class CalculosService {
   public ClasificacionJornada(juegoSeleccionado: Juego, alumnoJuegoDeCompeticionFormulaUno: TablaAlumnoJuegoDeCompeticion[],
                               equipoJuegoDeCompeticionFormulaUno: TablaEquipoJuegoDeCompeticion[], GanadoresFormulaUno: string[],
                               GanadoresFormulaUnoId: number[]) {
-    console.log('Estoy en calculos.ClasificacionJornada()');
     const ParticipantesFormulaUno: string[] = [];
     const PuntosFormulaUno: number[] = [];
     const Posicion: number[] = [];
@@ -1998,7 +1863,6 @@ export class CalculosService {
       GanadoresFormulaUno.forEach(ganador => ParticipantesFormulaUno.push(ganador));
       juegoSeleccionado.Puntos.forEach(punto => {
         PuntosFormulaUno.push(punto);
-        console.log('Los Puntos del juego son: ' + punto);
       });
       // const PuntosFormulaUno: number[] = juegoSeleccionado.Puntos;
       if (juegoSeleccionado.Modo === 'Individual') {
@@ -2016,7 +1880,6 @@ export class CalculosService {
           Posicion[j] = j + 1;
         }
       } else {
-        console.log('Estamos en ClasificacionJornada() equipo');
         equipoJuegoDeCompeticionFormulaUno.forEach(a => {
           const ParticipanteFormulaUno = a.nombre;
           const ParticipanteId = a.id;
@@ -2032,7 +1895,6 @@ export class CalculosService {
         }
       }
     } else {
-      console.log('Esta jornada aún no tiene ganadores asignados');
       if (juegoSeleccionado.Modo === 'Individual') {
         alumnoJuegoDeCompeticionFormulaUno.forEach(a => {
           const ParticipanteFormulaUno = a.nombre + ' ' + a.primerApellido + ' ' + a.segundoApellido;
@@ -2045,7 +1907,6 @@ export class CalculosService {
           Posicion[j] = j + 1;
         }
       } else {
-        console.log('Estamos en ClasificacionJornada() equipo');
         equipoJuegoDeCompeticionFormulaUno.forEach(a => {
           const ParticipanteFormulaUno = a.nombre;
           const ParticipanteId = a.id;
@@ -2074,7 +1935,6 @@ export class CalculosService {
     posicion: number[];
     participanteId: number[]
   }) {
-    console.log('Estoy en PrepararTablaRankingJornadaFormulaUno');
     const rankingJornadaFormulaUno: TablaClasificacionJornada[] = [];
     for (let i = 0; i < datosClasificacionJornadaSeleccionada.participante.length; i++) {
       rankingJornadaFormulaUno[i] = new TablaClasificacionJornada(datosClasificacionJornadaSeleccionada.participante[i],
@@ -2089,17 +1949,11 @@ export class CalculosService {
                                 equipoJuegoDeCompeticionFormulaUno) {
 
     const TablaJornada: TablaJornadas[] = [];
-    console.log('juego seleccionado:');
-    console.log(juegoSeleccionado);
     for (let i = 0; i < juegoSeleccionado.NumeroTotalJornadas; i++) {
       let jornada: Jornada;
       const jornadaId = jornadas[i].id;
       jornada = jornadas.filter(res => res.id === jornadaId)[0];
 
-      console.log('Ganadores de la jornada:');
-      console.log(jornada.GanadoresFormulaUno);
-      console.log('Fecha de la jornada');
-      console.log(jornada.Fecha);
       if (juegoSeleccionado.Tipo === 'Juego De Competición Fórmula Uno') {
 
         if (jornada.Fecha === undefined && jornada.GanadoresFormulaUno === undefined) {
@@ -2133,7 +1987,6 @@ export class CalculosService {
 
   public ObtenerNombreGanadoresFormulaUno(juegoSeleccionado: Juego, jornada, alumnoJuegoDeCompeticionFormulaUno,
                                           equipoJuegoDeCompeticionFormulaUno) {
-    console.log('Estoy en ObtenerNombreGanadoresFormulaUno()');
     const GanadoresFormulaUno: {
       nombre: string[]
       id: number[]
@@ -2151,21 +2004,16 @@ export class CalculosService {
           }
         }
       }
-      console.log(GanadoresFormulaUno);
       return GanadoresFormulaUno;
     } else {
       for (let j = 0; j < GanadoresFormulaUno.id.length; j++) {
         // tslint:disable-next-line:prefer-for-of
         for (let k = 0; k < equipoJuegoDeCompeticionFormulaUno.length; k++) {
-          console.log('GanadoresFormulaUno[j].id === equipoJuegoDeCompeticionFormulaUno[k].id :');
-          console.log(GanadoresFormulaUno.id[j] + '===' + equipoJuegoDeCompeticionFormulaUno[k].id);
           if (GanadoresFormulaUno.id[j] === equipoJuegoDeCompeticionFormulaUno[k].id) {
             GanadoresFormulaUno.nombre[j] = equipoJuegoDeCompeticionFormulaUno[k].nombre;
           }
         }
       }
-      console.log('GanadoresFormulaUno:');
-      console.log(GanadoresFormulaUno);
       return GanadoresFormulaUno;
     }
   }
@@ -2253,21 +2101,14 @@ export class CalculosService {
 
   public DameEquipoAlumnoEnJuegoDeColeccion(alumnoId: number, juegoId: number): any {
     const equipoObservable = new Observable(obs => {
-      console.log ('voy a por el equipo de este alumno en el juego');
       // primero traigo los equipos que participan en el juego
       this.peticionesAPI.DameEquiposJuegoDeColeccion (juegoId)
       .subscribe (equiposJuego => {
-        console.log ('equipos del juego');
-        console.log (equiposJuego);
         // ahora traigo los equipos a los que pertenece el alumno
         this.peticionesAPI.DameEquiposDelAlumno (alumnoId)
         .subscribe (equiposAlumno => {
-          console.log ('equipos del alumno');
-          console.log (equiposAlumno);
           // ahora miro cual es el equipo que está en ambas listas
           const equipo = equiposAlumno.filter(e => equiposJuego.some(a => a.id === e.id))[0];
-          console.log ('interseccion');
-          console.log (equipo);
           obs.next (equipo);
         });
 
@@ -2284,28 +2125,21 @@ export class CalculosService {
       const juegosActivos: any[] = [];
       const juegosInactivos: any[] = [];
       const juegosPreparados: any[] = [];
+      let juegos: any[];
 
-      console.log ('vamos a por los juegos de puntos del grupo: ' + grupoID);
       this.peticionesAPI.DameJuegoDePuntosGrupo(grupoID)
       .subscribe(juegosPuntos => {
-        console.log('He recibido los juegos de puntos');
-        console.log(juegosPuntos);
         // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < juegosPuntos.length; i++) {
           if (juegosPuntos[i].JuegoActivo === true) {
             juegosActivos.push(juegosPuntos[i]);
           } else {
-            console.log('Juego inactivo');
-            console.log(juegosPuntos[i]);
             juegosInactivos.push(juegosPuntos[i]);
           }
         }
         // Ahora vamos apor por los juegos de colección
-        console.log ('vamos a por los juegos de colección del grupo: ' + grupoID);
         this.peticionesAPI.DameJuegoDeColeccionGrupo(grupoID)
         .subscribe(juegosColeccion => {
-          console.log('He recibido los juegos de coleccion');
-          console.log(juegosColeccion);
           // tslint:disable-next-line:prefer-for-of
           for (let i = 0; i < juegosColeccion.length; i++) {
             if (juegosColeccion[i].JuegoActivo === true) {
@@ -2315,11 +2149,8 @@ export class CalculosService {
             }
           }
           // Ahora vamos a por los juegos de competición
-          console.log ('vamos a por los juegos de competicion liga del grupo: ' + grupoID);
           this.peticionesAPI.DameJuegoDeCompeticionLigaGrupo(grupoID)
           .subscribe(juegosCompeticion => {
-            console.log('He recibido los juegos de competición');
-            console.log(juegosCompeticion);
             // tslint:disable-next-line:prefer-for-of
             for (let i = 0; i < juegosCompeticion.length; i++) {
               if (juegosCompeticion[i].JuegoActivo === true) {
@@ -2329,11 +2160,8 @@ export class CalculosService {
               }
             }
             // ahora toca los juegos de competicion de formula uno
-            console.log ('vamos a por los juegos de competicion formula uno del grupo: ' + grupoID);
             this.peticionesAPI.DameJuegoDeCompeticionFormulaUnoGrupo(grupoID)
             .subscribe(juegosCompeticionFormulaUno => {
-              console.log('He recibido los juegos de competición formula uno');
-              console.log(juegosCompeticionFormulaUno);
               // tslint:disable-next-line:prefer-for-of
               for (let i = 0; i < juegosCompeticionFormulaUno.length; i++) {
                 if (juegosCompeticionFormulaUno[i].JuegoActivo === true) {
@@ -2342,11 +2170,9 @@ export class CalculosService {
                   juegosInactivos.push(juegosCompeticionFormulaUno[i]);
                 }
               }
-              console.log ('vamos a por los juegos de avatar del grupo: ' + grupoID);
+
               this.peticionesAPI.DameJuegoDeAvatarGrupo(grupoID)
               .subscribe(juegosAvatar => {
-                console.log('He recibido los juegos de avatar');
-                console.log(juegosAvatar);
                 // tslint:disable-next-line:prefer-for-of
                 for (let i = 0; i < juegosAvatar.length; i++) {
                   if (juegosAvatar[i].JuegoActivo === true) {
@@ -2356,12 +2182,8 @@ export class CalculosService {
                   }
                 }
                 // Ahora recogemos los juegos de cuestionario
-                // console.log ('vamos a por los juegos de cuestionario del grupo: ' + grupoID);
-                console.log ('vamos a por los juegos de cuestionario del grupo: ' + grupoID);
                 this.peticionesAPI.DameJuegoDeCuestionario(grupoID)
                 .subscribe(juegosCuestionario => {
-                  console.log('He recibido los juegos de cuestionario');
-                  console.log(juegosCuestionario);
                   // tslint:disable-next-line:prefer-for-of
                   for (let i = 0; i < juegosCuestionario.length; i++) {
                     if (juegosCuestionario[i].JuegoActivo === true) {
@@ -2376,11 +2198,8 @@ export class CalculosService {
                     }
                   }
 
-                  console.log ('vamos a por los juegos de geocaching del grupo: ' + grupoID);
                   this.peticionesAPI.DameJuegoDeGeocaching(grupoID)
                   .subscribe(juegosGeocaching => {
-                    console.log('He recibido los juegos de geocaching');
-                    console.log(juegosGeocaching);
                     // tslint:disable-next-line:prefer-for-of
                     for (let i = 0; i < juegosGeocaching.length; i++) {
                       if (juegosGeocaching[i].JuegoActivo === true) {
@@ -2394,11 +2213,8 @@ export class CalculosService {
                         juegosInactivos.push(juegosGeocaching[i]);
                       }
                     }
-                    console.log ('Vamos a por los juegos de votacion Uno a Todos del grupo: ' + grupoID);
                     this.peticionesAPI.DameJuegosDeVotacionUnoATodos(grupoID)
                       .subscribe(juegosVotacionUnoATodos => {
-                      console.log('He recibido los juegos de votacion Uno A Todos');
-                      console.log(juegosVotacionUnoATodos);
                       // tslint:disable-next-line:prefer-for-of
                       for (let i = 0; i < juegosVotacionUnoATodos.length; i++) {
                         if (juegosVotacionUnoATodos[i].JuegoActivo === true) {
@@ -2409,11 +2225,8 @@ export class CalculosService {
                           juegosInactivos.push(juegosVotacionUnoATodos[i]);
                         }
                       }
-                      console.log ('Vamos a por los juegos de votacion Todos A Uno del grupo: ' + grupoID);
                       this.peticionesAPI.DameJuegosDeVotacionTodosAUno(grupoID)
                         .subscribe(juegosVotacioTodosAUno => {
-                        console.log('He recibido los juegos de votacion Todos A Uno');
-                        console.log(juegosVotacioTodosAUno);
                         // tslint:disable-next-line:prefer-for-of
                         for (let i = 0; i < juegosVotacioTodosAUno.length; i++) {
                           if (juegosVotacioTodosAUno[i].JuegoActivo === true) {
@@ -2424,11 +2237,8 @@ export class CalculosService {
                             juegosInactivos.push(juegosVotacioTodosAUno[i]);
                           }
                         }
-                        console.log ('Vamos a por los juegos de cuestionario de satisfacción: ' + grupoID);
                         this.peticionesAPI.DameJuegosDeCuestionarioSatisfaccion(grupoID)
                           .subscribe(juegosCuestionarioSatisfaccion => {
-                          console.log('He recibido los juegos de cuestionario de satisfacción');
-                          console.log(juegosCuestionarioSatisfaccion);
                           // tslint:disable-next-line:prefer-for-of
                           for (let i = 0; i < juegosCuestionarioSatisfaccion.length; i++) {
                             if (juegosCuestionarioSatisfaccion[i].JuegoActivo === true) {
@@ -2437,6 +2247,17 @@ export class CalculosService {
                               juegosInactivos.push(juegosCuestionarioSatisfaccion[i]);
                             }
                           }
+                        //Control de trabajo
+                        this.peticionesAPI.DameJuegosDeControlDeTrabajoEnEquipo(grupoID)
+                        .subscribe(juegosControlGrupo => {
+                          // tslint:disable-next-line:prefer-for-of
+                          for (let i = 0; i < juegosControlGrupo .length; i++) {
+                            if (juegosControlGrupo [i].JuegoActivo === true) {
+                              juegosActivos.push(juegosControlGrupo [i]);
+                            } else {
+                              juegosInactivos.push(juegosControlGrupo[i]);
+                            }
+                        }
 
                           // Ahora vamos a por los juegos de competición
                           console.log ('vamos a por los juegos de competicion torneo del grupo: ' + grupoID);
@@ -2480,6 +2301,7 @@ export class CalculosService {
         });
       });
     });
+  });
 
     return listasObservables;
   }
@@ -2594,12 +2416,9 @@ export class CalculosService {
 
     const puntuacionesDelJuego = juego.Puntos;
     if (participantesPuntuan.length === puntuacionesDelJuego.length) {
-      console.log('ganadores.length === puntuacionesDelJuego.length');
 
       // Si la jornada no tenía ganadores (en principio tadas las jornadas que llegan a esta función es porque no tenían ganadores)
       // --> actualizar jornada con los ganadores seleccionados y actualizar puntos de los particupantes
-      console.log('jornadaId: ' + jornada.id);
-      console.log('ganador = ' + jornada.GanadoresFormulaUno);
       if (jornada.GanadoresFormulaUno === undefined) {
 
         // Actualizamos el ganador en JornadaDeCompeticionFormulaUno
@@ -2624,55 +2443,31 @@ export class CalculosService {
   }
 
   GuardarGanadorJornada(jornada: Jornada, participantesPuntuan: number[]) {
-    console.log('Actualizamos la Jornada');
     const jornadaActualizada: Jornada = jornada;
-    console.log('jornada NO actualizada');
-    console.log(jornadaActualizada);
     jornadaActualizada.GanadoresFormulaUno = participantesPuntuan;
-    console.log('jornada actualizada');
-    console.log(jornadaActualizada);
     this.peticionesAPI.PonGanadoresJornadasDeCompeticionFormulaUno(jornadaActualizada)
     .subscribe(res => {
       console.log(res);
-      console.log('Se ha actualizado la jornada en la base de datos');
     });
   }
   ActualizarPuntosParticipantesJornada(juego: Juego, participantePuntua: number, puntuacionDelParticipantePuntua: number) {
 
     if (juego.Modo === 'Individual') {
-      console.log('Estoy en ActualizarPuntosParticipantesJornada() Individual');
       let alumnoPuntua: AlumnoJuegoDeCompeticionFormulaUno;
       this.peticionesAPI.DameInscripcionesAlumnoJuegoDeCompeticionFormulaUno(juego.id)
       .subscribe(alumnosJuegoF1 => {
-        console.log('alumnosJuegoF1');
-        console.log(alumnosJuegoF1);
-        console.log('participantePuntua');
-        console.log(participantePuntua);
         alumnoPuntua = alumnosJuegoF1.filter(alumno => alumno.AlumnoId === participantePuntua)[0];
-        console.log('alumnoGanador NO actualizado:');
-        console.log(alumnoPuntua);
         alumnoPuntua.PuntosTotalesAlumno = alumnoPuntua.PuntosTotalesAlumno + puntuacionDelParticipantePuntua;
-        console.log('alumnoGanador actualizado:');
-        console.log(alumnoPuntua);
         this.peticionesAPI.PonPuntosAlumnoGanadorJornadasDeCompeticionFormulaUno(alumnoPuntua)
         .subscribe(res => console.log(res));
       });
 
     } else {
-      console.log('Estoy en ActualizarPuntosParticipantesJornada() Individual');
       let equipoPuntua: EquipoJuegoDeCompeticionFormulaUno;
       this.peticionesAPI.DameInscripcionesEquipoJuegoDeCompeticionFormulaUno(juego.id)
       .subscribe(equiposJuegoF1 => {
-        console.log('equiposJuegoF1');
-        console.log(equiposJuegoF1);
-        console.log('participantePuntua');
-        console.log(participantePuntua);
         equipoPuntua = equiposJuegoF1.filter(alumno => alumno.EquipoId === participantePuntua)[0];
-        console.log('equipoPuntua NO actualizado:');
-        console.log(equipoPuntua);
         equipoPuntua.PuntosTotalesEquipo = equipoPuntua.PuntosTotalesEquipo + puntuacionDelParticipantePuntua;
-        console.log('equipoPuntua actualizado:');
-        console.log(equipoPuntua);
         this.peticionesAPI.PonPuntosEquipoGanadorJornadasDeCompeticionFormulaUno(equipoPuntua)
         .subscribe(res => console.log(res));
       });
@@ -2697,30 +2492,20 @@ export class CalculosService {
       let juegosRapidos: any[] = [];
       this.peticionesAPI.DameJuegosDeEncuestaRapida(profesorId)
       .subscribe(juegos => {
-        console.log ('Ya tengo los juegos de encuesta rápida');
-        console.log (juegos);
         juegosRapidos = juegosRapidos.concat (juegos);
         this.peticionesAPI.DameJuegosDeVotacionRapida(profesorId)
         // tslint:disable-next-line:no-shadowed-variable
         .subscribe(juegos => {
-          console.log ('Ya tengo los juegos de votación rápida');
-          console.log (juegos);
           juegosRapidos = juegosRapidos.concat (juegos);
           this.peticionesAPI.DameJuegosDeCuestionarioRapido(profesorId)
           // tslint:disable-next-line:no-shadowed-variable
           .subscribe(juegos => {
-            console.log ('Ya tengo los juegos de cuestionario rapido');
-            console.log (juegos);
             juegosRapidos = juegosRapidos.concat (juegos);
-            console.log (juegosRapidos);
            // obs.next (juegosRapidos);
             this.peticionesAPI.DameJuegosDeCogerTurnoRapido(profesorId)
             // tslint:disable-next-line:no-shadowed-variable
             .subscribe(juegos => {
-              console.log ('Ya tengo los juegos de coger turno rapido');
-              console.log (juegos);
               juegosRapidos = juegosRapidos.concat (juegos);
-              console.log (juegosRapidos);
               obs.next (juegosRapidos);
             });
           });
@@ -2733,8 +2518,6 @@ export class CalculosService {
 
   public PrepararTablaRankingIndividualVotacionUnoATodos(listaAlumnosOrdenadaPorPuntos: AlumnoJuegoDeVotacionUnoATodos[],
                                                          alumnosDelJuego: Alumno[]): TablaAlumnoJuegoDeVotacionUnoATodos[] {
-    console.log (' EN CALCULOS');
-    console.log (listaAlumnosOrdenadaPorPuntos);
     const rankingJuegoDeVotacion: TablaAlumnoJuegoDeVotacionUnoATodos [] = [];
     // tslint:disable-next-line:prefer-for-oF
     for (let i = 0; i < listaAlumnosOrdenadaPorPuntos.length; i++) {
@@ -2863,8 +2646,6 @@ public PrepararTablaRankingIndividualVotacionTodosAUnoAcabado(listaAlumnosOrdena
 
     const elem = new TablaAlumnoJuegoDeVotacionTodosAUno(i + 1, alumno.Nombre, alumno.PrimerApellido, alumno.SegundoApellido,
     listaAlumnosOrdenadaPorPuntos[i].PuntosTotales, alumnoId);
-    console.log ('elemento');
-    console.log (elem);
     elem.conceptos = Array(juego.Conceptos.length).fill (0);
     rankingJuegoDeVotacion[i] = elem;
   }
@@ -2892,6 +2673,15 @@ public PrepararTablaRankingIndividualVotacionTodosAUnoAcabado(listaAlumnosOrdena
   return rankingJuegoDeVotacion;
 }
 
+public async EliminarJuegoControlDeTrabajoEnEquipo(juego: any) {
+
+  const inscripciones = await this.peticionesAPI.DameInscripcionesAlumnosJuegoDeControlDeTrabajoEnEquipo (juego.id).toPromise();
+  // tslint:disable-next-line:prefer-for-of
+  for (let i = 0; i < inscripciones.length ; i++ ) {
+    await this.peticionesAPI.BorrarInscripcionAlumnoJuegoDeControlDeTrabajoEnEquipo(inscripciones[i].id).toPromise();
+  }
+  await this.peticionesAPI.BorrarJuegoDeControlDeTrabajoEnEquipo (juego.id).toPromise();
+}
 public GuardarGanadorEnfrentamiento(enfrentamiento: EnfrentamientoLiga, resultado: number) {
   let enfrentamientoActualizado: EnfrentamientoLiga;
 

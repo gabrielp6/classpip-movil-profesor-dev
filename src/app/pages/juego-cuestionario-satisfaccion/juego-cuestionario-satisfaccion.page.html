@@ -1,0 +1,97 @@
+
+
+
+<ion-header class="juegos-header">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button class="menu-btn"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cuestionario de satisfacción</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="juegos-content">
+
+  <ion-list *ngIf = "informacionPreparada" lines = "none" style="text-align: center;">
+    <label style="text-align: center;"><h2 style="color:rgb(109, 11, 19)"><strong>Datos generales</strong></h2></label>
+    <div>
+      <h4><strong>Número de participantes</strong></h4>
+      <h3>{{inscripciones.length}}</h3>
+    </div>
+    <div>
+      <h4><strong>Número de respuestas actuales </strong></h4>
+      <h3>{{numeroRespuestas}} ({{((numeroRespuestas/inscripciones.length)*100).toFixed(0)}}%)</h3>
+    </div>
+  </ion-list>
+
+  <ion-list style="text-align: center;">
+    <label astyle="text-align: center;"><h1 style="color:rgb(109, 11, 19)"><strong>Afirmaciones</strong></h1></label>
+    <br>
+    <ion-item  *ngFor="let afirmacion of afirmaciones;">
+      <ion-item lines = "none">
+        <ion-label class="ion-text-wrap" style = "font-style: italic;">{{afirmacion.Texto}} </ion-label>
+      </ion-item>
+      <ion-item lines = "none" style="text-align: right;">
+        <ion-label style = " color: rgb(11, 105, 27); text-align: right;">{{afirmacion.Media.toFixed(2)}} </ion-label>
+      </ion-item>
+    </ion-item>
+  </ion-list>
+
+  <!--<ion-list style="text-align: center;">
+    <label style="text-align: center;"><h1 style="color:rgb(109, 11, 19)"><strong>Preguntas abiertas</strong></h1></label>
+    <br>
+    <ion-item><h3><strong>  {{cuestionario.PreguntasAbiertas[i]}}</strong></h3></ion-item>
+    <ion-item  *ngFor="let respuesta of respuestas">
+      <ion-label class="ion-text-wrap" style = "font-style: italic;"> {{respuesta}} </ion-label>
+    </ion-item>
+  </ion-list>-->
+  
+  <!--<button *ngIf="!disablePrevBtn" class = "anterior" mat-raised-button  (click)="prev()">Anterior</button>
+  <button *ngIf="!disableNextBtn"  class = "siguiente" mat-raised-button  (click)="next()">Siguiente</button>
+
+  
+  <ion-slides  #slides (ionSlideWillChange)="doCheck()">
+
+    <ion-slide>
+      <ion-list *ngIf = "informacionPreparada" lines = "none" style="text-align: center;">
+        <label style="text-align: center;"><h2 style="color:rgb(109, 11, 19)"><strong>Datos generales</strong></h2></label>
+        <div>
+          <h4><strong>Número de participantes</strong></h4>
+          <h3>{{inscripciones.length}}</h3>
+        </div>
+        <div>
+          <h4><strong>Número de respuestas actuales </strong></h4>
+          <h3>{{numeroRespuestas}} ({{((numeroRespuestas/inscripciones.length)*100).toFixed(0)}}%)</h3>
+        </div>
+      </ion-list>
+    </ion-slide>
+    <ion-slide>
+      <ion-list style="text-align: center;">
+        <label astyle="text-align: center;"><h1 style="color:rgb(109, 11, 19)"><strong>Afirmaciones</strong></h1></label>
+        <br>
+        <ion-item  *ngFor="let afirmacion of afirmaciones;">
+          <ion-item lines = "none" style = " width: 85%">
+            <ion-label class="ion-text-wrap" style = "font-style: italic;">{{afirmacion.Texto}} </ion-label>
+          </ion-item>
+          <ion-item lines = "none" style="text-align: right;">
+            <ion-label style = " color: rgb(11, 105, 27); text-align: right;">{{afirmacion.Media.toFixed(2)}} </ion-label>
+          </ion-item>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+    <ion-slide *ngFor="let respuestas of respuestasPreguntasAbiertas; let i = index">
+      <ion-list style="text-align: center;">
+        <label style="text-align: center;"><h1 style="color:rgb(109, 11, 19)"><strong>Preguntas abiertas</strong></h1></label>
+        <br>
+        <ion-item><h3><strong>  {{cuestionario.PreguntasAbiertas[i]}}</strong></h3></ion-item>
+        <ion-item  *ngFor="let respuesta of respuestas">
+          <ion-label class="ion-text-wrap" style = "font-style: italic;"> {{respuesta}} </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+
+  </ion-slides>-->
+
+
+</ion-content>

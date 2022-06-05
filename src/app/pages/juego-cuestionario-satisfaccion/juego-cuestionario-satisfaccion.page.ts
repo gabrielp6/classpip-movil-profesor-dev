@@ -1,18 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { PeticionesAPIService, SesionService } from '../../services/index';
-import { CalculosService, ComServerService } from '../../services';
-import { NavController, AlertController, PickerController  } from '@ionic/angular';
+import { NavController  } from '@ionic/angular';
 import { CuestionarioSatisfaccion, Alumno, AlumnoJuegoDeCuestionarioSatisfaccion } from '../../clases';
 import {MatStepper} from '@angular/material';
-import {PickerOptions} from '@ionic/core';
 import { IonSlides } from '@ionic/angular';
-import { Router } from '@angular/router';
-
-
-
-
-
-
+import Swal from 'sweetalert2';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-juego-cuestionario-satisfaccion',
@@ -43,10 +36,7 @@ export class JuegoCuestionarioSatisfaccionPage implements OnInit {
     public navCtrl: NavController,
     private sesion: SesionService,
     private peticionesAPI: PeticionesAPIService,
-    private alertCtrl: AlertController,
-    private pickerCtrl: PickerController,
-    private comServer: ComServerService,
-    private route: Router,
+    private location: Location
   ) {}
 
 
@@ -72,8 +62,6 @@ export class JuegoCuestionarioSatisfaccionPage implements OnInit {
     });
   }
 
-
-  
   PreparaInformacion() {
     this.numeroRespuestas = 0;
     this.respuestasAfirmaciones = Array(this.cuestionario.Afirmaciones.length).fill (0);
@@ -168,5 +156,28 @@ export class JuegoCuestionarioSatisfaccionPage implements OnInit {
     this.slides.slidePrev();
   }
 
+  DesactivarJuego() {
+    Swal.fire({
+      title: '¿Seguro que quieres desactivar el juego?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, estoy seguro'
+    }).then((result) => {
+      if (result.value) {
 
+        this.juegoSeleccionado.JuegoActivo = false;
+        this.peticionesAPI.CambiaEstadoJuegoDeCuestionarioSatisfaccion (this.juegoSeleccionado)
+        .subscribe(res => {
+            if (res !== undefined) {
+              console.log(res);
+              console.log('juego desactivado');
+              Swal.fire('El juego se ha desactivado correctamente');
+              this.location.back();
+            }
+        });
+      }
+    });
+  }
 }

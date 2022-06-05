@@ -70,5 +70,7 @@ export * from './SesionClase';
 export * from './AsistenciaClase';
 export * from './TablaAlumnoJuegoDeVotacionUnoATodos';
 export * from './TablaAlumnoJuegoDeVotacionTodosAUno';
+export * from './JuegoDeControlDeTrabajoEnEquipo';
+export * from './AlumnoJuegoDeControlDeTrabajoEnEquipo';
 
 
