@@ -34,7 +34,6 @@ export class AppComponent {
   }
 
   initializeApp() {
-    console.log('cuando se lee esto??');
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();

@@ -10,6 +10,7 @@ export class AlumnoJuegoDeVotacionUnoATodos {
   
       this.alumnoId = alumnoId;
       this.juegoDeVotacionUnoATodosId = juegoDeVotacionUnoATodosId;
+      this.PuntosTotales = 0;
     }
-  }
+}
   

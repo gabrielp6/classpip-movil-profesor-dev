@@ -2,14 +2,23 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Alumno, AlumnoJuegoDeCompeticionFormulaUno, Profesor } from '../clases/index';
 import { Observable } from 'rxjs';
+import * as io from 'socket.io-client';
+import * as URL from '../URLs/urls';
+import { SesionService } from './sesion.service';
+
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ComServerService {
+
+  private socket;
   profesorId: number;
  
-  constructor(private servidor: Socket) { }
+  constructor(private servidor: Socket, private sesion: SesionService) { }
+
+
   Conectar(profesorId: number) {
     this.servidor.connect();
     this.servidor.emit ('conectarDash', profesorId);
@@ -42,6 +51,13 @@ export class ComServerService {
     this.profesorId = profesorId;
     // tslint:disable-next-line:object-literal-shorthand
     this.servidor.emit('nickNameJuegoRapidoYRegistro', { profesorId: this.profesorId, info: nick, c: clave});
+  }
+
+  /* JUEGO DE EVALUACION */
+  public EsperoResultadosJuegoEvaluacion(): any {
+    return Observable.create((observer) => {
+      this.servidor.on('respuestaEvaluacion', (respuesta) => {observer.next(respuesta);});
+    });
   }
 
 
@@ -89,6 +105,7 @@ export class ComServerService {
     // Me desconecto
     this.servidor.disconnect();
   }
+  //Ejemplo Conexion con Servidor
   public EsperoRespuestasJuegoDeCuestionario (): any {
     return Observable.create((observer) => {
         this.servidor.on('respuestaJuegoDeCuestionario', (respuesta) => {

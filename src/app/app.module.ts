@@ -25,12 +25,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule, MatRadioModule } from '@angular/material';
+import { MatInputModule } from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as URL from './URLs/urls';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
  
 
 
@@ -53,6 +57,7 @@ import { AvatarEditorPageModule } from './pagesPrevias/avatar-editor/avatar-edit
 import { LongPressModule } from 'ionic-long-press';
 import { IonicGestureConfig } from '../ionicGestureConfig';
 import { WheelSelector } from '@ionic-native/wheel-selector/ngx';
+import { DialogData } from '../components/evaluacion-dialogo/evaluacion-dialogo.component';
 
 import { DateAdapter } from '@angular/material';
 import { CustomDateAdapter } from './customDataAdapter';
@@ -81,11 +86,13 @@ import * as echarts from 'echarts';
     MatStepperModule,
     MatFormFieldModule,
     MatInputModule,
+    MatTableModule,
+    MatListModule,
+    MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     LongPressModule,
-
     SocketIoModule.forRoot(config),
     IntercambiarCromosPageModule,
     AvatarEditorPageModule,

@@ -17,13 +17,16 @@
     <img class="logo-liga" src="../../assets/img/jornadasf1icon.svg" width="100px">
     <p>Resultados de cada jornada</p>  
   </div>
-  
+  <div *ngIf="juegoSeleccionado.Tipo === 'Juego De Competición Torneo'">
+    <img class="logo-liga" src="../../assets/img/jornadasf1icon.svg" width="100px">
+    <p>Resultados de cada jornada</p>  
+  </div>
   
 
   <mat-accordion *ngIf="numeroTotalJornadas!==0">
 
     <div *ngFor="let jornada of JornadasCompeticion; let i=index">
-      <mat-expansion-panel class="ranking-acordeon" (click)="ObtenerEnfrentamientosDeCadaJornada(jornada)">
+      <mat-expansion-panel class="ranking-acordeon">
         
         <mat-expansion-panel-header>
           
@@ -54,4 +57,5 @@
       </mat-expansion-panel>
     </div>
   </mat-accordion>
+
 </ion-content>
