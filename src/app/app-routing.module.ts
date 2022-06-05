@@ -33,7 +33,7 @@ const routes: Routes = [
   // tslint:disable-next-line:max-line-length
   { path: 'juego-votacion-todos-auno', loadChildren: './pagesPrevias/juego-votacion-todos-auno/juego-votacion-todos-auno.module#JuegoVotacionTodosAUnoPageModule' },
   // tslint:disable-next-line:max-line-length
-  { path: 'juego-cuestionario-satisfaccion', loadChildren: './pagesPrevias/juego-cuestionario-satisfaccion/juego-cuestionario-satisfaccion.module#JuegoCuestionarioSatisfaccionPageModule' },
+  { path: 'juego-cuestionario-satisfaccion', loadChildren: './pages/juego-cuestionario-satisfaccion/juego-cuestionario-satisfaccion.module#JuegoCuestionarioSatisfaccionPageModule' },
   { path: 'juego-votacion-rapida', loadChildren: './pagesPrevias/juego-votacion-rapida/juego-votacion-rapida.module#JuegoVotacionRapidaPageModule' },
   { path: 'mis-juegos-inactivos', loadChildren: './pagesPrevias/mis-juegos-inactivos/mis-juegos-inactivos.module#MisJuegosInactivosPageModule' },
   // tslint:disable-next-line:max-line-length
@@ -51,6 +51,9 @@ const routes: Routes = [
   { path: 'juego-encuesta-rapida', loadChildren: './pagesPrevias/juego-encuesta-rapida/juego-encuesta-rapida.module#JuegoEncuestaRapidaPageModule' },
   { path: 'juego-cuestionario-rapido', loadChildren: './pagesPrevias/juego-cuestionario-rapido/juego-cuestionario-rapido.module#JuegoCuestionarioRapidoPageModule' },
   { path: 'editar-jornadas', loadChildren: './pages/editar-jornadas/editar-jornadas.module#EditarJornadasPageModule' },
+  { path: 'control-de-trabajo', loadChildren: './pages/control-de-trabajo/control-de-trabajo.module#ControlDeTrabajoPageModule' },
+
+
   
 
 

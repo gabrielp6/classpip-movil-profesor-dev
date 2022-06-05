@@ -107,7 +107,9 @@ export class IniciPage implements OnInit {
       this.navCtrl.navigateForward('/juego-votacion-todos-auno');
     } else if (juego.Tipo === 'Juego De Cuestionario de Satisfacción') {
         this.navCtrl.navigateForward('/juego-cuestionario-satisfaccion');
-    } else {
+    } else if (juego.Tipo === 'Control de trabajo en equipo') {
+      this.navCtrl.navigateForward('/control-de-trabajo');
+    }else {
       this.navCtrl.navigateForward('/juego-colleccion');
     }
   }

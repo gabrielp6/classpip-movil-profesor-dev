@@ -12,9 +12,9 @@ import {
   MiAlumnoAMostrarJuegoDeGeocaching,
   PuntoGeolocalizable, AlumnoJuegoDeAvatar, FamiliaAvatares, JuegoDeVotacionUnoATodos, AlumnoJuegoDeVotacionUnoATodos,
   Rubrica, JuegoDeVotacionTodosAUno, AlumnoJuegoDeVotacionTodosAUno, JuegoDeCuestionarioSatisfaccion, AlumnoJuegoDeCuestionarioSatisfaccion,
-  CuestionarioSatisfaccion, JuegoDeEncuestaRapida, JuegoDeCuestionarioRapido, SesionClase, AsistenciaClase, JuegoDeCogerTurnoRapido, JuegoDeVotacionRapida
-
-
+  CuestionarioSatisfaccion, JuegoDeEncuestaRapida, JuegoDeCuestionarioRapido, SesionClase, AsistenciaClase, JuegoDeCogerTurnoRapido, JuegoDeVotacionRapida,
+  JuegoDeControlDeTrabajoEnEquipo, AlumnoJuegoDeControlDeTrabajoEnEquipo
+  
 } from '../clases';
 import { AlumnoJuegoDeCuestionario } from '../clases/AlumnoJuegoDeCuestionario';
 import { Cuestionario } from '../clases/Cuestionario';
@@ -121,6 +121,9 @@ export class PeticionesAPIService {
   private APIUrlCuestionariosSatisfaccion = this.base + '3000/api/cuestionariosSatisfaccion';
   private APIUrlAsistenciasClase = this.base + '3000/api/AsistenciasClase';
   private APIUrlSesionesClase = this.base + '3000/api/SesionesClase';
+
+  private APIUrlAlumnoJuegoDeControlDeTrabajoEnEquipo = this.base + '3000/api/alumnosJuegoDeControlDeTrabajoEnEquipo';
+  private APIUrlJuegoDeControlDeTrabajoEnEquipo = this.base + '3000/api/juegosDeControlDeTrabajoEnEquipo';
 
   constructor(
     private http: HttpClient,
@@ -1316,6 +1319,39 @@ public PonerNotaAlumnoJuegoDeGeocaching(alumnoJuegoDeGeocaching: AlumnoJuegoDeGe
   public DameInscripcionesAlumnoJuegoDeVotacionTodosAUno(juegoId: number): Observable<AlumnoJuegoDeVotacionTodosAUno[]> {
     return this.http.get<AlumnoJuegoDeVotacionTodosAUno[]>(this.APIUrlAlumnoJuegoDeVotacionTodosAUno
                                                       + '?filter[where][juegoDeVotacionTodosAUnoId]=' + juegoId);
+  }
+
+  public DameJuegosDeControlDeTrabajoEnEquipo(grupoId: number): Observable<JuegoDeControlDeTrabajoEnEquipo[]> {
+    return this.http.get<JuegoDeControlDeTrabajoEnEquipo[]>(this.APIUrlGrupos + '/' + grupoId + '/juegosDeControlDeTrabajoEnEquipo');
+  }
+
+  public DameInscripcionAlumnoJuegoDeControlDeTrabajoEnEquipo(juegoId: number, alumnoId: number): Observable<AlumnoJuegoDeControlDeTrabajoEnEquipo[]> {
+    return this.http.get<AlumnoJuegoDeControlDeTrabajoEnEquipo[]>(this.APIUrlAlumnoJuegoDeControlDeTrabajoEnEquipo
+        + '?filter[where][juegoDeControlDeTrabajoEnEquipoId]=' + juegoId +  '&filter[where][alumnoId]=' + alumnoId);
+  }
+
+  public CambiaEstadoJuegoDeControlDeTrabajoEnEquipo(juego: JuegoDeControlDeTrabajoEnEquipo): Observable<JuegoDeControlDeTrabajoEnEquipo> {
+    // tslint:disable-next-line:max-line-length
+    return this.http.put<JuegoDeControlDeTrabajoEnEquipo>(this.APIUrlJuegoDeControlDeTrabajoEnEquipo + '/' + juego.id , juego);
+  }
+
+  public DameInscripcionesAlumnosJuegoDeControlDeTrabajoEnEquipo(juegoId: number): Observable<AlumnoJuegoDeControlDeTrabajoEnEquipo[]> {
+    return this.http.get<AlumnoJuegoDeControlDeTrabajoEnEquipo[]>(this.APIUrlAlumnoJuegoDeControlDeTrabajoEnEquipo
+      + '?filter[where][juegoDeControlDeTrabajoEnEquipoId]=' + juegoId);
+  }
+
+
+  public BorrarInscripcionAlumnoJuegoDeControlDeTrabajoEnEquipo(inscripcionId: number): Observable<AlumnoJuegoDeControlDeTrabajoEnEquipo> {
+    return this.http.delete<AlumnoJuegoDeControlDeTrabajoEnEquipo>(this.APIUrlAlumnoJuegoDeControlDeTrabajoEnEquipo + '/' + inscripcionId);
+  }
+
+  public BorrarJuegoDeControlDeTrabajoEnEquipo(juegoId: number): Observable<JuegoDeControlDeTrabajoEnEquipo> {
+    return this.http.delete<JuegoDeControlDeTrabajoEnEquipo>(this.APIUrlJuegoDeControlDeTrabajoEnEquipo + '/' + juegoId);
+  }
+
+  public CambiaEstadoJuegoDeCuestionarioSatisfaccion(juego: JuegoDeCuestionarioSatisfaccion): Observable<JuegoDeCuestionarioSatisfaccion> {
+    // tslint:disable-next-line:max-line-length
+    return this.http.put<JuegoDeCuestionarioSatisfaccion>(this.APIUrlGrupos + '/' + juego.grupoId + '/juegoDeCuestionarioSatisfaccion/' + juego.id, juego);
   }
   
 }

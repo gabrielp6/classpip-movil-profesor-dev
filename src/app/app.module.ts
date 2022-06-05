@@ -62,6 +62,8 @@ import { SeleccionarAlumnosPageModule } from './pagesPrevias/seleccionar-alumnos
 
 import {NgxEchartsModule} from 'ngx-echarts';
 
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
+
 
 // /////////import * as echarts from './custom-echarts';
 import * as echarts from 'echarts';
@@ -105,7 +107,8 @@ import * as echarts from 'echarts';
     Media,
     { provide: HAMMER_GESTURE_CONFIG, useClass: IonicGestureConfig},
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: DateAdapter, useClass: CustomDateAdapter}
+    { provide: DateAdapter, useClass: CustomDateAdapter},
+    { provide: "CemailComposer", useFactory: () => new EmailComposer() },
   ],
   bootstrap: [AppComponent]
 })

@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-
 import { IonicModule } from '@ionic/angular';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatInputModule, MatRadioModule } from '@angular/material';
+import { MatTableModule } from '@angular/material/table'
 
 import { JuegoCuestionarioSatisfaccionPage } from './juego-cuestionario-satisfaccion.page';
 
@@ -24,7 +24,8 @@ const routes: Routes = [
     MatStepperModule,
     MatRadioModule,
     MatInputModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    MatTableModule,
   ],
   declarations: [JuegoCuestionarioSatisfaccionPage]
 })
